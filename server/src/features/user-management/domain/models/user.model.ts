@@ -8,6 +8,9 @@ export class User {
   email: string;
   first_name: string | null;
   last_name: string | null;
+  phone: string | null;
+  date_of_birth: Date | null;
+  is_active: boolean;
   deleted_by: string | null;
   deleted_at: Date | null;
   created_by: string | null;
@@ -21,6 +24,9 @@ export class User {
     email: string;
     first_name?: string | null;
     last_name?: string | null;
+    phone?: string | null;
+    date_of_birth?: Date | null;
+    is_active?: boolean;
     deleted_by?: string | null;
     deleted_at?: Date | null;
     created_by?: string | null;
@@ -33,6 +39,9 @@ export class User {
     this.email = dto.email;
     this.first_name = dto.first_name ?? null;
     this.last_name = dto.last_name ?? null;
+    this.phone = dto.phone ?? null;
+    this.date_of_birth = dto.date_of_birth ?? null;
+    this.is_active = dto.is_active ?? true;
     this.deleted_by = dto.deleted_by ?? null;
     this.deleted_at = dto.deleted_at ?? null;
     this.created_by = dto.created_by ?? null;
@@ -47,6 +56,9 @@ export class User {
     email: string;
     first_name?: string | null;
     last_name?: string | null;
+    phone?: string | null;
+    date_of_birth?: Date | null;
+    is_active?: boolean;
     created_by?: string | null;
   }): User {
     const user = new User({
@@ -54,6 +66,9 @@ export class User {
       email: params.email,
       first_name: params.first_name ?? null,
       last_name: params.last_name ?? null,
+      phone: params.phone ?? null,
+      date_of_birth: params.date_of_birth ?? null,
+      is_active: params.is_active ?? true,
       created_by: params.created_by ?? null,
     });
     user.validate();
@@ -66,6 +81,9 @@ export class User {
     email?: string;
     first_name?: string | null;
     last_name?: string | null;
+    phone?: string | null;
+    date_of_birth?: Date | null;
+    is_active?: boolean;
     updated_by?: string | null;
   }): void {
     if (this.deleted_at) {
@@ -80,6 +98,9 @@ export class User {
       email: dto.email ?? this.email,
       first_name: dto.first_name ?? this.first_name,
       last_name: dto.last_name ?? this.last_name,
+      phone: dto.phone ?? this.phone,
+      date_of_birth: dto.date_of_birth ?? this.date_of_birth,
+      is_active: dto.is_active ?? this.is_active,
       created_at: this.created_at,
       updated_at: this.updated_at,
     });
@@ -88,6 +109,9 @@ export class User {
     this.email = dto.email ?? this.email;
     this.first_name = dto.first_name ?? this.first_name;
     this.last_name = dto.last_name ?? this.last_name;
+    this.phone = dto.phone ?? this.phone;
+    this.date_of_birth = dto.date_of_birth ?? this.date_of_birth;
+    this.is_active = dto.is_active ?? this.is_active;
     this.updated_by = dto.updated_by ?? null;
   }
 
@@ -166,6 +190,38 @@ export class User {
       if (this.last_name.length > 100) {
         throw new UserBusinessException(
           'Last name must not exceed 100 characters.',
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+    }
+    if (this.phone !== null && this.phone !== undefined) {
+      if (this.phone.length > 20) {
+        throw new UserBusinessException(
+          'Phone number must not exceed 20 characters.',
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+      const phone_regex = /^[\d\s\-\+\(\)]+$/;
+      if (!phone_regex.test(this.phone)) {
+        throw new UserBusinessException(
+          'Phone number contains invalid characters.',
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+    }
+    if (this.date_of_birth !== null && this.date_of_birth !== undefined) {
+      const today = new Date();
+      const birth_date = new Date(this.date_of_birth);
+      if (birth_date > today) {
+        throw new UserBusinessException(
+          'Date of birth cannot be in the future.',
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+      const age = today.getFullYear() - birth_date.getFullYear();
+      if (age > 150) {
+        throw new UserBusinessException(
+          'Date of birth is invalid (age exceeds 150 years).',
           HTTP_STATUS.BAD_REQUEST,
         );
       }

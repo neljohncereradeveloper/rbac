@@ -23,7 +23,9 @@ src/
         repositories/         # interfaces only
       application/
         use_cases/
+          <model_name>/        # e.g. role/, permission/, user-role/
         dto/
+          <model_name>/        # e.g. role/, permission/, user-role/
       infrastructure/
         entities/             # persistence/ORM entities (DB-specific)
         repositories/         # implementations
@@ -39,6 +41,69 @@ src/
       ...
     utils/                     # reusable utilities for all features
 ```
+
+## Application Layer Structure
+
+Organize use cases and DTOs by model/aggregate. Each model has its own folder in `use_cases/` and `dto/`:
+
+```
+application/
+  use_cases/
+    role/                      # Role-related use cases
+      create-role.use-case.ts
+      update-role.use-case.ts
+      archive-role.use-case.ts
+      restore-role.use-case.ts
+      get-role-by-id.use-case.ts
+      get-roles-paginated.use-case.ts
+      index.ts
+    permission/                # Permission-related use cases
+      create-permission.use-case.ts
+      update-permission.use-case.ts
+      archive-permission.use-case.ts
+      restore-permission.use-case.ts
+      get-permission-by-id.use-case.ts
+      index.ts
+    role-permission/           # Role-Permission relationship use cases
+      assign-permissions-to-role.use-case.ts
+      remove-permissions-from-role.use-case.ts
+      index.ts
+    user-role/                 # User-Role relationship use cases
+      assign-roles-to-user.use-case.ts
+      remove-roles-from-user.use-case.ts
+      index.ts
+    user-permission/           # User-Permission override use cases
+      grant-permissions-to-user.use-case.ts
+      deny-permissions-to-user.use-case.ts
+      remove-permission-overrides-from-user.use-case.ts
+      index.ts
+    index.ts                   # Export all use cases
+  dto/
+    role/                      # Role-related DTOs
+      create-role.dto.ts
+      update-role.dto.ts
+      index.ts
+    permission/                # Permission-related DTOs
+      create-permission.dto.ts
+      update-permission.dto.ts
+      index.ts
+    role-permission/           # Role-Permission DTOs
+      assign-permissions-to-role.dto.ts
+      index.ts
+    user-role/                 # User-Role DTOs
+      assign-roles-to-user.dto.ts
+      index.ts
+    user-permission/           # User-Permission DTOs
+      grant-permissions-to-user.dto.ts
+      deny-permissions-to-user.dto.ts
+      index.ts
+    index.ts                   # Export all DTOs
+```
+
+- **Each model/aggregate has its own folder** in both `use_cases/` and `dto/`.
+- **Group related operations** together (e.g., all role operations in `use_cases/role/`).
+- **Use kebab-case** for file names (e.g., `create-role.use-case.ts`, `assign-permissions-to-role.dto.ts`).
+- **Include index.ts** in each folder to export its contents, and a root index.ts to export all.
 
 ## Repository interface (default)
 
@@ -311,6 +376,7 @@ updated_at: Date;
 - One folder per feature; name folders in snake_case (e.g. `user_management`, `order_processing`).
 - **Domain is independent.** The domain layer must have no dependencies on application, infrastructure, or external libraries. Domain contains only models, constants, exceptions, value objects, repository interfaces, and events. Domain may depend on `@core` (e.g. `DomainException`) and `@shared/constants` (e.g. `HTTP_STATUS`) for exceptions only.
 - **Constants for each model live in `domain/constants/`.** Put model-specific constants (e.g. status codes, validation limits, default values) in the feature’s domain—one file per model (e.g. `barangay-constants.ts`) or grouped under constants. Shared constants used by more than one feature go in `core/domain/constants/`.
+- **Use cases and DTOs are organized by model.** Each model/aggregate has its own folder in `application/use_cases/` and `application/dto/`. Group related operations together (e.g., all role operations in `use_cases/role/`, all role DTOs in `dto/role/`).
 - **Dependencies live in infrastructure.** All framework, database, ORM, and external-service dependencies belong in the infrastructure layer. Domain models are mapped to infrastructure entities (e.g. ORM/DB entities) via mappers.
 - **If it’s used in more than one feature, it belongs in `core/`.** Do not duplicate shared logic across features—extract to core and import from there.
 - **Reusable utilities for all features live in `core/utils/`.** Put cross-feature helpers (formatting, validation, date/time, string helpers, etc.) in `core/utils/`. Feature-specific utilities stay in the feature; only shared ones go in core.
