@@ -4,6 +4,7 @@ import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import { winston_config } from './core/infrastructure/logger';
 import { ConfigService } from '@nestjs/config';
+import { DomainExceptionFilter, JwtExceptionFilter } from './core/infrastructure/filters';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -16,6 +17,8 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
+
+  app.useGlobalFilters(new DomainExceptionFilter(), new JwtExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
