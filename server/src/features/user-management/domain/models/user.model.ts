@@ -8,10 +8,13 @@ export class User {
   email: string;
   password: string | null;
   first_name: string | null;
+  middle_name: string | null;
   last_name: string | null;
   phone: string | null;
   date_of_birth: Date | null;
   is_active: boolean;
+  is_email_verified: boolean;
+  is_email_verified_at: Date | null;
   deleted_by: string | null;
   deleted_at: Date | null;
   created_by: string | null;
@@ -27,10 +30,13 @@ export class User {
     email: string;
     password?: string | null;
     first_name?: string | null;
+    middle_name?: string | null;
     last_name?: string | null;
     phone?: string | null;
     date_of_birth?: Date | null;
     is_active?: boolean;
+    is_email_verified?: boolean;
+    is_email_verified_at?: Date | null;
     deleted_by?: string | null;
     deleted_at?: Date | null;
     created_by?: string | null;
@@ -45,10 +51,13 @@ export class User {
     this.email = dto.email;
     this.password = dto.password ?? null;
     this.first_name = dto.first_name ?? null;
+    this.middle_name = dto.middle_name ?? null;
     this.last_name = dto.last_name ?? null;
     this.phone = dto.phone ?? null;
     this.date_of_birth = dto.date_of_birth ?? null;
     this.is_active = dto.is_active ?? true;
+    this.is_email_verified = dto.is_email_verified ?? false;
+    this.is_email_verified_at = dto.is_email_verified_at ?? null;
     this.deleted_by = dto.deleted_by ?? null;
     this.deleted_at = dto.deleted_at ?? null;
     this.created_by = dto.created_by ?? null;
@@ -65,10 +74,12 @@ export class User {
     email: string;
     password: string;
     first_name?: string | null;
+    middle_name?: string | null;
     last_name?: string | null;
     phone?: string | null;
     date_of_birth?: Date | null;
     is_active?: boolean;
+    is_email_verified?: boolean;
     created_by?: string | null;
   }): User {
     const user = new User({
@@ -76,10 +87,12 @@ export class User {
       email: params.email,
       password: params.password,
       first_name: params.first_name ?? null,
+      middle_name: params.middle_name ?? null,
       last_name: params.last_name ?? null,
       phone: params.phone ?? null,
       date_of_birth: params.date_of_birth ?? null,
       is_active: params.is_active ?? true,
+      is_email_verified: params.is_email_verified ?? false,
       created_by: params.created_by ?? null,
     });
     user.validate();
@@ -91,10 +104,12 @@ export class User {
     username?: string;
     email?: string;
     first_name?: string | null;
+    middle_name?: string | null;
     last_name?: string | null;
     phone?: string | null;
     date_of_birth?: Date | null;
     is_active?: boolean;
+    is_email_verified?: boolean;
     updated_by?: string | null;
   }): void {
     if (this.deleted_at) {
@@ -109,10 +124,12 @@ export class User {
       email: dto.email ?? this.email,
       password: this.password,
       first_name: dto.first_name ?? this.first_name,
+      middle_name: dto.middle_name ?? this.middle_name,
       last_name: dto.last_name ?? this.last_name,
       phone: dto.phone ?? this.phone,
       date_of_birth: dto.date_of_birth ?? this.date_of_birth,
       is_active: dto.is_active ?? this.is_active,
+      is_email_verified: dto.is_email_verified ?? this.is_email_verified,
       created_at: this.created_at,
       updated_at: this.updated_at,
     });
@@ -120,10 +137,12 @@ export class User {
     this.username = dto.username ?? this.username;
     this.email = dto.email ?? this.email;
     this.first_name = dto.first_name ?? this.first_name;
+    this.middle_name = dto.middle_name ?? this.middle_name;
     this.last_name = dto.last_name ?? this.last_name;
     this.phone = dto.phone ?? this.phone;
     this.date_of_birth = dto.date_of_birth ?? this.date_of_birth;
     this.is_active = dto.is_active ?? this.is_active;
+    this.is_email_verified = dto.is_email_verified ?? this.is_email_verified;
     this.updated_by = dto.updated_by ?? null;
   }
 
@@ -160,6 +179,25 @@ export class User {
     this.change_password_by = change_password_by ?? null;
     this.change_password_at = getPHDateTime();
     this.updated_by = change_password_by ?? null;
+  }
+
+  /** Verify email address. */
+  verifyEmail(verified_by?: string | null): void {
+    if (this.deleted_at) {
+      throw new UserBusinessException(
+        'User is archived and cannot verify email',
+        HTTP_STATUS.CONFLICT,
+      );
+    }
+    if (this.is_email_verified) {
+      throw new UserBusinessException(
+        'Email is already verified.',
+        HTTP_STATUS.CONFLICT,
+      );
+    }
+    this.is_email_verified = true;
+    this.is_email_verified_at = getPHDateTime();
+    this.updated_by = verified_by ?? null;
   }
 
   /** Soft-delete. */
@@ -229,6 +267,14 @@ export class User {
       if (this.first_name.length > 100) {
         throw new UserBusinessException(
           'First name must not exceed 100 characters.',
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+    }
+    if (this.middle_name !== null && this.middle_name !== undefined) {
+      if (this.middle_name.length > 100) {
+        throw new UserBusinessException(
+          'Middle name must not exceed 100 characters.',
           HTTP_STATUS.BAD_REQUEST,
         );
       }

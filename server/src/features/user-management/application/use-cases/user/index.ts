@@ -1,6 +1,7 @@
 export * from './create.use-case';
 export * from './update.use-case';
 export * from './change-password.use-case';
+export * from './verify-email.use-case';
 export * from './archive.use-case';
 export * from './restore.use-case';
 export * from './get-by-id.use-case';

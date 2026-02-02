@@ -54,6 +54,7 @@ export class UpdateUserUseCase {
           { field: 'username' },
           { field: 'email' },
           { field: 'first_name' },
+          { field: 'middle_name' },
           { field: 'last_name' },
           { field: 'phone' },
           {
@@ -61,6 +62,7 @@ export class UpdateUserUseCase {
             transform: (val) => (val ? getPHDateTime(val) : null),
           },
           { field: 'is_active' },
+          { field: 'is_email_verified' },
           {
             field: 'updated_at',
             transform: (val) => (val ? getPHDateTime(val) : null),
@@ -76,10 +78,12 @@ export class UpdateUserUseCase {
           username: dto.username,
           email: dto.email,
           first_name: dto.first_name ?? user.first_name,
+          middle_name: dto.middle_name ?? user.middle_name,
           last_name: dto.last_name ?? user.last_name,
           phone: dto.phone ?? user.phone,
           date_of_birth: dto.date_of_birth ?? user.date_of_birth,
           is_active: dto.is_active ?? user.is_active,
+          is_email_verified: dto.is_email_verified ?? user.is_email_verified,
           updated_by: requestInfo?.user_name || null,
         });
 

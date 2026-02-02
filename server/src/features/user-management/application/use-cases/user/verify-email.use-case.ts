@@ -7,17 +7,16 @@ import { ActivityLog } from '@/core/domain/models';
 import { TransactionPort } from '@/core/domain/ports';
 import { HTTP_STATUS } from '@/core/domain/constants';
 import { UserBusinessException } from '@/features/user-management/domain/exceptions';
-import { User } from '@/features/user-management/domain/models';
 import { UserRepository } from '@/features/user-management/domain/repositories';
 import {
   USER_ACTIONS,
   USER_MANAGEMENT_TOKENS,
   USER_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/user-management/domain/constants';
-import { CreateUserDto } from '../../dto/user/create-user.dto';
+import { VerifyEmailDto } from '../../dto/user/verify-email.dto';
 
 @Injectable()
-export class CreateUserUseCase {
+export class VerifyEmailUseCase {
   constructor(
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
@@ -28,61 +27,55 @@ export class CreateUserUseCase {
   ) { }
 
   async execute(
-    dto: CreateUserDto,
+    dto: VerifyEmailDto,
     requestInfo?: RequestInfo,
-  ): Promise<User> {
+  ): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
-      USER_ACTIONS.CREATE,
+      USER_ACTIONS.VERIFY_EMAIL,
       async (manager) => {
-        // Create domain model (validates automatically)
-        const new_user = User.create({
-          username: dto.username,
-          email: dto.email,
-          password: dto.password,
-          first_name: dto.first_name ?? null,
-          middle_name: dto.middle_name ?? null,
-          last_name: dto.last_name ?? null,
-          phone: dto.phone ?? null,
-          date_of_birth: dto.date_of_birth ?? null,
-          is_active: dto.is_active ?? true,
-          is_email_verified: dto.is_email_verified ?? false,
-          created_by: requestInfo?.user_name || null,
-        });
+        // Validate user existence
+        const user = await this.userRepository.findById(dto.user_id, manager);
+        if (!user) {
+          throw new UserBusinessException(
+            `User with ID ${dto.user_id} not found.`,
+            HTTP_STATUS.NOT_FOUND,
+          );
+        }
 
-        // Persist the entity
-        const created_user = await this.userRepository.create(
-          new_user,
+        // Use domain method to verify email (validates automatically)
+        // Email verification is done via email link, so no user_name is required
+        user.verifyEmail(null);
+
+        // Update the user in the database
+        const success = await this.userRepository.update(
+          dto.user_id,
+          user,
           manager,
         );
-
-        if (!created_user) {
+        if (!success) {
           throw new UserBusinessException(
-            'User creation failed',
+            'Email verification failed',
             HTTP_STATUS.INTERNAL_SERVER_ERROR,
           );
         }
 
-        // Log the creation
+        // Log the email verification
+        // Email verification is system-initiated via email link (no login required)
         const log = ActivityLog.create({
-          action: USER_ACTIONS.CREATE,
+          action: USER_ACTIONS.VERIFY_EMAIL,
           entity: USER_MANAGEMENT_DATABASE_MODELS.USERS,
           details: JSON.stringify({
-            id: created_user.id,
-            username: created_user.username,
-            email: created_user.email,
-            first_name: created_user.first_name,
-            middle_name: created_user.middle_name,
-            last_name: created_user.last_name,
-            is_active: created_user.is_active,
-            is_email_verified: created_user.is_email_verified,
-            created_by: requestInfo?.user_name || '',
-            created_at: getPHDateTime(created_user.created_at),
+            user_id: dto.user_id,
+            username: user.username,
+            email: user.email,
+            explanation: `Email verified for user with ID : ${dto.user_id} via email verification link`,
+            verified_at: getPHDateTime(user.is_email_verified_at || new Date()),
           }),
           request_info: requestInfo || { user_name: '' },
         });
         await this.activityLogRepository.create(log, manager);
 
-        return created_user;
+        return true;
       },
     );
   }
