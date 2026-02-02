@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getTypeormConfig } from './config/typeorm.config';
+import { allEntities } from './entities/all-entities';
 
 @Module({
   imports: [
@@ -12,8 +13,8 @@ import { getTypeormConfig } from './config/typeorm.config';
         getTypeormConfig(config_service),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([]),
+    TypeOrmModule.forFeature(allEntities),
   ],
   exports: [TypeOrmModule], // Export TypeOrmModule for use in other modules
 })
-export class PostgresqlDatabaseModule {}
+export class PostgresqlDatabaseModule { }
