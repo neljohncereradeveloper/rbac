@@ -1,0 +1,33 @@
+---
+description: Domain Driven Design (DDD) conventions and layered architecture
+alwaysApply: true
+---
+
+# Domain Driven Design
+
+Follow DDD principles when designing and organizing code.
+
+## Core Concepts
+
+- **Bounded contexts**: Each feature/domain has clear boundaries. Do not mix concerns across contexts.
+- **Domain models**: Objects with identity and business logic (e.g. `User`, `Order`). Live in domain; pure, no framework or DB. Identity and invariants are expressed here.
+- **Entities (persistence)**: ORM/DB entities live in **infrastructure**. They map to/from domain models via mappers. Domain does not reference these.
+- **Value objects**: Immutable objects defined by attributes (e.g. `Email`, `Money`). No identity. Live in domain.
+- **Aggregates**: Cluster of domain models + value objects with one aggregate root. External references use aggregate root ID only.
+- **Domain events**: Represent something that happened in the domain. Name in past tense (e.g. `OrderPlaced`). Live in domain.
+- **Repositories**: Abstract persistence. One per aggregate root. **Interface in domain** (operates on domain models); **implementation in infrastructure** (uses persistence entities and mappers).
+- **Domain services**: Stateless operations that don’t fit on a single domain model.
+
+## Layered Structure
+
+1. **Domain**: Models, constants, exceptions, value objects, domain events, repository interfaces. No framework or DB imports. May depend on `@core` (e.g. `DomainException`) and `@shared/constants` (e.g. `HTTP_STATUS`) for exceptions only.
+2. **Application (use cases)**: Application services, DTOs, ports. Orchestrate domain; no business rules.
+3. **Infrastructure**: Entities (ORM/DB), repository implementations, mappers, DB, external APIs, framework glue. All framework and DB dependencies live here.
+4. **Presentation**: Controllers, HTTP, UI. Thin; delegate to application layer.
+
+## Rules
+
+- Domain layer has no dependencies on application or infrastructure (except core and shared constants for domain exceptions).
+- Application layer depends only on domain (and ports).
+- Keep domain logic in the domain layer; avoid anemic models. Persistence entities in infrastructure map to domain models via mappers.
+- Use ubiquitous language: class, method, and variable names match domain terms.

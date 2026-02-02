@@ -1,0 +1,118 @@
+---
+description: Feature-based folder and module structure
+alwaysApply: true
+---
+
+# Feature-Based Structure
+
+Organize code by feature (bounded context), not by technical layer across the whole app.
+
+## Folder Layout
+
+Group by feature first, then by layer inside the feature:
+
+```
+src/
+  features/
+    <feature_name>/           # e.g. user_management, order_processing
+      domain/
+        models/               # pure domain models (no framework/DB)
+        constants/            # constants per model (e.g. statuses, limits, defaults)
+        exceptions/           # business/domain exceptions per model
+        value_objects/
+        repositories/         # interfaces only
+      application/
+        use_cases/
+        dto/
+      infrastructure/
+        entities/             # persistence/ORM entities (DB-specific)
+        repositories/         # implementations
+        mappers/
+      presentation/
+        controllers/
+        dto/
+  core/                        # code used by 2+ features (no duplication)
+    domain/
+    application/
+    infrastructure/
+```
+
+## Repository interface (default)
+
+Use this as the default shape for repository interfaces in `domain/repositories/`. Replace the aggregate/model name and adjust methods as needed; keep `context: Context` on all methods.
+
+```ts
+create(model: Model, context: Context): Promise<Model>;
+update(
+  id: number,
+  dto: Partial<Model>,
+  context: Context,
+): Promise<boolean>;
+findById(id: number, context: Context): Promise<Model | null>;
+findPaginatedList(
+  term: string,
+  page: number,
+  limit: number,
+  is_archived: boolean,
+  context: Context,
+): Promise<PaginatedResult<Model>>;
+findByDescription(desc1: string, context: Context): Promise<Model | null>;
+combobox(context: Context): Promise<Model[]>;
+```
+
+- `Context` is passed through for tenant, user, or request-scoped data.
+- Use `PaginatedResult<Model>` for list responses with total count and items.
+- Omit or rename methods (e.g. `findByDescription`) per aggregate; keep `create`, `update`, `findById`, `findPaginatedList`, and `combobox` as the baseline.
+
+## Constants: LOG ACTIONS (per model)
+
+Define LOG ACTIONS for each model in `domain/constants/`, aligned with that model’s repository. Use as the default pattern (adjust keys to match repo methods):
+
+```ts
+export const BARANGAY_ACTIONS = {
+  CREATE: "CREATE_BARANGAY",
+  UPDATE: "UPDATE_BARANGAY",
+  ARCHIVE: "ARCHIVE_BARANGAY",
+  RESTORE: "RESTORE_BARANGAY",
+  PAGINATED_LIST: "PAGINATED_LIST_BARANGAY",
+  BY_DESCRIPTION: "BY_DESCRIPTION_BARANGAY",
+  COMBOBOX: "COMBOBOX_BARANGAY",
+} as const;
+```
+
+- Name: `<MODEL>_ACTIONS` (e.g. `BARANGAY_ACTIONS`, `USER_ACTIONS`). Values: `'<ACTION>_<MODEL>'`.
+- Include one entry per repository operation you log (create, update, archive, restore, findPaginatedList, findByDescription, combobox, etc.). Add or remove actions per model.
+
+## Domain exceptions (per model)
+
+Define a business/domain exception for each model in `domain/exceptions/`. Extend `DomainException` from core and use `HTTP_STATUS` from shared constants. Use as the default pattern:
+
+```ts
+import { HTTP_STATUS } from "@shared/constants";
+import { DomainException } from "@core/exceptions/domain.exception";
+
+/**
+ * Thrown when barangay data violates domain invariants or business rules
+ */
+export class BarangayBusinessException extends DomainException {
+  constructor(message: string, status_code: number = HTTP_STATUS.BAD_REQUEST) {
+    super(message, "BARANGAY_BUSINESS_EXCEPTION", status_code);
+    this.name = "BarangayBusinessException";
+  }
+}
+```
+
+- Name: `<Model>BusinessException` (e.g. `BarangayBusinessException`, `UserBusinessException`). Code: `'<MODEL>_BUSINESS_EXCEPTION'`.
+- One exception class per model; throw when domain invariants or business rules are violated. Domain may depend on `@core/exceptions` and `@shared/constants` for exceptions only.
+
+## Rules
+
+- One folder per feature; name folders in snake_case (e.g. `user_management`, `order_processing`).
+- **Domain is independent.** The domain layer must have no dependencies on application, infrastructure, or external libraries. Domain contains only models, constants, exceptions, value objects, repository interfaces, and events. Domain may depend on `@core` (e.g. `DomainException`) and `@shared/constants` (e.g. `HTTP_STATUS`) for exceptions only.
+- **Constants for each model live in `domain/constants/`.** Put model-specific constants (e.g. status codes, validation limits, default values) in the feature’s domain—one file per model (e.g. `barangay-constants.ts`) or grouped under constants. Shared constants used by more than one feature go in `core/domain/constants/`.
+- **Dependencies live in infrastructure.** All framework, database, ORM, and external-service dependencies belong in the infrastructure layer. Domain models are mapped to infrastructure entities (e.g. ORM/DB entities) via mappers.
+- **If it’s used in more than one feature, it belongs in `core/`.** Do not duplicate shared logic across features—extract to core and import from there.
+- Keep feature folders self-contained. Only feature-specific code stays in a feature; reused code lives in `core/`.
+- Prefer importing from the same feature. Cross-feature or shared use: import from `core/`.
+- Each feature can expose a single module (e.g. `UserManagementModule`) that wires domain, application, and infrastructure for that feature.
+- Do not create top-level folders like `controllers/`, `services/`, `repositories/` that mix all features.
