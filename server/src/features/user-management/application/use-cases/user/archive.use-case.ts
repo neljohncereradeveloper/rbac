@@ -23,7 +23,7 @@ export class ArchiveUserUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
@@ -58,8 +58,9 @@ export class ArchiveUserUseCase {
             id,
             username: user.username,
             email: user.email,
-            explanation: `User with ID : ${id} archived by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `User with ID : ${id} archived by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             archived_by: requestInfo?.user_name || '',
             archived_at: getPHDateTime(user.deleted_at || new Date()),
           }),

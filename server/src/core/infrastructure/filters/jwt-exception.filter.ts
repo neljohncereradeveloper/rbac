@@ -13,7 +13,7 @@ export class JwtExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     let message = 'Unauthorized';
-    let status_code = 401;
+    const status_code = 401;
 
     if (exception instanceof TokenExpiredError) {
       message = 'JWT token expired';

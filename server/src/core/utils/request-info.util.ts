@@ -5,7 +5,6 @@ export interface RequestInfo {
   user_name: string;
 }
 
-
 /**
  * Creates a RequestInfo object from a NestJS/Express Request object
  * @param request - The NestJS Request object (or any object with user, ip, headers, sessionId)
@@ -15,7 +14,10 @@ export function createRequestInfo(request: any): RequestInfo {
   return {
     user_name: request?.user?.username || 'system',
     ip_address: request?.ip,
-    user_agent: typeof request?.headers?.['user-agent'] === 'string' ? request.headers['user-agent'] : undefined,
+    user_agent:
+      typeof request?.headers?.['user-agent'] === 'string'
+        ? request.headers['user-agent']
+        : undefined,
     session_id: request?.sessionId,
   };
 }

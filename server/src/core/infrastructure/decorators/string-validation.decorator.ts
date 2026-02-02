@@ -8,7 +8,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { DecoratorValidationException } from '@/cored/domain/exceptions/decorator';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
 
 export interface RequiredStringValidationOptions {
   field_name?: string;
@@ -81,11 +81,8 @@ export function RequiredStringValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add sanitization transformation if enabled
   if (sanitize) {
@@ -100,7 +97,7 @@ export function RequiredStringValidation(
         const trimmed = String(value).trim();
         const lowercased = trimmed.toLowerCase();
         return lowercased === '' ? (allow_empty ? null : '') : lowercased;
-      }) as PropertyDecorator,
+      }),
     );
   }
 
@@ -184,11 +181,8 @@ export function OptionalStringValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add sanitization transformation if enabled
   if (sanitize) {
@@ -203,7 +197,7 @@ export function OptionalStringValidation(
         const trimmed = String(value).trim();
         const lowercased = trimmed.toLowerCase();
         return lowercased === '' ? null : lowercased;
-      }) as PropertyDecorator,
+      }),
     );
   }
 

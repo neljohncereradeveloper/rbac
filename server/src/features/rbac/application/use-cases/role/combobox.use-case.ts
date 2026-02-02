@@ -11,7 +11,7 @@ export class ComboboxRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(): Promise<{ value: string; label: string }[]> {
     return this.transactionHelper.executeTransaction(
@@ -22,7 +22,7 @@ export class ComboboxRoleUseCase {
           value: role.name || '',
           label: role.name
             ? role.name.charAt(0).toUpperCase() +
-            role.name.slice(1).toLowerCase()
+              role.name.slice(1).toLowerCase()
             : '',
         }));
       },

@@ -8,11 +8,7 @@ export interface RoleRepository<Context = unknown> {
     context: Context,
     permission_ids?: number[],
   ): Promise<Role>;
-  update(
-    id: number,
-    dto: Partial<Role>,
-    context: Context,
-  ): Promise<boolean>;
+  update(id: number, dto: Partial<Role>, context: Context): Promise<boolean>;
   findById(id: number, context: Context): Promise<Role | null>;
   findPaginatedList(
     term: string,

@@ -24,7 +24,7 @@ export class VerifyEmailUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     dto: VerifyEmailDto,

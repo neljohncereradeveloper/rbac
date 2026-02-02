@@ -1,7 +1,6 @@
-import { getPHDateTime, RequestInfo } from "../../utils";
-import { HTTP_STATUS } from "../constants";
-import { ActivityLogBusinessException } from "../exceptions/activitylog";
-
+import { getPHDateTime, RequestInfo } from '../../utils';
+import { HTTP_STATUS } from '../constants';
+import { ActivityLogBusinessException } from '../exceptions/activitylog';
 
 /**
  * ActivityLog Domain Model

@@ -36,5 +36,9 @@ export interface RolePermissionRepository<Context = unknown> {
   findByRoleId(role_id: number, context: Context): Promise<RolePermission[]>;
 
   /** Check if a role has a specific permission. */
-  exists(role_id: number, permission_id: number, context: Context): Promise<boolean>;
+  exists(
+    role_id: number,
+    permission_id: number,
+    context: Context,
+  ): Promise<boolean>;
 }

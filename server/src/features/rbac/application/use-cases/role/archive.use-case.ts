@@ -23,7 +23,7 @@ export class ArchiveRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
@@ -57,8 +57,9 @@ export class ArchiveRoleUseCase {
           details: JSON.stringify({
             id,
             name: role.name,
-            explanation: `Role with ID : ${id} archived by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `Role with ID : ${id} archived by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             archived_by: requestInfo?.user_name || '',
             archived_at: getPHDateTime(role.deleted_at || new Date()),
           }),

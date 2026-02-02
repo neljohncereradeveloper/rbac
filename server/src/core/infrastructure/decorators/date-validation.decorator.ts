@@ -7,11 +7,8 @@ import {
   ValidationArguments,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { DecoratorValidationException } from '@/cored/domain/exceptions/decorator';
-import {
-  IsDateStringCustom,
-  transformDateString,
-} from '../../utils/date.util';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
+import { IsDateStringCustom, transformDateString } from '../../utils/date.util';
 
 export interface RequiredDateValidationOptions {
   field_name?: string;
@@ -138,11 +135,8 @@ export function RequiredDateValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -152,7 +146,7 @@ export function RequiredDateValidation(
           return null;
         }
         return transformDateString(value);
-      }) as PropertyDecorator,
+      }),
     );
   }
 
@@ -163,7 +157,7 @@ export function RequiredDateValidation(
   decorators.push(
     IsDateStringCustom({
       message: `${field_name} must be a valid date string (YYYY-MM-DD)`,
-    }),
+    }) as PropertyDecorator,
   );
 
   // Add min date validation if provided
@@ -215,11 +209,8 @@ export function OptionalDateValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -229,7 +220,7 @@ export function OptionalDateValidation(
           return null;
         }
         return transformDateString(value);
-      }) as PropertyDecorator,
+      }),
     );
   }
 
@@ -238,10 +229,12 @@ export function OptionalDateValidation(
 
   // Add date validation (only validate if value is provided)
   decorators.push(
-    ValidateIf((o, v) => v !== null && v !== undefined && v !== ''),
-    IsDateStringCustom({
-      message: `${field_name} must be a valid date string (YYYY-MM-DD)`,
-    }),
+    applyDecorators(
+      ValidateIf((o, v) => v !== null && v !== undefined && v !== ''),
+      IsDateStringCustom({
+        message: `${field_name} must be a valid date string (YYYY-MM-DD)`,
+      }) as PropertyDecorator,
+    ),
   );
 
   // Add min date validation if provided (only if value is provided)

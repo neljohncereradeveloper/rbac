@@ -8,7 +8,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { DecoratorValidationException } from '@/cored/domain/exceptions/decorator';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
 
 export interface RequiredNumberValidationOptions {
   field_name?: string;
@@ -79,11 +79,8 @@ export function RequiredNumberValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -113,7 +110,7 @@ export function RequiredNumberValidation(
 
         // Return as-is if already a number
         return typeof value === 'number' && isFinite(value) ? value : null;
-      }) as PropertyDecorator,
+      }),
     );
   }
 
@@ -217,11 +214,8 @@ export function OptionalNumberValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -251,7 +245,7 @@ export function OptionalNumberValidation(
 
         // Return as-is if already a number
         return typeof value === 'number' && isFinite(value) ? value : null;
-      }) as PropertyDecorator,
+      }),
     );
   }
 

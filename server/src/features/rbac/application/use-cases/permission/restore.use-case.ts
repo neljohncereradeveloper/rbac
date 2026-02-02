@@ -23,12 +23,9 @@ export class RestorePermissionUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
-  async execute(
-    id: number,
-    requestInfo?: RequestInfo,
-  ): Promise<boolean> {
+  async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
       PERMISSION_ACTIONS.RESTORE,
       async (manager) => {
@@ -67,8 +64,9 @@ export class RestorePermissionUseCase {
           details: JSON.stringify({
             id,
             name: permission.name,
-            explanation: `Permission with ID : ${id} restored by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `Permission with ID : ${id} restored by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             restored_by: requestInfo?.user_name || '',
             restored_at: getPHDateTime(new Date()),
           }),

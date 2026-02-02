@@ -1,6 +1,12 @@
-import { CheckConstraintViolationException, ForeignKeyViolationException, NotNullViolationException, SerializationFailureException, UniqueConstraintException } from '@/cored/domain/exceptions/database';
-import { InternalDatabaseErrorException } from '@/cored/domain/exceptions/database/internal-database.exception';
-import { TransactionPort } from '@/cored/domain/ports';
+import {
+  CheckConstraintViolationException,
+  ForeignKeyViolationException,
+  NotNullViolationException,
+  SerializationFailureException,
+  UniqueConstraintException,
+} from '@/core/domain/exceptions/database';
+import { InternalDatabaseErrorException } from '@/core/domain/exceptions/database/internal-database.exception';
+import { TransactionPort } from '@/core/domain/ports';
 import { Injectable, Logger } from '@nestjs/common';
 import {
   DataSource,
@@ -9,10 +15,9 @@ import {
   QueryFailedError,
 } from 'typeorm';
 
-
 @Injectable()
 export class TransactionAdapter implements TransactionPort {
-  constructor(private readonly data_source: DataSource) { }
+  constructor(private readonly data_source: DataSource) {}
 
   async executeTransaction<T>(
     action_log: string,
@@ -83,7 +88,6 @@ export class TransactionAdapter implements TransactionPort {
               throw new SerializationFailureException();
             default:
               throw new InternalDatabaseErrorException();
-
           }
         } else {
           throw new InternalDatabaseErrorException();

@@ -12,7 +12,6 @@ export interface PaginatedResult<T> {
   meta: PaginationMeta;
 }
 
-
 export function calculatePagination(
   total_records: number,
   page: number,

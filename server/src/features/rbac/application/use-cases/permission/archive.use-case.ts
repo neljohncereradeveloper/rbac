@@ -23,12 +23,9 @@ export class ArchivePermissionUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
-  async execute(
-    id: number,
-    requestInfo?: RequestInfo,
-  ): Promise<boolean> {
+  async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
       PERMISSION_ACTIONS.ARCHIVE,
       async (manager) => {
@@ -67,8 +64,9 @@ export class ArchivePermissionUseCase {
           details: JSON.stringify({
             id,
             name: permission.name,
-            explanation: `Permission with ID : ${id} archived by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `Permission with ID : ${id} archived by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             archived_by: requestInfo?.user_name || '',
             archived_at: getPHDateTime(permission.deleted_at || new Date()),
           }),

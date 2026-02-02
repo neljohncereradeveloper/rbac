@@ -172,4 +172,3 @@ function isEqual(a: any, b: any): boolean {
   // Handle primitives
   return a === b;
 }
-

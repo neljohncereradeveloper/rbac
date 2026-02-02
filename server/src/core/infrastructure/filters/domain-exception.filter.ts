@@ -1,5 +1,5 @@
 // infrastructure/filters/domain-exception.filter.ts
-import { DomainException } from '@/cored/domain/exceptions/domain.exception';
+import { DomainException } from '@/core/domain/exceptions/domain.exception';
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Response } from 'express';
 

@@ -25,12 +25,9 @@ export class CreateUserUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
-  async execute(
-    dto: CreateUserDto,
-    requestInfo?: RequestInfo,
-  ): Promise<User> {
+  async execute(dto: CreateUserDto, requestInfo?: RequestInfo): Promise<User> {
     return this.transactionHelper.executeTransaction(
       USER_ACTIONS.CREATE,
       async (manager) => {

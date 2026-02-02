@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
-import { winston_config } from './core/infrastructure/logger';
+import { winston_config } from '@/core/infrastructure/logger';
 import { ConfigService } from '@nestjs/config';
-import { DomainExceptionFilter, JwtExceptionFilter } from './core/infrastructure/filters';
+import {
+  DomainExceptionFilter,
+  JwtExceptionFilter,
+} from '@/core/infrastructure/filters';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -27,7 +30,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
 
   const configService = app.get(ConfigService);
   const PORT = configService.get<number>('PORT', 3000);

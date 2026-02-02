@@ -9,14 +9,14 @@ import {
  * This decorator validates that the input is a valid date string in YYYY-MM-DD format
  */
 export function IsDateStringCustom(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isDateStringCustom',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any) {
           // Handle Date objects (from @Transform)
           if (value instanceof Date) {
             return !isNaN(value.getTime());

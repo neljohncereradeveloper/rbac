@@ -3,16 +3,8 @@ import { User } from '../models/user.model';
 
 export interface UserRepository<Context = unknown> {
   create(user: User, context: Context): Promise<User>;
-  update(
-    id: number,
-    dto: Partial<User>,
-    context: Context,
-  ): Promise<boolean>;
-  changePassword(
-    id: number,
-    user: User,
-    context: Context,
-  ): Promise<boolean>;
+  update(id: number, dto: Partial<User>, context: Context): Promise<boolean>;
+  changePassword(id: number, user: User, context: Context): Promise<boolean>;
   findById(id: number, context: Context): Promise<User | null>;
   findPaginatedList(
     term: string,

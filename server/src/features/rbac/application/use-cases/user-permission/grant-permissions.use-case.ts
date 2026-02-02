@@ -6,9 +6,7 @@ import { getPHDateTime } from '@/core/utils/date.util';
 import { ActivityLog } from '@/core/domain/models';
 import { TransactionPort } from '@/core/domain/ports';
 import { HTTP_STATUS } from '@/core/domain/constants';
-import {
-  UserPermissionBusinessException,
-} from '@/features/rbac/domain/exceptions';
+import { UserPermissionBusinessException } from '@/features/rbac/domain/exceptions';
 import { UserPermissionRepository } from '@/features/rbac/domain/repositories';
 import {
   USER_PERMISSION_ACTIONS,
@@ -31,7 +29,7 @@ export class GrantPermissionsToUserUseCase {
     private readonly userPermissionRepository: UserPermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     dto: GrantPermissionsToUserDto,

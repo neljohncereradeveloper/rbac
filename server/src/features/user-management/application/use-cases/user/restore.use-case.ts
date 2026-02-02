@@ -23,7 +23,7 @@ export class RestoreUserUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
@@ -58,8 +58,9 @@ export class RestoreUserUseCase {
             id,
             username: user.username,
             email: user.email,
-            explanation: `User with ID : ${id} restored by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `User with ID : ${id} restored by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             restored_by: requestInfo?.user_name || '',
             restored_at: getPHDateTime(new Date()),
           }),

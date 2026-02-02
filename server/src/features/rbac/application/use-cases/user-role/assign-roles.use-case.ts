@@ -6,9 +6,7 @@ import { getPHDateTime } from '@/core/utils/date.util';
 import { ActivityLog } from '@/core/domain/models';
 import { TransactionPort } from '@/core/domain/ports';
 import { HTTP_STATUS } from '@/core/domain/constants';
-import {
-  UserRoleBusinessException,
-} from '@/features/rbac/domain/exceptions';
+import { UserRoleBusinessException } from '@/features/rbac/domain/exceptions';
 import { UserRoleRepository } from '@/features/rbac/domain/repositories';
 import {
   USER_ROLE_ACTIONS,
@@ -31,7 +29,7 @@ export class AssignRolesToUserUseCase {
     private readonly userRoleRepository: UserRoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     dto: AssignRolesToUserDto,

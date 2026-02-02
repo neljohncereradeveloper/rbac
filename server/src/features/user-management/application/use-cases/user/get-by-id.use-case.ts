@@ -17,7 +17,7 @@ export class GetUserByIdUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(id: number): Promise<User> {
     return this.transactionHelper.executeTransaction(

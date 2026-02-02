@@ -14,7 +14,7 @@ export class GetRoleByIdUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(id: number): Promise<Role> {
     return this.transactionHelper.executeTransaction(

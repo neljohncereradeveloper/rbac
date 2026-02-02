@@ -24,7 +24,7 @@ export class ChangePasswordUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     dto: ChangePasswordDto,
@@ -43,10 +43,7 @@ export class ChangePasswordUseCase {
         }
 
         // Use domain method to change password (validates automatically)
-        user.changePassword(
-          dto.new_password,
-          requestInfo?.user_name || null,
-        );
+        user.changePassword(dto.new_password, requestInfo?.user_name || null);
 
         // Update the user in the database
         const success = await this.userRepository.changePassword(
@@ -68,10 +65,13 @@ export class ChangePasswordUseCase {
           details: JSON.stringify({
             user_id: dto.user_id,
             username: user.username,
-            explanation: `Password changed for user with ID : ${dto.user_id} by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `Password changed for user with ID : ${dto.user_id} by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             change_password_by: requestInfo?.user_name || '',
-            change_password_at: getPHDateTime(user.change_password_at || new Date()),
+            change_password_at: getPHDateTime(
+              user.change_password_at || new Date(),
+            ),
           }),
           request_info: requestInfo || { user_name: '' },
         });

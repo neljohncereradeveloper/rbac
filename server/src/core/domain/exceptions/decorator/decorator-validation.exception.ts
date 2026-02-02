@@ -1,6 +1,5 @@
-import { HTTP_STATUS } from "../../constants";
-import { DomainException } from "../domain.exception";
-
+import { HTTP_STATUS } from '../../constants';
+import { DomainException } from '../domain.exception';
 
 /**
  * Exception thrown when a decorator is configured with invalid parameters
@@ -12,10 +11,6 @@ export class DecoratorValidationException extends DomainException {
       ? `${decoratorName}: ${message}`
       : message;
 
-    super(
-      error_message,
-      'DECORATOR_VALIDATION_ERROR',
-      HTTP_STATUS.BAD_REQUEST,
-    );
+    super(error_message, 'DECORATOR_VALIDATION_ERROR', HTTP_STATUS.BAD_REQUEST);
   }
 }

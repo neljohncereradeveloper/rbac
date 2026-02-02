@@ -3,7 +3,7 @@ import {
   ValidationOptions,
   ValidationArguments,
 } from 'class-validator';
-import { DecoratorValidationException } from '@/cored/domain/exceptions/decorator';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
 
 /**
  * Custom validator for decimal places
@@ -32,7 +32,7 @@ export function IsDecimalPlaces(
     );
   }
 
-  return function (object: Object, propertyName: string | symbol) {
+  return function (object: object, propertyName: string | symbol) {
     registerDecorator({
       name: 'isDecimalPlaces',
       target: object.constructor,

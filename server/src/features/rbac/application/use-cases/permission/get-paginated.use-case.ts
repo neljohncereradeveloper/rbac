@@ -16,13 +16,13 @@ export class GetPaginatedPermissionUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(
     term: string,
     page: number,
     limit: number,
-    is_archived: boolean
+    is_archived: boolean,
   ): Promise<PaginatedResult<Permission>> {
     return this.transactionHelper.executeTransaction(
       PERMISSION_ACTIONS.PAGINATED_LIST,

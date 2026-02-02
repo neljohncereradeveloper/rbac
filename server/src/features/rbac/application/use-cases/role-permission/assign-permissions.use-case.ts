@@ -37,7 +37,7 @@ export class AssignPermissionsToRoleUseCase {
     private readonly rolePermissionRepository: RolePermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     dto: AssignPermissionsToRoleDto,
@@ -47,10 +47,7 @@ export class AssignPermissionsToRoleUseCase {
       ROLE_PERMISSION_ACTIONS.ASSIGN_TO_ROLE,
       async (manager) => {
         // Validate role existence
-        const role = await this.roleRepository.findById(
-          dto.role_id,
-          manager,
-        );
+        const role = await this.roleRepository.findById(dto.role_id, manager);
         if (!role) {
           throw new RoleBusinessException(
             `Role with ID ${dto.role_id} not found.`,

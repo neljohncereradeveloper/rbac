@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { IsDecimalPlaces } from './decimal-places-validator.decorator';
-import { DecoratorValidationException } from '@/cored/domain/exceptions/decorator';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
 
 export interface RequiredDecimalValidationOptions {
   field_name?: string;
@@ -90,11 +90,8 @@ export function RequiredDecimalValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled (must be before decimal places validation)
   if (transform) {
@@ -117,7 +114,7 @@ export function RequiredDecimalValidation(
 
         // Return as-is if already a number
         return typeof value === 'number' && isFinite(value) ? value : null;
-      }) as PropertyDecorator,
+      }),
     );
   }
 
@@ -237,11 +234,8 @@ export function OptionalDecimalValidation(
     );
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled (must be before decimal places validation)
   if (transform) {
@@ -264,7 +258,7 @@ export function OptionalDecimalValidation(
 
         // Return as-is if already a number
         return typeof value === 'number' && isFinite(value) ? value : null;
-      }) as PropertyDecorator,
+      }),
     );
   }
 

@@ -8,7 +8,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { DecoratorValidationException } from '@/cored/domain/exceptions/decorator';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
 
 export interface RequiredArrayValidationOptions {
   field_name?: string;
@@ -77,11 +77,8 @@ export function RequiredArrayValidation(
     }
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -110,7 +107,7 @@ export function RequiredArrayValidation(
 
         // Convert single value to array
         return [value];
-      }) as PropertyDecorator,
+      }),
     );
   }
 
@@ -199,11 +196,8 @@ export function OptionalArrayValidation(
     }
   }
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -232,7 +226,7 @@ export function OptionalArrayValidation(
 
         // Convert single value to array
         return [value];
-      }) as PropertyDecorator,
+      }),
     );
   }
 

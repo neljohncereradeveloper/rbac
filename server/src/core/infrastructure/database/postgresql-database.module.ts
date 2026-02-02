@@ -16,4 +16,4 @@ import { getTypeormConfig } from './config/typeorm.config';
   ],
   exports: [TypeOrmModule], // Export TypeOrmModule for use in other modules
 })
-export class PostgresqlDatabaseModule { }
+export class PostgresqlDatabaseModule {}

@@ -1,5 +1,4 @@
-import { ActivityLog } from "../models";
-
+import { ActivityLog } from '../models';
 
 export interface ActivityLogRepository<Context = unknown> {
   // Create with transaction activity log entry

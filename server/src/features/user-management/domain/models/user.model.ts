@@ -294,7 +294,7 @@ export class User {
           HTTP_STATUS.BAD_REQUEST,
         );
       }
-      const phone_regex = /^[\d\s\-\+\(\)]+$/;
+      const phone_regex = /^[\d\s\-+()]+$/;
       if (!phone_regex.test(this.phone)) {
         throw new UserBusinessException(
           'Phone number contains invalid characters.',

@@ -30,7 +30,7 @@ export class UpdateUserUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     id: number,
@@ -100,10 +100,7 @@ export class UpdateUserUseCase {
         const updated_result = await this.userRepository.findById(id, manager);
 
         // Capture after state for logging
-        const after_state = extractEntityState(
-          updated_result,
-          tracking_config,
-        );
+        const after_state = extractEntityState(updated_result, tracking_config);
 
         // Get only the changed fields with old and new states
         const changed_fields = getChangedFields(before_state, after_state);
@@ -116,9 +113,7 @@ export class UpdateUserUseCase {
             id: updated_result?.id,
             changed_fields: changed_fields,
             updated_by: requestInfo?.user_name || '',
-            updated_at: getPHDateTime(
-              updated_result?.updated_at || new Date(),
-            ),
+            updated_at: getPHDateTime(updated_result?.updated_at || new Date()),
           }),
           request_info: requestInfo || { user_name: '' },
         });

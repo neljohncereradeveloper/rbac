@@ -1,5 +1,4 @@
-import { DomainException } from "../domain.exception";
-
+import { DomainException } from '../domain.exception';
 
 /**
  * Thrown when a check constraint is violated

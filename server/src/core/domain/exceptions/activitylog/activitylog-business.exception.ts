@@ -1,6 +1,5 @@
-import { HTTP_STATUS } from "../../constants";
-import { DomainException } from "../domain.exception";
-
+import { HTTP_STATUS } from '../../constants';
+import { DomainException } from '../domain.exception';
 
 /**
  * Thrown when activity log data violates domain invariants or business rules

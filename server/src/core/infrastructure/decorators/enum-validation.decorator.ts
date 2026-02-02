@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { IsEnum, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { DecoratorValidationException } from '@/cored/domain/exceptions/decorator';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
 
 export interface EnumValidationOptions {
   field_name?: string;
@@ -48,11 +48,8 @@ export function RequiredEnumValidation(options: EnumValidationOptions) {
   const enum_values = Object.values(enum_object);
   const enum_values_string = enum_values.join(', ');
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -71,7 +68,7 @@ export function RequiredEnumValidation(options: EnumValidationOptions) {
 
         // Return as-is for other types
         return value;
-      }) as PropertyDecorator,
+      }),
     );
   }
 
@@ -127,11 +124,8 @@ export function OptionalEnumValidation(options: EnumValidationOptions) {
   const enum_values = Object.values(enum_object);
   const enum_values_string = enum_values.join(', ');
 
-  const decorators: (
-    | ClassDecorator
-    | MethodDecorator
-    | PropertyDecorator
-  )[] = [];
+  const decorators: (ClassDecorator | MethodDecorator | PropertyDecorator)[] =
+    [];
 
   // Add transformation if enabled
   if (transform) {
@@ -150,7 +144,7 @@ export function OptionalEnumValidation(options: EnumValidationOptions) {
 
         // Return as-is for other types
         return value;
-      }) as PropertyDecorator,
+      }),
     );
   }
 

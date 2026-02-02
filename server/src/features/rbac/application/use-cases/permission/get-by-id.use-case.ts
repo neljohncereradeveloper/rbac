@@ -17,7 +17,7 @@ export class GetPermissionByIdUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(id: number): Promise<Permission> {
     return this.transactionHelper.executeTransaction(
