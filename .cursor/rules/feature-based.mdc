@@ -50,32 +50,32 @@ Organize use cases and DTOs by model/aggregate. Each model has its own folder in
 application/
   use_cases/
     role/                      # Role-related use cases
-      create-role.use-case.ts
-      update-role.use-case.ts
-      archive-role.use-case.ts
-      restore-role.use-case.ts
-      get-role-by-id.use-case.ts
-      get-roles-paginated.use-case.ts
+      create.use-case.ts
+      update.use-case.ts
+      archive.use-case.ts
+      restore.use-case.ts
+      get-by-id.use-case.ts
+      get-paginated.use-case.ts
       index.ts
     permission/                # Permission-related use cases
-      create-permission.use-case.ts
-      update-permission.use-case.ts
-      archive-permission.use-case.ts
-      restore-permission.use-case.ts
-      get-permission-by-id.use-case.ts
+      create.use-case.ts
+      update.use-case.ts
+      archive.use-case.ts
+      restore.use-case.ts
+      get-by-id.use-case.ts
       index.ts
     role-permission/           # Role-Permission relationship use cases
-      assign-permissions-to-role.use-case.ts
-      remove-permissions-from-role.use-case.ts
+      assign-permissions.use-case.ts
+      remove-permissions.use-case.ts
       index.ts
     user-role/                 # User-Role relationship use cases
-      assign-roles-to-user.use-case.ts
-      remove-roles-from-user.use-case.ts
+      assign-roles.use-case.ts
+      remove-roles.use-case.ts
       index.ts
     user-permission/           # User-Permission override use cases
-      grant-permissions-to-user.use-case.ts
-      deny-permissions-to-user.use-case.ts
-      remove-permission-overrides-from-user.use-case.ts
+      grant-permissions.use-case.ts
+      deny-permissions.use-case.ts
+      remove-overrides.use-case.ts
       index.ts
     index.ts                   # Export all use cases
   dto/
@@ -102,7 +102,9 @@ application/
 
 - **Each model/aggregate has its own folder** in both `use_cases/` and `dto/`.
 - **Group related operations** together (e.g., all role operations in `use_cases/role/`).
-- **Use kebab-case** for file names (e.g., `create-role.use-case.ts`, `assign-permissions-to-role.dto.ts`).
+- **Use case file names exclude the model name** since they're already in a model-specific folder (e.g., `create.use-case.ts` in `role/`, not `create-role.use-case.ts`).
+- **DTO file names include the model name** for clarity when importing (e.g., `create-role.dto.ts`).
+- **Use kebab-case** for file names (e.g., `create.use-case.ts`, `assign-permissions-to-role.dto.ts`).
 - **Include index.ts** in each folder to export its contents, and a root index.ts to export all.
 
 ## Repository interface (default)
