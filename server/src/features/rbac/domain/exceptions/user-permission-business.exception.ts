@@ -1,5 +1,5 @@
-import { HTTP_STATUS } from '@/cored/domain/constants';
-import { DomainException } from '@/cored/domain/exceptions/domain.exception';
+import { HTTP_STATUS } from '@/core/domain/constants';
+import { DomainException } from '@/core/domain/exceptions/domain.exception';
 
 /**
  * Thrown when user-permission data violates domain invariants or business rules

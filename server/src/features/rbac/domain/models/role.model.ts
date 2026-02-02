@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from '@/cored/domain/constants';
+import { HTTP_STATUS } from '@/core/domain/constants';
 import { getPHDateTime } from '@/core/utils/date.util';
 import { RoleBusinessException } from '../exceptions';
 

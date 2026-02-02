@@ -1,6 +1,6 @@
 import { getPHDateTime } from '@/core/utils/date.util';
 import { UserPermissionBusinessException } from '../exceptions/user-permission-business.exception';
-import { HTTP_STATUS } from '@/cored/domain/constants';
+import { HTTP_STATUS } from '@/core/domain/constants';
 
 /**
  * Represents explicit permission grants or denials for a user.

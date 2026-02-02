@@ -109,7 +109,7 @@ application/
 
 ## Feature-Specific Tokens and Database Models
 
-Each feature should define its own token constants and database model constants in `domain/constants/` for feature-specific repositories and entities. Use `TOKENS_CORE` and `DATABASE_CORE_MODELS` only for shared/core services and entities (e.g., `TRANSACTIONPORT`, `ACTIVITYLOGS`).
+Each feature should define its own token constants and database model constants in `domain/constants/` for feature-specific repositories and entities. Use `TOKENS_CORE` only for shared/core services (e.g., `TRANSACTIONPORT`, `ACTIVITYLOGS`).
 
 **Example for RBAC feature:**
 
@@ -136,7 +136,6 @@ export const RBAC_DATABASE_MODELS = {
 - Feature-specific repositories use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
 - Feature-specific entities use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
 - Shared/core services use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
-- Shared/core entities use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
 - Export tokens and database models from `domain/constants/index.ts` alongside action constants.
 
 ## Use Case Pattern: Archive
@@ -145,18 +144,18 @@ Use this pattern for archive (soft-delete) use cases. Replace `Role` / `role` wi
 
 ```ts
 import { Inject, Injectable } from "@nestjs/common";
-import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
-import { ActivityLogRepository } from "@core/domain/repositories";
-import { ActivityLog } from "@core/domain/models";
-import { TransactionPort } from "@core/domain/ports";
+import { TOKENS_CORE } from "@/core/domain/constants";
+import { ActivityLogRepository } from "@/core/domain/repositories";
+import { ActivityLog } from "@/core/domain/models";
+import { TransactionPort } from "@/core/domain/ports";
 import { HTTP_STATUS } from "@/core/domain/constants";
-import { RoleBusinessException } from "@features/rbac/domain/exceptions";
-import { RoleRepository } from "@features/rbac/domain/repositories";
+import { RoleBusinessException } from "@/features/rbac/domain/exceptions";
+import { RoleRepository } from "@/features/rbac/domain/repositories";
 import {
   ROLE_ACTIONS,
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
-} from "@features/rbac/domain/constants";
+} from "@/features/rbac/domain/constants";
 import { RequestInfo } from "@/core/utils/request-info.util";
 import { getPHDateTime } from "@/core/utils/date.util";
 
@@ -224,7 +223,6 @@ export class ArchiveRoleUseCase {
 - **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
 - **Feature-specific entities** use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
 - **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
-- **Shared/core entities** use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Validate entity existence before archiving.
 - Use domain model's `archive()` method (not direct repository update).
@@ -240,17 +238,21 @@ Use this pattern for create use cases. Replace `Role` / `role` with your model n
 
 ```ts
 import { Inject, Injectable } from "@nestjs/common";
-import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
-import { ActivityLogRepository } from "@core/domain/repositories";
+import { TOKENS_CORE } from "@/core/domain/constants";
+import { ActivityLogRepository } from "@/core/domain/repositories";
 import { RequestInfo } from "@/core/utils/request-info.util";
 import { getPHDateTime } from "@/core/utils/date.util";
-import { ActivityLog } from "@core/domain/models";
-import { TransactionPort } from "@core/domain/ports";
+import { ActivityLog } from "@/core/domain/models";
+import { TransactionPort } from "@/core/domain/ports";
 import { HTTP_STATUS } from "@/core/domain/constants";
-import { RoleBusinessException } from "@features/rbac/domain/exceptions";
-import { Role } from "@features/rbac/domain/models";
-import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS, RBAC_TOKENS } from "@features/rbac/domain/constants";
+import { RoleBusinessException } from "@/features/rbac/domain/exceptions";
+import { Role } from "@/features/rbac/domain/models";
+import { RoleRepository } from "@/features/rbac/domain/repositories";
+import {
+  ROLE_ACTIONS,
+  RBAC_TOKENS,
+  RBAC_DATABASE_MODELS,
+} from "@/features/rbac/domain/constants";
 import { CreateRoleDto } from "../dto/role/create-role.dto";
 
 @Injectable()
@@ -329,20 +331,20 @@ Use this pattern for restore use cases. Replace `Role` / `role` with your model 
 
 ```ts
 import { Inject, Injectable } from "@nestjs/common";
-import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
-import { ActivityLogRepository } from "@core/domain/repositories";
+import { TOKENS_CORE } from "@/core/domain/constants";
+import { ActivityLogRepository } from "@/core/domain/repositories";
 import { RequestInfo } from "@/core/utils/request-info.util";
 import { getPHDateTime } from "@/core/utils/date.util";
-import { ActivityLog } from "@core/domain/models";
-import { TransactionPort } from "@core/domain/ports";
+import { ActivityLog } from "@/core/domain/models";
+import { TransactionPort } from "@/core/domain/ports";
 import { HTTP_STATUS } from "@/core/domain/constants";
-import { RoleBusinessException } from "@features/rbac/domain/exceptions";
-import { RoleRepository } from "@features/rbac/domain/repositories";
+import { RoleBusinessException } from "@/features/rbac/domain/exceptions";
+import { RoleRepository } from "@/features/rbac/domain/repositories";
 import {
   ROLE_ACTIONS,
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
-} from "@features/rbac/domain/constants";
+} from "@/features/rbac/domain/constants";
 
 @Injectable()
 export class RestoreRoleUseCase {
@@ -408,7 +410,6 @@ export class RestoreRoleUseCase {
 - **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
 - **Feature-specific entities** use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
 - **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
-- **Shared/core entities** use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Validate entity existence before restoring.
 - Use domain model's `restore()` method (not direct repository update).
@@ -424,10 +425,10 @@ Use this pattern for combobox use cases. Replace `Role` / `role` with your model
 
 ```ts
 import { Inject, Injectable } from "@nestjs/common";
-import { TOKENS_CORE } from "@core/domain/constants";
-import { TransactionPort } from "@core/domain/ports";
-import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS, RBAC_TOKENS } from "@features/rbac/domain/constants";
+import { TOKENS_CORE } from "@/core/domain/constants";
+import { TransactionPort } from "@/core/domain/ports";
+import { RoleRepository } from "@/features/rbac/domain/repositories";
+import { ROLE_ACTIONS, RBAC_TOKENS } from "@/features/rbac/domain/constants";
 
 @Injectable()
 export class ComboboxRoleUseCase {
@@ -471,12 +472,12 @@ Use this pattern for paginated list use cases. Replace `Role` / `role` with your
 
 ```ts
 import { Injectable, Inject } from "@nestjs/common";
-import { TOKENS_CORE } from "@core/domain/constants";
-import { TransactionPort } from "@core/domain/ports";
-import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS } from "@features/rbac/domain/constants";
-import { PaginatedResult } from "@core/utils/pagination.util";
-import { Role } from "@features/rbac/domain/models";
+import { TOKENS_CORE } from "@/core/domain/constants";
+import { TransactionPort } from "@/core/domain/ports";
+import { RoleRepository } from "@/features/rbac/domain/repositories";
+import { ROLE_ACTIONS } from "@/features/rbac/domain/constants";
+import { PaginatedResult } from "@/core/utils/pagination.util";
+import { Role } from "@/features/rbac/domain/models";
 
 @Injectable()
 export class PaginatedListRoleUseCase {
@@ -526,23 +527,27 @@ Use this pattern for update use cases. Replace `Role` / `role` with your model n
 
 ```ts
 import { Inject, Injectable } from "@nestjs/common";
-import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
-import { ActivityLogRepository } from "@core/domain/repositories";
+import { TOKENS_CORE } from "@/core/domain/constants";
+import { ActivityLogRepository } from "@/core/domain/repositories";
 import { RequestInfo } from "@/core/utils/request-info.util";
 import { getPHDateTime } from "@/core/utils/date.util";
-import { ActivityLog } from "@core/domain/models";
-import { TransactionPort } from "@core/domain/ports";
+import { ActivityLog } from "@/core/domain/models";
+import { TransactionPort } from "@/core/domain/ports";
 import { HTTP_STATUS } from "@/core/domain/constants";
-import { RoleBusinessException } from "@features/rbac/domain/exceptions";
-import { Role } from "@features/rbac/domain/models";
-import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS, RBAC_TOKENS } from "@features/rbac/domain/constants";
+import { RoleBusinessException } from "@/features/rbac/domain/exceptions";
+import { Role } from "@/features/rbac/domain/models";
+import { RoleRepository } from "@/features/rbac/domain/repositories";
+import {
+  ROLE_ACTIONS,
+  RBAC_TOKENS,
+  RBAC_DATABASE_MODELS,
+} from "@/features/rbac/domain/constants";
 import { UpdateRoleDto } from "../dto/role/update-role.dto";
 import {
   getChangedFields,
   extractEntityState,
   FieldExtractorConfig,
-} from "@core/utils/change-tracking.util";
+} from "@/core/utils/change-tracking.util";
 
 @Injectable()
 export class UpdateRoleUseCase {
@@ -636,7 +641,6 @@ export class UpdateRoleUseCase {
 - **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
 - **Feature-specific entities** use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
 - **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
-- **Shared/core entities** use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Validate entity existence before updating using `findById()`.
 - Use domain model's `update()` method (validates automatically and checks if archived).
@@ -654,7 +658,7 @@ export class UpdateRoleUseCase {
 Use this as the default shape for repository interfaces in `domain/repositories/`. Replace the aggregate/model name and adjust methods as needed; keep `context: Context` on all methods.
 
 ```ts
-import { PaginatedResult } from "@core/utils/pagination.util";
+import { PaginatedResult } from "@/core/utils/pagination.util";
 import { Role } from "../models/role.model";
 
 export interface RoleRepository<Context = unknown> {
@@ -870,7 +874,7 @@ export class RoleBusinessException extends DomainException {
 ```
 
 - Name: `<Model>BusinessException` (e.g. `RoleBusinessException`, `UserBusinessException`). Code: `'<MODEL>_BUSINESS_EXCEPTION'`.
-- One exception class per model; throw when domain invariants or business rules are violated. Domain may depend on `@core` (e.g. `DomainException`) and `@core/domain/constants` (e.g. `HTTP_STATUS`) for exceptions only.
+- One exception class per model; throw when domain invariants or business rules are violated. Domain may depend on `@/core` (e.g. `DomainException`) and `@/core/domain/constants` (e.g. `HTTP_STATUS`) for exceptions only.
 
 ## Standard audit fields (entities)
 
@@ -941,7 +945,7 @@ updated_at: Date;
 ## Rules
 
 - One folder per feature; name folders in snake_case (e.g. `user_management`, `order_processing`).
-- **Domain is independent.** The domain layer must have no dependencies on application, infrastructure, or external libraries. Domain contains only models, constants, exceptions, value objects, repository interfaces, and events. Domain may depend on `@core` (e.g. `DomainException`) and `@shared/constants` (e.g. `HTTP_STATUS`) for exceptions only.
+- **Domain is independent.** The domain layer must have no dependencies on application, infrastructure, or external libraries. Domain contains only models, constants, exceptions, value objects, repository interfaces, and events. Domain may depend on `@/core` (e.g. `DomainException`) and `@/core/domain/constants` (e.g. `HTTP_STATUS`) for exceptions only.
 - **Constants for each model live in `domain/constants/`.** Put model-specific constants (e.g. status codes, validation limits, default values) in the feature’s domain—one file per model (e.g. `barangay-constants.ts`) or grouped under constants. Shared constants used by more than one feature go in `core/domain/constants/`.
 - **Use cases and DTOs are organized by model.** Each model/aggregate has its own folder in `application/use_cases/` and `application/dto/`. Group related operations together (e.g., all role operations in `use_cases/role/`, all role DTOs in `dto/role/`).
 - **Dependencies live in infrastructure.** All framework, database, ORM, and external-service dependencies belong in the infrastructure layer. Domain models are mapped to infrastructure entities (e.g. ORM/DB entities) via mappers.

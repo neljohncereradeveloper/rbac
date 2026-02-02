@@ -1,6 +1,6 @@
 import { getPHDateTime } from '@/core/utils/date.util';
 import { UserRoleBusinessException } from '../exceptions/user-role-business.exception';
-import { HTTP_STATUS } from '@/cored/domain/constants';
+import { HTTP_STATUS } from '@/core/domain/constants';
 
 /**
  * Represents the association between a User and a Role.
