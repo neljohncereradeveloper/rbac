@@ -16,7 +16,9 @@
     "baseUrl": "./",
     "paths": {
       "@/cored/domain/*": ["src/core/domain/*"],
-      "@/core/infrastructure/*": ["src/core/infrastructure/*"]
+      "@/core/infrastructure/*": ["src/core/infrastructure/*"],
+      "@/core/utils/*": ["src/core/utils/*"],
+      "@/features/*": ["src/features/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

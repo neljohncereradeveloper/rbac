@@ -45,25 +45,30 @@ src/
 Use this as the default shape for repository interfaces in `domain/repositories/`. Replace the aggregate/model name and adjust methods as needed; keep `context: Context` on all methods.
 
 ```ts
-create(model: Model, context: Context): Promise<Model>;
-update(
-  id: number,
-  dto: Partial<Model>,
-  context: Context,
-): Promise<boolean>;
-findById(id: number, context: Context): Promise<Model | null>;
-findPaginatedList(
-  term: string,
-  page: number,
-  limit: number,
-  is_archived: boolean,
-  context: Context,
-): Promise<PaginatedResult<Model>>;
-findByDescription(desc1: string, context: Context): Promise<Model | null>;
-combobox(context: Context): Promise<Model[]>;
+import { PaginatedResult } from "@shared/interfaces";
+import { Barangay } from "../models/barangay.model";
+
+export interface BarangayRepository<Context = unknown> {
+  create(barangay: Barangay, context: Context): Promise<Barangay>;
+  update(
+    id: number,
+    dto: Partial<Barangay>,
+    context: Context
+  ): Promise<boolean>;
+  findById(id: number, context: Context): Promise<Barangay | null>;
+  findPaginatedList(
+    term: string,
+    page: number,
+    limit: number,
+    is_archived: boolean,
+    context: Context
+  ): Promise<PaginatedResult<Barangay>>;
+  findByDescription(desc1: string, context: Context): Promise<Barangay | null>;
+  combobox(context: Context): Promise<Barangay[]>;
+}
 ```
 
-- `Context` is passed through for tenant, user, or request-scoped data.
+- `Context` is a generic (default `unknown`) passed through for tenant, user, or request-scoped data.
 - Use `PaginatedResult<Model>` for list responses with total count and items.
 - Omit or rename methods (e.g. `findByDescription`) per aggregate; keep `create`, `update`, `findById`, `findPaginatedList`, and `combobox` as the baseline.
 
