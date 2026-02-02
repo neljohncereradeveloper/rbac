@@ -8,6 +8,11 @@ export interface UserRepository<Context = unknown> {
     dto: Partial<User>,
     context: Context,
   ): Promise<boolean>;
+  changePassword(
+    id: number,
+    user: User,
+    context: Context,
+  ): Promise<boolean>;
   findById(id: number, context: Context): Promise<User | null>;
   findPaginatedList(
     term: string,

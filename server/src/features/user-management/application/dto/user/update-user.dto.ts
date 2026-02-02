@@ -1,0 +1,9 @@
+export class UpdateUserDto {
+  username?: string;
+  email?: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  phone?: string | null;
+  date_of_birth?: Date | null;
+  is_active?: boolean;
+}

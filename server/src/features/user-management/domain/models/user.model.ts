@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from '@/cored/domain/constants';
+import { HTTP_STATUS } from '@/core/domain/constants';
 import { getPHDateTime } from '@/core/utils/date.util';
 import { UserBusinessException } from '../exceptions';
 
@@ -6,6 +6,7 @@ export class User {
   id?: number;
   username: string;
   email: string;
+  password: string | null;
   first_name: string | null;
   last_name: string | null;
   phone: string | null;
@@ -17,11 +18,14 @@ export class User {
   created_at: Date;
   updated_by: string | null;
   updated_at: Date;
+  change_password_by: string | null;
+  change_password_at: Date | null;
 
   constructor(dto: {
     id?: number;
     username: string;
     email: string;
+    password?: string | null;
     first_name?: string | null;
     last_name?: string | null;
     phone?: string | null;
@@ -33,10 +37,13 @@ export class User {
     created_at?: Date;
     updated_by?: string | null;
     updated_at?: Date;
+    change_password_by?: string | null;
+    change_password_at?: Date | null;
   }) {
     this.id = dto.id;
     this.username = dto.username;
     this.email = dto.email;
+    this.password = dto.password ?? null;
     this.first_name = dto.first_name ?? null;
     this.last_name = dto.last_name ?? null;
     this.phone = dto.phone ?? null;
@@ -48,12 +55,15 @@ export class User {
     this.created_at = dto.created_at ?? getPHDateTime();
     this.updated_by = dto.updated_by ?? null;
     this.updated_at = dto.updated_at ?? getPHDateTime();
+    this.change_password_by = dto.change_password_by ?? null;
+    this.change_password_at = dto.change_password_at ?? null;
   }
 
   /** Static factory: create and validate. */
   static create(params: {
     username: string;
     email: string;
+    password: string;
     first_name?: string | null;
     last_name?: string | null;
     phone?: string | null;
@@ -64,6 +74,7 @@ export class User {
     const user = new User({
       username: params.username,
       email: params.email,
+      password: params.password,
       first_name: params.first_name ?? null,
       last_name: params.last_name ?? null,
       phone: params.phone ?? null,
@@ -96,6 +107,7 @@ export class User {
       id: this.id,
       username: dto.username ?? this.username,
       email: dto.email ?? this.email,
+      password: this.password,
       first_name: dto.first_name ?? this.first_name,
       last_name: dto.last_name ?? this.last_name,
       phone: dto.phone ?? this.phone,
@@ -113,6 +125,41 @@ export class User {
     this.date_of_birth = dto.date_of_birth ?? this.date_of_birth;
     this.is_active = dto.is_active ?? this.is_active;
     this.updated_by = dto.updated_by ?? null;
+  }
+
+  /** Change password; validate new password before applying. */
+  changePassword(
+    new_password: string,
+    change_password_by?: string | null,
+  ): void {
+    if (this.deleted_at) {
+      throw new UserBusinessException(
+        'User is archived and cannot change password',
+        HTTP_STATUS.CONFLICT,
+      );
+    }
+    if (!new_password || new_password.trim().length === 0) {
+      throw new UserBusinessException(
+        'Password is required and cannot be empty.',
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+    if (new_password.length < 8) {
+      throw new UserBusinessException(
+        'Password must be at least 8 characters long.',
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+    if (new_password.length > 255) {
+      throw new UserBusinessException(
+        'Password must not exceed 255 characters.',
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+    this.password = new_password;
+    this.change_password_by = change_password_by ?? null;
+    this.change_password_at = getPHDateTime();
+    this.updated_by = change_password_by ?? null;
   }
 
   /** Soft-delete. */
@@ -222,6 +269,20 @@ export class User {
       if (age > 150) {
         throw new UserBusinessException(
           'Date of birth is invalid (age exceeds 150 years).',
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+    }
+    if (this.password !== null && this.password !== undefined) {
+      if (this.password.length < 8) {
+        throw new UserBusinessException(
+          'Password must be at least 8 characters long.',
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+      if (this.password.length > 255) {
+        throw new UserBusinessException(
+          'Password must not exceed 255 characters.',
           HTTP_STATUS.BAD_REQUEST,
         );
       }
