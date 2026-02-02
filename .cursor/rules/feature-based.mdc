@@ -35,6 +35,9 @@ src/
     domain/
     application/
     infrastructure/
+      decorators/              # shared decorators (validation, param extraction, etc.)
+      ...
+    utils/                     # reusable utilities for all features
 ```
 
 ## Repository interface (default)
@@ -112,6 +115,8 @@ export class BarangayBusinessException extends DomainException {
 - **Constants for each model live in `domain/constants/`.** Put model-specific constants (e.g. status codes, validation limits, default values) in the feature’s domain—one file per model (e.g. `barangay-constants.ts`) or grouped under constants. Shared constants used by more than one feature go in `core/domain/constants/`.
 - **Dependencies live in infrastructure.** All framework, database, ORM, and external-service dependencies belong in the infrastructure layer. Domain models are mapped to infrastructure entities (e.g. ORM/DB entities) via mappers.
 - **If it’s used in more than one feature, it belongs in `core/`.** Do not duplicate shared logic across features—extract to core and import from there.
+- **Reusable utilities for all features live in `core/utils/`.** Put cross-feature helpers (formatting, validation, date/time, string helpers, etc.) in `core/utils/`. Feature-specific utilities stay in the feature; only shared ones go in core.
+- **Shared decorators live in `core/infrastructure/decorators/`.** Put decorators used by more than one feature (validation, param extraction, etc.) in `core/infrastructure/decorators/`. Feature-specific decorators stay in the feature’s infrastructure or presentation layer.
 - Keep feature folders self-contained. Only feature-specific code stays in a feature; reused code lives in `core/`.
 - Prefer importing from the same feature. Cross-feature or shared use: import from `core/`.
 - Each feature can expose a single module (e.g. `UserManagementModule`) that wires domain, application, and infrastructure for that feature.
