@@ -1,18 +1,19 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PostgresqlDatabaseModule } from './core/infrastructure/database/postgresql-database.module';
+import { ErrorLoggerMiddleware, RequestLoggerMiddleware } from './core/infrastructure/middlewares';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST ?? 'localhost',
-      port: parseInt(process.env.DB_PORT ?? '5432', 10),
-      username: process.env.DB_USERNAME ?? 'postgres',
-      password: process.env.DB_PASSWORD ?? 'postgres',
-      database: process.env.DB_DATABASE ?? 'rbac',
-      autoLoadEntities: true,
-      synchronize: process.env.NODE_ENV !== 'production',
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    PostgresqlDatabaseModule,
   ],
 })
-export class AppModule { }
+
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(RequestLoggerMiddleware, ErrorLoggerMiddleware)
+      .forRoutes('*'); // Logs all requests
+  }
+}
