@@ -22,8 +22,7 @@ export class GetPaginatedPermissionUseCase {
     term: string,
     page: number,
     limit: number,
-    is_archived: boolean,
-    context: any,
+    is_archived: boolean
   ): Promise<PaginatedResult<Permission>> {
     return this.transactionHelper.executeTransaction(
       PERMISSION_ACTIONS.PAGINATED_LIST,

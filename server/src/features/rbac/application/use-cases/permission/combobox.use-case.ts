@@ -16,7 +16,7 @@ export class ComboboxPermissionUseCase {
     private readonly transactionHelper: TransactionPort,
   ) { }
 
-  async execute(context: any): Promise<{ value: string; label: string }[]> {
+  async execute(): Promise<{ value: string; label: string }[]> {
     return this.transactionHelper.executeTransaction(
       PERMISSION_ACTIONS.COMBOBOX,
       async (manager) => {

@@ -16,7 +16,7 @@ export class GetRoleByIdUseCase {
     private readonly transactionHelper: TransactionPort,
   ) { }
 
-  async execute(id: number, context: any): Promise<Role> {
+  async execute(id: number): Promise<Role> {
     return this.transactionHelper.executeTransaction(
       ROLE_ACTIONS.PAGINATED_LIST,
       async (manager) => {

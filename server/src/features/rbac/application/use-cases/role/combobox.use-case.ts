@@ -13,7 +13,7 @@ export class ComboboxRoleUseCase {
     private readonly transactionHelper: TransactionPort,
   ) { }
 
-  async execute(context: any): Promise<{ value: string; label: string }[]> {
+  async execute(): Promise<{ value: string; label: string }[]> {
     return this.transactionHelper.executeTransaction(
       ROLE_ACTIONS.COMBOBOX,
       async (manager) => {

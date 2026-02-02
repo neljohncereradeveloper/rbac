@@ -19,7 +19,7 @@ export class GetPermissionByIdUseCase {
     private readonly transactionHelper: TransactionPort,
   ) { }
 
-  async execute(id: number, context: any): Promise<Permission> {
+  async execute(id: number): Promise<Permission> {
     return this.transactionHelper.executeTransaction(
       PERMISSION_ACTIONS.PAGINATED_LIST,
       async (manager) => {

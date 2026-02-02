@@ -20,7 +20,6 @@ export class GetPaginatedRoleUseCase {
     page: number,
     limit: number,
     is_archived: boolean,
-    context: any,
   ): Promise<PaginatedResult<Role>> {
     return this.transactionHelper.executeTransaction(
       ROLE_ACTIONS.PAGINATED_LIST,
