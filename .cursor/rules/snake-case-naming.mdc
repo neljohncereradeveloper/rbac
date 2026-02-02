@@ -8,7 +8,7 @@ alwaysApply: true
 ## Files and Folders
 
 - **File names**: Use **kebab-case** (dashes). Examples: `user-repository.ts`, `order-placed-event.ts`, `create-order-use-case.ts`
-- **Folder names**: Use **snake_case**. Examples: `user_management/`, `value_objects/`, `use_cases/`
+- **Folder names**: Use **kebab-case**. Examples: `user-management/`, `value-objects/`, `use-cases/`
 - **Test files**: `user-repository.spec.ts`, `create-order-use-case.e2e-spec.ts`
 
 ## Code (language-dependent)

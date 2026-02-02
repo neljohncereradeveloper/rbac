@@ -2,7 +2,12 @@ import { PaginatedResult } from '@/core/utils/pagination.util';
 import { Role } from '../models/role.model';
 
 export interface RoleRepository<Context = unknown> {
-  create(model: Role, context: Context): Promise<Role>;
+  /** Create a role. Optionally link permissions via permission_ids. */
+  create(
+    role: Role,
+    context: Context,
+    permission_ids?: number[],
+  ): Promise<Role>;
   update(
     id: number,
     dto: Partial<Role>,
