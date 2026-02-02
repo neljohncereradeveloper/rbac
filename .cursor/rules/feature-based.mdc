@@ -107,6 +107,38 @@ application/
 - **Use kebab-case** for file names (e.g., `create.use-case.ts`, `assign-permissions-to-role.dto.ts`).
 - **Include index.ts** in each folder to export its contents, and a root index.ts to export all.
 
+## Feature-Specific Tokens and Database Models
+
+Each feature should define its own token constants and database model constants in `domain/constants/` for feature-specific repositories and entities. Use `TOKENS_CORE` and `DATABASE_CORE_MODELS` only for shared/core services and entities (e.g., `TRANSACTIONPORT`, `ACTIVITYLOGS`).
+
+**Example for RBAC feature:**
+
+```ts
+// features/rbac/domain/constants/tokens.constant.ts
+export const RBAC_TOKENS = {
+  ROLE: "RoleRepository",
+  PERMISSION: "PermissionRepository",
+  ROLE_PERMISSION: "RolePermissionRepository",
+  USER_ROLE: "UserRoleRepository",
+  USER_PERMISSION: "UserPermissionRepository",
+} as const;
+
+// features/rbac/domain/constants/database.constants.ts
+export const RBAC_DATABASE_MODELS = {
+  ROLES: "roles",
+  PERMISSIONS: "permissions",
+  ROLE_PERMISSIONS: "role_permissions",
+  USER_ROLES: "user_roles",
+  USER_PERMISSIONS: "user_permissions",
+} as const;
+```
+
+- Feature-specific repositories use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
+- Feature-specific entities use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
+- Shared/core services use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
+- Shared/core entities use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
+- Export tokens and database models from `domain/constants/index.ts` alongside action constants.
+
 ## Use Case Pattern: Archive
 
 Use this pattern for archive (soft-delete) use cases. Replace `Role` / `role` with your model name:
@@ -115,21 +147,25 @@ Use this pattern for archive (soft-delete) use cases. Replace `Role` / `role` wi
 import { Inject, Injectable } from "@nestjs/common";
 import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
 import { ActivityLogRepository } from "@core/domain/repositories";
-import { RequestInfo } from "@core/utils";
 import { ActivityLog } from "@core/domain/models";
-import { getPHDateTime } from "@core/utils";
 import { TransactionPort } from "@core/domain/ports";
-import { HTTP_STATUS } from "@/cored/domain/constants";
+import { HTTP_STATUS } from "@/core/domain/constants";
 import { RoleBusinessException } from "@features/rbac/domain/exceptions";
 import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS } from "@features/rbac/domain/constants";
+import {
+  ROLE_ACTIONS,
+  RBAC_TOKENS,
+  RBAC_DATABASE_MODELS,
+} from "@features/rbac/domain/constants";
+import { RequestInfo } from "@/core/utils/request-info.util";
+import { getPHDateTime } from "@/core/utils/date.util";
 
 @Injectable()
 export class ArchiveRoleUseCase {
   constructor(
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-    @Inject(TOKENS_CORE.ROLE)
+    @Inject(RBAC_TOKENS.ROLE)
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository
@@ -163,7 +199,7 @@ export class ArchiveRoleUseCase {
         // Log the archive
         const log = ActivityLog.create({
           action: ROLE_ACTIONS.ARCHIVE,
-          entity: DATABASE_CORE_MODELS.ROLES,
+          entity: RBAC_DATABASE_MODELS.ROLES,
           details: JSON.stringify({
             id,
             name: role.name,
@@ -184,7 +220,11 @@ export class ArchiveRoleUseCase {
 }
 ```
 
-- Use `@Injectable()` and `@Inject()` for dependency injection with tokens from `TOKENS_CORE`.
+- Use `@Injectable()` and `@Inject()` for dependency injection.
+- **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
+- **Feature-specific entities** use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
+- **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
+- **Shared/core entities** use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Validate entity existence before archiving.
 - Use domain model's `archive()` method (not direct repository update).
@@ -202,14 +242,15 @@ Use this pattern for create use cases. Replace `Role` / `role` with your model n
 import { Inject, Injectable } from "@nestjs/common";
 import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
 import { ActivityLogRepository } from "@core/domain/repositories";
-import { RequestInfo, getPHDateTime } from "@core/utils";
+import { RequestInfo } from "@/core/utils/request-info.util";
+import { getPHDateTime } from "@/core/utils/date.util";
 import { ActivityLog } from "@core/domain/models";
 import { TransactionPort } from "@core/domain/ports";
-import { HTTP_STATUS } from "@/cored/domain/constants";
+import { HTTP_STATUS } from "@/core/domain/constants";
 import { RoleBusinessException } from "@features/rbac/domain/exceptions";
 import { Role } from "@features/rbac/domain/models";
 import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS } from "@features/rbac/domain/constants";
+import { ROLE_ACTIONS, RBAC_TOKENS } from "@features/rbac/domain/constants";
 import { CreateRoleDto } from "../dto/role/create-role.dto";
 
 @Injectable()
@@ -217,7 +258,7 @@ export class CreateRoleUseCase {
   constructor(
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-    @Inject(TOKENS_CORE.ROLE)
+    @Inject(RBAC_TOKENS.ROLE)
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository
@@ -251,7 +292,7 @@ export class CreateRoleUseCase {
         // Log the creation
         const log = ActivityLog.create({
           action: ROLE_ACTIONS.CREATE,
-          entity: DATABASE_CORE_MODELS.ROLES,
+          entity: RBAC_DATABASE_MODELS.ROLES,
           details: JSON.stringify({
             id: created_role.id,
             name: created_role.name,
@@ -270,7 +311,9 @@ export class CreateRoleUseCase {
 }
 ```
 
-- Use `@Injectable()` and `@Inject()` for dependency injection with tokens from `TOKENS_CORE`.
+- Use `@Injectable()` and `@Inject()` for dependency injection.
+- **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
+- **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Use domain model's `create()` static factory method (validates automatically).
 - Persist via repository `create()` method.
@@ -288,20 +331,25 @@ Use this pattern for restore use cases. Replace `Role` / `role` with your model 
 import { Inject, Injectable } from "@nestjs/common";
 import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
 import { ActivityLogRepository } from "@core/domain/repositories";
-import { RequestInfo, getPHDateTime } from "@core/utils";
+import { RequestInfo } from "@/core/utils/request-info.util";
+import { getPHDateTime } from "@/core/utils/date.util";
 import { ActivityLog } from "@core/domain/models";
 import { TransactionPort } from "@core/domain/ports";
-import { HTTP_STATUS } from "@/cored/domain/constants";
+import { HTTP_STATUS } from "@/core/domain/constants";
 import { RoleBusinessException } from "@features/rbac/domain/exceptions";
 import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS } from "@features/rbac/domain/constants";
+import {
+  ROLE_ACTIONS,
+  RBAC_TOKENS,
+  RBAC_DATABASE_MODELS,
+} from "@features/rbac/domain/constants";
 
 @Injectable()
 export class RestoreRoleUseCase {
   constructor(
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-    @Inject(TOKENS_CORE.ROLE)
+    @Inject(RBAC_TOKENS.ROLE)
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository
@@ -335,7 +383,7 @@ export class RestoreRoleUseCase {
         // Log the restore
         const log = ActivityLog.create({
           action: ROLE_ACTIONS.RESTORE,
-          entity: DATABASE_CORE_MODELS.ROLES,
+          entity: RBAC_DATABASE_MODELS.ROLES,
           details: JSON.stringify({
             id,
             name: role.name,
@@ -356,7 +404,11 @@ export class RestoreRoleUseCase {
 }
 ```
 
-- Use `@Injectable()` and `@Inject()` for dependency injection with tokens from `TOKENS_CORE`.
+- Use `@Injectable()` and `@Inject()` for dependency injection.
+- **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
+- **Feature-specific entities** use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
+- **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
+- **Shared/core entities** use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Validate entity existence before restoring.
 - Use domain model's `restore()` method (not direct repository update).
@@ -375,12 +427,12 @@ import { Inject, Injectable } from "@nestjs/common";
 import { TOKENS_CORE } from "@core/domain/constants";
 import { TransactionPort } from "@core/domain/ports";
 import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS } from "@features/rbac/domain/constants";
+import { ROLE_ACTIONS, RBAC_TOKENS } from "@features/rbac/domain/constants";
 
 @Injectable()
 export class ComboboxRoleUseCase {
   constructor(
-    @Inject(TOKENS_CORE.ROLE)
+    @Inject(RBAC_TOKENS.ROLE)
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort
@@ -404,7 +456,9 @@ export class ComboboxRoleUseCase {
 }
 ```
 
-- Use `@Injectable()` and `@Inject()` for dependency injection with tokens from `TOKENS_CORE`.
+- Use `@Injectable()` and `@Inject()` for dependency injection.
+- **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
+- **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Call repository `combobox()` method to get list of entities.
 - Map results to `{ value, label }` format for dropdown/select components.
@@ -457,7 +511,9 @@ export class PaginatedListRoleUseCase {
 }
 ```
 
-- Use `@Injectable()` and `@Inject()` for dependency injection with tokens from `TOKENS_CORE`.
+- Use `@Injectable()` and `@Inject()` for dependency injection.
+- **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
+- **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Call repository `findPaginatedList()` method with search term, pagination params, and archive filter.
 - Returns `PaginatedResult<Model>` with `data` array and `meta` pagination information.
@@ -472,14 +528,15 @@ Use this pattern for update use cases. Replace `Role` / `role` with your model n
 import { Inject, Injectable } from "@nestjs/common";
 import { DATABASE_CORE_MODELS, TOKENS_CORE } from "@core/domain/constants";
 import { ActivityLogRepository } from "@core/domain/repositories";
-import { RequestInfo, getPHDateTime } from "@core/utils";
+import { RequestInfo } from "@/core/utils/request-info.util";
+import { getPHDateTime } from "@/core/utils/date.util";
 import { ActivityLog } from "@core/domain/models";
 import { TransactionPort } from "@core/domain/ports";
-import { HTTP_STATUS } from "@/cored/domain/constants";
+import { HTTP_STATUS } from "@/core/domain/constants";
 import { RoleBusinessException } from "@features/rbac/domain/exceptions";
 import { Role } from "@features/rbac/domain/models";
 import { RoleRepository } from "@features/rbac/domain/repositories";
-import { ROLE_ACTIONS } from "@features/rbac/domain/constants";
+import { ROLE_ACTIONS, RBAC_TOKENS } from "@features/rbac/domain/constants";
 import { UpdateRoleDto } from "../dto/role/update-role.dto";
 import {
   getChangedFields,
@@ -492,7 +549,7 @@ export class UpdateRoleUseCase {
   constructor(
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-    @Inject(TOKENS_CORE.ROLE)
+    @Inject(RBAC_TOKENS.ROLE)
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository
@@ -557,7 +614,7 @@ export class UpdateRoleUseCase {
         // Log the update with only changed fields (old state and new state)
         const log = ActivityLog.create({
           action: ROLE_ACTIONS.UPDATE,
-          entity: DATABASE_CORE_MODELS.ROLES,
+          entity: RBAC_DATABASE_MODELS.ROLES,
           details: JSON.stringify({
             id: updated_result?.id,
             changed_fields: changed_fields,
@@ -575,7 +632,11 @@ export class UpdateRoleUseCase {
 }
 ```
 
-- Use `@Injectable()` and `@Inject()` for dependency injection with tokens from `TOKENS_CORE`.
+- Use `@Injectable()` and `@Inject()` for dependency injection.
+- **Feature-specific repositories** use feature tokens (e.g., `RBAC_TOKENS.ROLE`).
+- **Feature-specific entities** use feature database model constants (e.g., `RBAC_DATABASE_MODELS.ROLES`).
+- **Shared/core services** use `TOKENS_CORE` (e.g., `TOKENS_CORE.TRANSACTIONPORT`, `TOKENS_CORE.ACTIVITYLOGS`).
+- **Shared/core entities** use `DATABASE_CORE_MODELS` (e.g., `DATABASE_CORE_MODELS.ACTIVITYLOGS`).
 - Wrap operations in `transactionHelper.executeTransaction()` for atomicity.
 - Validate entity existence before updating using `findById()`.
 - Use domain model's `update()` method (validates automatically and checks if archived).
@@ -626,7 +687,7 @@ export interface RoleRepository<Context = unknown> {
 Put pure domain models in `domain/models/`. Use the following pattern: **properties** (id, business fields, then audit fields in standard order), **constructor**, **static create()**, **update()**, **archive()**, **restore()**, **validate()**. Replace `Role` / `role` and field names (e.g. `name`, `description`) with your aggregate.
 
 ```ts
-import { HTTP_STATUS } from "@/cored/domain/constants";
+import { HTTP_STATUS } from "@/core/domain/constants";
 import { getPHDateTime } from "@/core/utils/date.util";
 import { RoleBusinessException } from "../exceptions";
 
@@ -794,8 +855,8 @@ export const ROLE_ACTIONS = {
 Define a business/domain exception for each model in `domain/exceptions/`. Extend `DomainException` from core and use `HTTP_STATUS` from shared constants. Use as the default pattern:
 
 ```ts
-import { HTTP_STATUS } from "@/cored/domain/constants";
-import { DomainException } from "@/cored/domain/exceptions/domain.exception";
+import { HTTP_STATUS } from "@/core/domain/constants";
+import { DomainException } from "@/core/domain/exceptions/domain.exception";
 
 /**
  * Thrown when role data violates domain invariants or business rules
@@ -809,7 +870,7 @@ export class RoleBusinessException extends DomainException {
 ```
 
 - Name: `<Model>BusinessException` (e.g. `RoleBusinessException`, `UserBusinessException`). Code: `'<MODEL>_BUSINESS_EXCEPTION'`.
-- One exception class per model; throw when domain invariants or business rules are violated. Domain may depend on `@core` (e.g. `DomainException`) and `@cored/domain/constants` (e.g. `HTTP_STATUS`) for exceptions only.
+- One exception class per model; throw when domain invariants or business rules are violated. Domain may depend on `@core` (e.g. `DomainException`) and `@core/domain/constants` (e.g. `HTTP_STATUS`) for exceptions only.
 
 ## Standard audit fields (entities)
 
