@@ -12,6 +12,10 @@ import { TOKENS_CORE } from '@/core/domain/constants';
 import { AUTH_TOKENS } from './domain/constants';
 import { UserManagementModule } from '@/features/user-management/user-management.module';
 import { RbacModule } from '@/features/rbac/rbac.module';
+import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/repositories';
+import { TransactionAdapter } from '@/core/infrastructure/database/adapters/transaction-helper.adapter';
+import { UserRepositoryImpl } from '../user-management/infrastructure/database/repositories';
+import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
 
 /**
  * Authentication Module
@@ -20,6 +24,7 @@ import { RbacModule } from '@/features/rbac/rbac.module';
 @Module({
   imports: [
     PostgresqlDatabaseModule,
+    RbacModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -38,14 +43,12 @@ import { RbacModule } from '@/features/rbac/rbac.module';
       },
       inject: [ConfigService],
     }),
-    UserManagementModule, // Required for UserRepository injection in JwtStrategy
-    RbacModule, // Required for RBAC repositories injection in RbacService
   ],
   controllers: [AuthController],
   providers: [
     JwtStrategy,
-    RbacService,
     LoginUseCase,
+    RbacService,
     {
       provide: TOKENS_CORE.JWT,
       useClass: JwtTokenService,
@@ -58,15 +61,25 @@ import { RbacModule } from '@/features/rbac/rbac.module';
       provide: AUTH_TOKENS.RBAC,
       useClass: RbacService,
     },
+    {
+      provide: TOKENS_CORE.ACTIVITYLOGS,
+      useClass: ActivityLogRepositoryImpl,
+    },
+    {
+      provide: TOKENS_CORE.TRANSACTIONPORT,
+      useClass: TransactionAdapter,
+    },
+    {
+      provide: USER_MANAGEMENT_TOKENS.USER,
+      useClass: UserRepositoryImpl,
+    },
     JwtTokenService,
   ],
   exports: [
-    RbacService,
     LoginUseCase,
     JwtTokenService,
-    // TOKENS_CORE.JWT,
-    // AUTH_TOKENS.JWT,
-    // AUTH_TOKENS.RBAC,
+    RbacService,
+    AUTH_TOKENS.RBAC,
   ],
 })
 export class AuthModule { }

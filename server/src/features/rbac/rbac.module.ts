@@ -44,6 +44,8 @@ import { PermissionController } from './presentation/controllers/permission';
 import { RolePermissionController } from './presentation/controllers/role-permission';
 import { UserRoleController } from './presentation/controllers/user-role';
 import { UserPermissionController } from './presentation/controllers/user-permission';
+import { UserRepositoryImpl } from '../user-management/infrastructure/database/repositories';
+import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
 
 @Module({
   imports: [PostgresqlDatabaseModule],
@@ -84,6 +86,10 @@ import { UserPermissionController } from './presentation/controllers/user-permis
       provide: TOKENS_CORE.ACTIVITYLOGS,
       useClass: ActivityLogRepositoryImpl,
     },
+    {
+      provide: USER_MANAGEMENT_TOKENS.USER,
+      useClass: UserRepositoryImpl,
+    },
     // Role use cases
     CreateRoleUseCase,
     UpdateRoleUseCase,
@@ -112,6 +118,13 @@ import { UserPermissionController } from './presentation/controllers/user-permis
     RemovePermissionsFromUserUseCase,
   ],
   exports: [
+    // Repository tokens (for use by other modules like AuthModule)
+    RBAC_TOKENS.ROLE,
+    RBAC_TOKENS.PERMISSION,
+    RBAC_TOKENS.ROLE_PERMISSION,
+    RBAC_TOKENS.USER_ROLE,
+    RBAC_TOKENS.USER_PERMISSION,
+    // Role use cases
     CreateRoleUseCase,
     UpdateRoleUseCase,
     ArchiveRoleUseCase,
