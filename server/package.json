@@ -25,7 +25,8 @@
     "migration:revert": "typeorm migration:revert -d dist/core/infrastructure/database/migrations/typeorm.config.js",
     "migration:generate": "typeorm migration:generate -d dist/core/infrastructure/database/migrations/typeorm.config.js --pretty",
     "migration:run": "typeorm migration:run -d dist/core/infrastructure/database/migrations/typeorm.config.js",
-    "migration:show": "typeorm migration:show -d dist/core/infrastructure/database/migrations/typeorm.config.js"
+    "migration:show": "typeorm migration:show -d dist/core/infrastructure/database/migrations/typeorm.config.js",
+    "seed:run": "node -r ts-node/register -r ./tsconfig-paths-bootstrap.js src/core/infrastructure/database/seed/seed-runner.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
