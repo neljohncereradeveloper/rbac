@@ -2,7 +2,10 @@ import { Injectable, Inject } from '@nestjs/common';
 import { TOKENS_CORE } from '@/core/domain/constants';
 import { TransactionPort } from '@/core/domain/ports';
 import { HolidayRepository } from '@/features/holiday-management/domain/repositories';
-import { HOLIDAY_ACTIONS, HOLIDAY_MANAGEMENT_TOKENS } from '@/features/holiday-management/domain/constants';
+import {
+  HOLIDAY_ACTIONS,
+  HOLIDAY_MANAGEMENT_TOKENS,
+} from '@/features/holiday-management/domain/constants';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { Holiday } from '@/features/holiday-management/domain/models';
 

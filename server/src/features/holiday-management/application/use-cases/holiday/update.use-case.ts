@@ -14,7 +14,7 @@ import {
   HOLIDAY_MANAGEMENT_TOKENS,
   HOLIDAY_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/holiday-management/domain/constants';
-import { UpdateHolidayDto } from '@/features/holiday-management/application/dto/holiday/update-holiday.dto';
+import { UpdateHolidayDto } from '../../dto/holiday/update-holiday.dto';
 import {
   getChangedFields,
   extractEntityState,

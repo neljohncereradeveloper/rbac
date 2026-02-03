@@ -1,1 +1,1 @@
-export { Holiday } from './holiday.model';
+export * from './holiday.model';

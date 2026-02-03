@@ -13,7 +13,10 @@ export class HolidayRepositoryImpl
   implements HolidayRepository<EntityManager> {
   constructor(private readonly dataSource: DataSource) { }
 
-  async create(holiday: Holiday, manager: EntityManager): Promise<Holiday> {
+  async create(
+    holiday: Holiday,
+    manager: EntityManager,
+  ): Promise<Holiday> {
     const query = `
       INSERT INTO ${HOLIDAY_MANAGEMENT_DATABASE_MODELS.HOLIDAYS} (
         name, date, type, description, is_recurring, deleted_by, deleted_at,
@@ -180,31 +183,25 @@ export class HolidayRepositoryImpl
     };
   }
 
-  async findByDate(
-    date: Date,
+  async findByDateRange(
+    start_date: Date,
+    end_date: Date,
     manager: EntityManager,
   ): Promise<Holiday[]> {
-    // Format date to YYYY-MM-DD for comparison
-    const dateStr = date.toISOString().split('T')[0];
-
     const query = `
       SELECT *
       FROM ${HOLIDAY_MANAGEMENT_DATABASE_MODELS.HOLIDAYS}
-      WHERE (
-        date = $1::date OR
-        (is_recurring = true AND EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM $1::date) AND EXTRACT(DAY FROM date) = EXTRACT(DAY FROM $1::date))
-      )
-      AND deleted_at IS NULL
+      WHERE date >= $1 AND date <= $2 AND deleted_at IS NULL
       ORDER BY date ASC
     `;
 
-    const result = await manager.query(query, [dateStr]);
+    const result = await manager.query(query, [start_date, end_date]);
     return result.map((row: any) => this.entityToModel(row));
   }
 
   async combobox(manager: EntityManager): Promise<Holiday[]> {
     const query = `
-      SELECT id, name, date, type, description, is_recurring
+      SELECT id, name, date, type
       FROM ${HOLIDAY_MANAGEMENT_DATABASE_MODELS.HOLIDAYS}
       WHERE deleted_at IS NULL
       ORDER BY date ASC, name ASC

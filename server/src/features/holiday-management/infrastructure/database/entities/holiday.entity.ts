@@ -32,7 +32,7 @@ export class HolidayEntity {
   @Column({
     type: 'varchar',
     length: 50,
-    comment: 'Type of holiday (e.g., regular, special, national)',
+    comment: 'Type of holiday (e.g., National, Regional, Special)',
   })
   @Index()
   type: string;
@@ -48,7 +48,7 @@ export class HolidayEntity {
   @Column({
     type: 'boolean',
     default: false,
-    comment: 'Whether the holiday recurs every year',
+    comment: 'Whether the holiday recurs annually',
   })
   is_recurring: boolean;
 

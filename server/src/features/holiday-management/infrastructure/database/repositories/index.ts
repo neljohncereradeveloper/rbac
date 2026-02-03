@@ -1,1 +1,1 @@
-export { HolidayRepositoryImpl } from './holiday.repository.impl';
+export * from './holiday.repository.impl';

@@ -1,1 +1,1 @@
-export { HolidayRepository } from './holiday.repository';
+export * from './holiday.repository';

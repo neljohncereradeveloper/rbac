@@ -1,1 +1,1 @@
-export { HolidayBusinessException } from './holiday-business.exception';
+export * from './holiday-business.exception';

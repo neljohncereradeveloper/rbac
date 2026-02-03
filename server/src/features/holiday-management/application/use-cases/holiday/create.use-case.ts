@@ -14,7 +14,7 @@ import {
   HOLIDAY_MANAGEMENT_TOKENS,
   HOLIDAY_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/holiday-management/domain/constants';
-import { CreateHolidayDto } from '@/features/holiday-management/application/dto/holiday/create-holiday.dto';
+import { CreateHolidayDto } from '../../dto/holiday/create-holiday.dto';
 
 @Injectable()
 export class CreateHolidayUseCase {

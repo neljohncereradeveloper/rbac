@@ -1,4 +1,8 @@
-export class CreateHolidayDto {
+/**
+ * DTO for creating a holiday
+ * Application layer DTO - simple type definition without validation
+ */
+export interface CreateHolidayDto {
   name: string;
   date: Date;
   type: string;

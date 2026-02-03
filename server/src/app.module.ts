@@ -10,9 +10,10 @@ import {
   ErrorLoggerMiddleware,
   RequestLoggerMiddleware,
 } from '@/core/infrastructure/middlewares';
+import { HolidayManagementModule } from './features/holiday-management/holiday-management.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PostgresqlDatabaseModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), PostgresqlDatabaseModule, HolidayManagementModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

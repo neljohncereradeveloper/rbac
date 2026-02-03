@@ -1,2 +1,2 @@
-export { HolidayEntity } from './holiday.entity';
-export { holidayManagementEntities } from './holiday-management.entities';
+export * from './holiday.entity';
+export * from './holiday-management.entities';
