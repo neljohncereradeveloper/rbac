@@ -14,29 +14,23 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
-import {
-    CreateRoleUseCase,
-    UpdateRoleUseCase,
-    ArchiveRoleUseCase,
-    RestoreRoleUseCase,
-    GetRoleByIdUseCase,
-    GetPaginatedRoleUseCase,
-    ComboboxRoleUseCase,
-} from '../../../application/use-cases';
-import {
-    CreateRoleDto as CreateRolePresentationDto,
-    UpdateRoleDto as UpdateRolePresentationDto,
-} from '../../dto/role';
-import {
-    CreateRoleCommand,
-    UpdateRoleCommand,
-} from '../../../application/commands';
-import { Role } from '../../../domain/models';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
+import {
+    ArchiveRoleUseCase,
+    ComboboxRoleUseCase,
+    CreateRoleCommand,
+    CreateRoleUseCase,
+    GetPaginatedRoleUseCase,
+    GetRoleByIdUseCase,
+    RestoreRoleUseCase,
+    UpdateRoleCommand,
+    UpdateRoleUseCase
+} from '@/features/rbac/application';
+import { CreateRoleDto, UpdateRoleDto } from '../../dto/role';
+import { Role } from '@/features/rbac/domain';
 
 @Controller('roles')
-// @UseGuards(RolesGuard, PermissionsGuard)
 export class RoleController {
     constructor(
         private readonly createRoleUseCase: CreateRoleUseCase,
@@ -52,15 +46,15 @@ export class RoleController {
     @Version('1')
     @HttpCode(HttpStatus.CREATED)
     async create(
-        @Body() presentationDto: CreateRolePresentationDto,
+        @Body() dto: CreateRoleDto,
         @Req() request: Request,
     ): Promise<Role> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: CreateRoleCommand = {
-            name: presentationDto.name,
-            description: presentationDto.description ?? null,
-            permission_ids: presentationDto.permission_ids,
+            name: dto.name,
+            description: dto.description ?? null,
+            permission_ids: dto.permission_ids,
         };
         return this.createRoleUseCase.execute(command, requestInfo);
     }
@@ -69,14 +63,14 @@ export class RoleController {
     @Version('1')
     async update(
         @Param('id') id: number,
-        @Body() presentationDto: UpdateRolePresentationDto,
+        @Body() dto: UpdateRoleDto,
         @Req() request: Request,
     ): Promise<Role | null> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: UpdateRoleCommand = {
-            name: presentationDto.name,
-            description: presentationDto.description ?? null,
+            name: dto.name,
+            description: dto.description ?? null,
         };
         return this.updateRoleUseCase.execute(id, command, requestInfo);
     }

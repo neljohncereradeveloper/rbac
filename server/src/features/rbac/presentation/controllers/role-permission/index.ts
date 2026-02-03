@@ -11,18 +11,9 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
-import {
-    AssignPermissionsToRoleUseCase,
-    RemovePermissionsFromRoleUseCase,
-} from '../../../application/use-cases';
-import {
-    AssignPermissionsToRoleDto as AssignPermissionsToRolePresentationDto,
-    RemovePermissionsFromRoleDto as RemovePermissionsFromRolePresentationDto,
-} from '../../dto/role-permission';
-import {
-    AssignPermissionsToRoleCommand,
-    RemovePermissionsFromRoleCommand,
-} from '../../../application/commands';
+import { AssignPermissionsToRoleCommand, AssignPermissionsToRoleUseCase, RemovePermissionsFromRoleCommand, RemovePermissionsFromRoleUseCase } from '@/features/rbac/application';
+import { AssignPermissionsToRoleDto, RemovePermissionsFromRoleDto } from '../../dto/role-permission';
+
 
 @Controller('roles/:roleId/permissions')
 export class RolePermissionController {
@@ -36,15 +27,15 @@ export class RolePermissionController {
     @HttpCode(HttpStatus.OK)
     async assignPermissions(
         @Param('roleId') roleId: number,
-        @Body() presentationDto: AssignPermissionsToRolePresentationDto,
+        @Body() dto: AssignPermissionsToRoleDto,
         @Req() request: Request,
     ): Promise<{ success: boolean }> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: AssignPermissionsToRoleCommand = {
             role_id: roleId,
-            permission_ids: presentationDto.permission_ids,
-            replace: presentationDto.replace,
+            permission_ids: dto.permission_ids,
+            replace: dto.replace,
         };
         await this.assignPermissionsToRoleUseCase.execute(command, requestInfo);
         return { success: true };
@@ -55,14 +46,14 @@ export class RolePermissionController {
     @HttpCode(HttpStatus.OK)
     async removePermissions(
         @Param('roleId') roleId: number,
-        @Body() presentationDto: RemovePermissionsFromRolePresentationDto,
+        @Body() dto: RemovePermissionsFromRoleDto,
         @Req() request: Request,
     ): Promise<{ success: boolean }> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: RemovePermissionsFromRoleCommand = {
             role_id: roleId,
-            permission_ids: presentationDto.permission_ids,
+            permission_ids: dto.permission_ids,
         };
         await this.removePermissionsFromRoleUseCase.execute(command, requestInfo);
         return { success: true };

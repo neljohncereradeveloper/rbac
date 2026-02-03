@@ -12,17 +12,16 @@ import {
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
-    AssignRolesToUserUseCase,
-    RemoveRolesFromUserUseCase,
-} from '../../../application/use-cases';
-import {
-    AssignRolesToUserDto as AssignRolesToUserPresentationDto,
-    RemoveRolesFromUserDto as RemoveRolesFromUserPresentationDto,
-} from '../../dto/user-role';
-import {
     AssignRolesToUserCommand,
+    AssignRolesToUserUseCase,
     RemoveRolesFromUserCommand,
-} from '../../../application/commands';
+    RemoveRolesFromUserUseCase
+} from '@/features/rbac/application';
+import {
+    AssignRolesToUserDto,
+    RemoveRolesFromUserDto
+} from '@/features/rbac/presentation/dto/user-role';
+
 
 @Controller('users/:userId/roles')
 export class UserRoleController {
@@ -36,15 +35,15 @@ export class UserRoleController {
     @HttpCode(HttpStatus.OK)
     async assignRoles(
         @Param('userId') userId: number,
-        @Body() presentationDto: AssignRolesToUserPresentationDto,
+        @Body() dto: AssignRolesToUserDto,
         @Req() request: Request,
     ): Promise<{ success: boolean }> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: AssignRolesToUserCommand = {
             user_id: userId,
-            role_ids: presentationDto.role_ids,
-            replace: presentationDto.replace,
+            role_ids: dto.role_ids,
+            replace: dto.replace,
         };
         await this.assignRolesToUserUseCase.execute(command, requestInfo);
         return { success: true };
@@ -55,14 +54,14 @@ export class UserRoleController {
     @HttpCode(HttpStatus.OK)
     async removeRoles(
         @Param('userId') userId: number,
-        @Body() presentationDto: RemoveRolesFromUserPresentationDto,
+        @Body() dto: RemoveRolesFromUserDto,
         @Req() request: Request,
     ): Promise<{ success: boolean }> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: RemoveRolesFromUserCommand = {
             user_id: userId,
-            role_ids: presentationDto.role_ids,
+            role_ids: dto.role_ids,
         };
         await this.removeRolesFromUserUseCase.execute(command, requestInfo);
         return { success: true };

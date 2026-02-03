@@ -1,4 +1,4 @@
-@token = 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiaWF0IjoxNzcwMDk4NTMzLCJleHAiOjE3NzAxODQ5MzN9.xSo277myvoOlAE2WBU7Vey3joVN0SONqIfRtXGtvRBs
 @host = http://localhost:3000/api/v1
 
 ##########################################
@@ -12,16 +12,14 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "username": "johndoe",
-  "email": "john.doe@example.com",
-  "password": "SecurePassword123!",
-  "first_name": "John",
-  "middle_name": "Michael",
-  "last_name": "Doe",
-  "phone": "+1234567890",
-  "date_of_birth": "1990-01-15",
-  "is_active": true,
-  "is_email_verified": false
+  "username": "editor",
+  "email": "editor@example.com",
+  "password": "editor123",
+  "first_name": "Editor",
+  "middle_name": "",
+  "last_name": "Account",
+  "phone": "",
+  "date_of_birth": ""
 }
 
 ###
@@ -121,3 +119,49 @@ Authorization: Bearer {{token}}
 POST {{host}}/users/1/restore
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+##########################################
+# USER-ROLES
+##########################################
+
+###
+# ASSIGN ROLES TO USER
+POST {{host}}/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "role_ids": [1, 2],
+  "replace": false
+}
+
+###
+# ASSIGN ROLES TO USER - REPLACE EXISTING
+POST {{host}}/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "role_ids": [3],
+  "replace": true
+}
+
+###
+# REMOVE ROLES FROM USER
+DELETE {{host}}/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "role_ids": [1]
+}
+
+###
+# REMOVE ALL ROLES FROM USER
+DELETE {{host}}/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "role_ids": []
+}

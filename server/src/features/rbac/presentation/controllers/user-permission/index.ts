@@ -12,20 +12,18 @@ import {
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
-    GrantPermissionsToUserUseCase,
-    DenyPermissionsToUserUseCase,
-    RemovePermissionsFromUserUseCase,
-} from '../../../application/use-cases';
-import {
-    GrantPermissionsToUserDto as GrantPermissionsToUserPresentationDto,
-    DenyPermissionsToUserDto as DenyPermissionsToUserPresentationDto,
-    RemovePermissionsFromUserDto as RemovePermissionsFromUserPresentationDto,
-} from '../../dto/user-permission';
-import {
     GrantPermissionsToUserCommand,
     DenyPermissionsToUserCommand,
     RemovePermissionsFromUserCommand,
-} from '../../../application/commands';
+    GrantPermissionsToUserUseCase,
+    DenyPermissionsToUserUseCase,
+    RemovePermissionsFromUserUseCase,
+} from '@/features/rbac/application';
+import {
+    DenyPermissionsToUserDto,
+    GrantPermissionsToUserDto,
+    RemovePermissionsFromUserDto
+} from '@/features/rbac/presentation/dto/user-permission';
 
 @Controller('users/:userId/permissions')
 export class UserPermissionController {
@@ -40,15 +38,15 @@ export class UserPermissionController {
     @HttpCode(HttpStatus.OK)
     async grantPermissions(
         @Param('userId') userId: number,
-        @Body() presentationDto: GrantPermissionsToUserPresentationDto,
+        @Body() dto: GrantPermissionsToUserDto,
         @Req() request: Request,
     ): Promise<{ success: boolean }> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: GrantPermissionsToUserCommand = {
             user_id: userId,
-            permission_ids: presentationDto.permission_ids,
-            replace: presentationDto.replace,
+            permission_ids: dto.permission_ids,
+            replace: dto.replace,
         };
         await this.grantPermissionsToUserUseCase.execute(command, requestInfo);
         return { success: true };
@@ -59,15 +57,15 @@ export class UserPermissionController {
     @HttpCode(HttpStatus.OK)
     async denyPermissions(
         @Param('userId') userId: number,
-        @Body() presentationDto: DenyPermissionsToUserPresentationDto,
+        @Body() dto: DenyPermissionsToUserDto,
         @Req() request: Request,
     ): Promise<{ success: boolean }> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: DenyPermissionsToUserCommand = {
             user_id: userId,
-            permission_ids: presentationDto.permission_ids,
-            replace: presentationDto.replace,
+            permission_ids: dto.permission_ids,
+            replace: dto.replace,
         };
         await this.denyPermissionsToUserUseCase.execute(command, requestInfo);
         return { success: true };
@@ -78,14 +76,14 @@ export class UserPermissionController {
     @HttpCode(HttpStatus.OK)
     async removeOverrides(
         @Param('userId') userId: number,
-        @Body() presentationDto: RemovePermissionsFromUserPresentationDto,
+        @Body() dto: RemovePermissionsFromUserDto,
         @Req() request: Request,
     ): Promise<{ success: boolean }> {
         const requestInfo = createRequestInfo(request);
         // Map presentation DTO to application command
         const command: RemovePermissionsFromUserCommand = {
             user_id: userId,
-            permission_ids: presentationDto.permission_ids,
+            permission_ids: dto.permission_ids,
         };
         await this.removePermissionsFromUserUseCase.execute(command, requestInfo);
         return { success: true };

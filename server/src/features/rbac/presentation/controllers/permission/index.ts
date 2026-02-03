@@ -14,26 +14,21 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
-import {
-  CreatePermissionUseCase,
-  UpdatePermissionUseCase,
-  ArchivePermissionUseCase,
-  RestorePermissionUseCase,
-  GetPermissionByIdUseCase,
-  GetPaginatedPermissionUseCase,
-  ComboboxPermissionUseCase,
-} from '../../../application/use-cases';
-import {
-  CreatePermissionDto as CreatePermissionPresentationDto,
-  UpdatePermissionDto as UpdatePermissionPresentationDto,
-} from '../../dto/permission';
-import {
-  CreatePermissionCommand,
-  UpdatePermissionCommand,
-} from '../../../application/commands';
-import { Permission } from '../../../domain/models';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
+import {
+  ArchivePermissionUseCase,
+  ComboboxPermissionUseCase,
+  CreatePermissionCommand,
+  CreatePermissionUseCase,
+  GetPaginatedPermissionUseCase,
+  GetPermissionByIdUseCase,
+  RestorePermissionUseCase,
+  UpdatePermissionCommand,
+  UpdatePermissionUseCase
+} from '@/features/rbac/application';
+import { CreatePermissionDto, UpdatePermissionDto } from '../../dto/permission';
+import { Permission } from '@/features/rbac/domain';
 
 @Controller('permissions')
 export class PermissionController {
@@ -51,16 +46,16 @@ export class PermissionController {
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
   async create(
-    @Body() presentationDto: CreatePermissionPresentationDto,
+    @Body() dto: CreatePermissionDto,
     @Req() request: Request,
   ): Promise<Permission> {
     const requestInfo = createRequestInfo(request);
     // Map presentation DTO to application command
     const command: CreatePermissionCommand = {
-      name: presentationDto.name,
-      resource: presentationDto.resource,
-      action: presentationDto.action,
-      description: presentationDto.description ?? null,
+      name: dto.name,
+      resource: dto.resource,
+      action: dto.action,
+      description: dto.description ?? null,
     };
     return this.createPermissionUseCase.execute(command, requestInfo);
   }
@@ -69,16 +64,16 @@ export class PermissionController {
   @Version('1')
   async update(
     @Param('id') id: number,
-    @Body() presentationDto: UpdatePermissionPresentationDto,
+    @Body() dto: UpdatePermissionDto,
     @Req() request: Request,
   ): Promise<Permission | null> {
     const requestInfo = createRequestInfo(request);
     // Map presentation DTO to application command
     const command: UpdatePermissionCommand = {
-      name: presentationDto.name,
-      resource: presentationDto.resource,
-      action: presentationDto.action,
-      description: presentationDto.description ?? null,
+      name: dto.name,
+      resource: dto.resource,
+      action: dto.action,
+      description: dto.description ?? null,
     };
     return this.updatePermissionUseCase.execute(id, command, requestInfo);
   }
