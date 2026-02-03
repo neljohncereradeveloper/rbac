@@ -32,7 +32,9 @@ src/
         mappers/
       presentation/
         controllers/
+          <model_name>/        # e.g. role/, permission/, user-role/
         dto/
+          <model_name>/        # e.g. role/, permission/, user-role/
   core/                        # code used by 2+ features (no duplication)
     domain/
     application/
@@ -109,6 +111,97 @@ application/
 - **Include index.ts** in each folder to export its contents, and a root index.ts to export all.
 
 **Note:** Application layer uses **commands** (interfaces/types), while presentation layer uses **DTOs** (classes with validation decorators). Controllers map presentation DTOs to application commands before calling use cases.
+
+## Presentation Layer Structure
+
+Organize DTOs and controllers by model/aggregate, matching the application layer structure. Each model has its own folder in `dto/` and its own controller file in `controllers/`:
+
+```
+presentation/
+  dto/
+    role/                      # Role-related DTOs (classes with validation decorators)
+      create-role.dto.ts
+      update-role.dto.ts
+      index.ts
+    permission/                # Permission-related DTOs
+      create-permission.dto.ts
+      update-permission.dto.ts
+      index.ts
+    role-permission/           # Role-Permission DTOs
+      assign-permissions-to-role.dto.ts
+      remove-permissions-from-role.dto.ts
+      index.ts
+    user-role/                 # User-Role DTOs
+      assign-roles-to-user.dto.ts
+      remove-roles-from-user.dto.ts
+      index.ts
+    user-permission/           # User-Permission DTOs
+      grant-permissions-to-user.dto.ts
+      deny-permissions-to-user.dto.ts
+      remove-permissions-from-user.dto.ts
+      index.ts
+    index.ts                   # Export all DTOs
+  controllers/
+    role/                      # Role controller
+      role.controller.ts
+      index.ts
+    permission/                # Permission controller
+      permission.controller.ts
+      index.ts
+    role-permission/           # Role-Permission controller
+      role-permission.controller.ts
+      index.ts
+    user-role/                 # User-Role controller
+      user-role.controller.ts
+      index.ts
+    user-permission/           # User-Permission controller
+      user-permission.controller.ts
+      index.ts
+    index.ts                   # Export all controllers
+```
+
+- **Each model/aggregate has its own folder** in both `dto/` and `controllers/` (e.g., `dto/role/`, `controllers/role/`).
+- **Each model/aggregate has its own controller file** in its model folder (e.g., `controllers/role/role.controller.ts`, `controllers/permission/permission.controller.ts`).
+- **DTO file names include the model name** for clarity when importing (e.g., `create-role.dto.ts`, `assign-permissions-to-role.dto.ts`).
+- **Controller file names follow the pattern** `<model-name>.controller.ts` (e.g., `role.controller.ts`, `role-permission.controller.ts`).
+- **Use kebab-case** for file names (e.g., `create-role.dto.ts`, `role-permission.controller.ts`).
+- **DTOs are classes with validation decorators** - use `class-validator` decorators like `@RequiredStringValidation`, `@IsEmail`, `@IsArray`, etc.
+- **Controllers map presentation DTOs to application commands** before calling use cases.
+- **Include index.ts** in each DTO and controller folder to export its contents, and root index.ts files to export all DTOs and controllers.
+
+**Example Controller Pattern:**
+
+```ts
+@Controller("roles")
+export class RoleController {
+  constructor(
+    private readonly createRoleUseCase: CreateRoleUseCase // ... other use cases
+  ) {}
+
+  @Post()
+  @Version("1")
+  @HttpCode(HttpStatus.CREATED)
+  async create(
+    @Body() presentationDto: CreateRoleDto,
+    @Req() request: Request
+  ): Promise<Role> {
+    const requestInfo = createRequestInfo(request);
+    // Map presentation DTO to application command
+    const command: CreateRoleCommand = {
+      name: presentationDto.name,
+      description: presentationDto.description ?? null,
+      permission_ids: presentationDto.permission_ids,
+    };
+    return this.createRoleUseCase.execute(command, requestInfo);
+  }
+}
+```
+
+- Controllers handle HTTP requests and responses.
+- Extract `RequestInfo` from the request using `createRequestInfo(request)` for audit trails.
+- Map presentation DTOs (with validation) to application commands (simple interfaces) before calling use cases.
+- Use RESTful endpoints with versioning (`@Version('1')`).
+- Return appropriate HTTP status codes (`@HttpCode(HttpStatus.CREATED)`, etc.).
 
 ## Feature-Specific Tokens and Database Models
 

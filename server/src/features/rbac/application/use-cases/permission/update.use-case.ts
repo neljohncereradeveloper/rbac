@@ -34,7 +34,7 @@ export class UpdatePermissionUseCase {
 
   async execute(
     id: number,
-    dto: UpdatePermissionDto,
+    command: UpdatePermissionCommand,
     requestInfo?: RequestInfo,
   ): Promise<Permission | null> {
     return this.transactionHelper.executeTransaction(
