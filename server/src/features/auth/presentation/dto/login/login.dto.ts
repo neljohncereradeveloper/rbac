@@ -1,6 +1,4 @@
-import {
-  RequiredStringValidation,
-} from '@/core/infrastructure/decorators';
+import { RequiredStringValidation } from '@/core/infrastructure/decorators';
 
 /**
  * Login DTO

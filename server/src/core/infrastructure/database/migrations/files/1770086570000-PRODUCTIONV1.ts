@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class PRODUCTIONV11770086570000 implements MigrationInterface {
-    name = 'PRODUCTIONV11770086570000'
+  name = 'PRODUCTIONV11770086570000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TABLE "holidays" (
                 "id" SERIAL NOT NULL,
                 "name" character varying(255) NOT NULL,
@@ -29,36 +29,35 @@ export class PRODUCTIONV11770086570000 implements MigrationInterface {
             COMMENT ON COLUMN "holidays"."created_by" IS 'User who created the holiday';
             COMMENT ON COLUMN "holidays"."updated_by" IS 'User who last updated the holiday'
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_edf0ee22a056c330fa5f121782" ON "holidays" ("name")
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_40dfddee0c0d7125c767d8962b" ON "holidays" ("date")
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_807f6c22fbc1ba875b1346328f" ON "holidays" ("type")
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_1b42a425aea8d35df4fc9ebfdb" ON "holidays" ("deleted_at")
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             DROP INDEX "public"."IDX_1b42a425aea8d35df4fc9ebfdb"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP INDEX "public"."IDX_807f6c22fbc1ba875b1346328f"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP INDEX "public"."IDX_40dfddee0c0d7125c767d8962b"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP INDEX "public"."IDX_edf0ee22a056c330fa5f121782"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "holidays"
         `);
-    }
-
+  }
 }

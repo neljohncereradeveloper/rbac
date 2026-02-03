@@ -16,7 +16,7 @@ export class GetPaginatedHolidayUseCase {
     private readonly holidayRepository: HolidayRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(
     term: string,

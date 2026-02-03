@@ -16,7 +16,10 @@ import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
-import { RequirePermissions, RequireRoles } from '@/features/auth';
+import {
+  RequirePermissions,
+  RequireRoles,
+} from '@/features/auth/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
   ArchivePermissionUseCase,
@@ -27,7 +30,7 @@ import {
   GetPermissionByIdUseCase,
   RestorePermissionUseCase,
   UpdatePermissionCommand,
-  UpdatePermissionUseCase
+  UpdatePermissionUseCase,
 } from '@/features/rbac/application';
 import { CreatePermissionDto, UpdatePermissionDto } from '../../dto/permission';
 import { Permission } from '@/features/rbac/domain';
@@ -42,7 +45,7 @@ export class PermissionController {
     private readonly getPermissionByIdUseCase: GetPermissionByIdUseCase,
     private readonly getPaginatedPermissionUseCase: GetPaginatedPermissionUseCase,
     private readonly comboboxPermissionUseCase: ComboboxPermissionUseCase,
-  ) { }
+  ) {}
 
   @Post()
   @Version('1')

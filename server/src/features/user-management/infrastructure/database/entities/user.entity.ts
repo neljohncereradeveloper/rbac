@@ -159,6 +159,9 @@ export class UserEntity {
   @OneToMany(() => UserRoleEntity, (userRole) => userRole.user)
   user_roles?: UserRoleEntity[];
 
-  @OneToMany(() => UserPermissionEntity, (userPermission) => userPermission.user)
+  @OneToMany(
+    () => UserPermissionEntity,
+    (userPermission) => userPermission.user,
+  )
   user_permissions?: UserPermissionEntity[];
 }

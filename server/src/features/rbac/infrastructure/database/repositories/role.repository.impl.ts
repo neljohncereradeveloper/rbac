@@ -3,11 +3,14 @@ import { DataSource, EntityManager } from 'typeorm';
 import { RoleRepository } from '@/features/rbac/domain/repositories';
 import { Role } from '@/features/rbac/domain/models';
 import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
-import { PaginatedResult, calculatePagination } from '@/core/utils/pagination.util';
+import {
+  PaginatedResult,
+  calculatePagination,
+} from '@/core/utils/pagination.util';
 
 @Injectable()
 export class RoleRepositoryImpl implements RoleRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) {}
 
   async create(
     role: Role,

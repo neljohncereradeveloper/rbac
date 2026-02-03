@@ -5,9 +5,8 @@ import { RolePermission } from '@/features/rbac/domain/models';
 import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
 
 @Injectable()
-export class RolePermissionRepositoryImpl
-  implements RolePermissionRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) { }
+export class RolePermissionRepositoryImpl implements RolePermissionRepository<EntityManager> {
+  constructor(private readonly dataSource: DataSource) {}
 
   async create(
     role_permission: RolePermission,

@@ -14,7 +14,7 @@ export class ComboboxHolidayUseCase {
     private readonly holidayRepository: HolidayRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(): Promise<{ value: string; label: string }[]> {
     return this.transactionHelper.executeTransaction(
@@ -25,7 +25,7 @@ export class ComboboxHolidayUseCase {
           value: holiday.name || '',
           label: holiday.name
             ? holiday.name.charAt(0).toUpperCase() +
-            holiday.name.slice(1).toLowerCase()
+              holiday.name.slice(1).toLowerCase()
             : '',
         }));
       },

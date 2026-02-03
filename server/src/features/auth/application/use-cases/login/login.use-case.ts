@@ -18,7 +18,7 @@ export class LoginUseCase {
     private readonly userRepository: UserRepository,
     private readonly jwtTokenService: JwtTokenService,
     private readonly dataSource: DataSource,
-  ) { }
+  ) {}
 
   async execute(command: LoginCommand): Promise<{
     access_token: string;

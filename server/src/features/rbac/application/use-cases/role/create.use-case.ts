@@ -25,9 +25,12 @@ export class CreateRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
-  async execute(command: CreateRoleCommand, requestInfo?: RequestInfo): Promise<Role> {
+  async execute(
+    command: CreateRoleCommand,
+    requestInfo?: RequestInfo,
+  ): Promise<Role> {
     return this.transactionHelper.executeTransaction(
       ROLE_ACTIONS.CREATE,
       async (manager) => {

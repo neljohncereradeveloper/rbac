@@ -31,7 +31,7 @@ import {
 export class SeedPermissions {
   private readonly logger = new Logger(SeedPermissions.name);
 
-  constructor(private readonly entityManager: EntityManager) { }
+  constructor(private readonly entityManager: EntityManager) {}
 
   /**
    * Executes the seed operation to create default permission entries.
@@ -310,9 +310,8 @@ export class SeedPermissions {
           created_at: getPHDateTime(),
         });
 
-        const saved_permission = await this.entityManager.save(
-          permission_entity,
-        );
+        const saved_permission =
+          await this.entityManager.save(permission_entity);
         permissionMap.set(permission.name, saved_permission.id);
         this.logger.log(`Created permission: ${permission.name}`);
       } else {

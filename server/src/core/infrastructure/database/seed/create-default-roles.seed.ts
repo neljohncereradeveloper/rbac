@@ -26,7 +26,7 @@ import { ROLES } from '@/core/domain/constants';
 export class SeedRoles {
   private readonly logger = new Logger(SeedRoles.name);
 
-  constructor(private readonly entityManager: EntityManager) { }
+  constructor(private readonly entityManager: EntityManager) {}
 
   /**
    * Executes the seed operation to create default role entries.

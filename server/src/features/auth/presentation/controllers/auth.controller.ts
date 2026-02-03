@@ -17,7 +17,7 @@ import { LoginCommand } from '../../application/commands/login/login.command';
  */
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly loginUseCase: LoginUseCase) { }
+  constructor(private readonly loginUseCase: LoginUseCase) {}
 
   /**
    * Login endpoint

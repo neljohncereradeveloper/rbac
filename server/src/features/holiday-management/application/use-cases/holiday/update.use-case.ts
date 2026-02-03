@@ -30,7 +30,7 @@ export class UpdateHolidayUseCase {
     private readonly holidayRepository: HolidayRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     id: number,
@@ -52,7 +52,10 @@ export class UpdateHolidayUseCase {
         // Define fields to track for change logging
         const tracking_config: FieldExtractorConfig[] = [
           { field: 'name' },
-          { field: 'date', transform: (val) => (val ? getPHDateTime(val) : null) },
+          {
+            field: 'date',
+            transform: (val) => (val ? getPHDateTime(val) : null),
+          },
           { field: 'type' },
           { field: 'description' },
           { field: 'is_recurring' },
@@ -77,7 +80,11 @@ export class UpdateHolidayUseCase {
         });
 
         // Update the holiday in the database
-        const success = await this.holidayRepository.update(id, holiday, manager);
+        const success = await this.holidayRepository.update(
+          id,
+          holiday,
+          manager,
+        );
         if (!success) {
           throw new HolidayBusinessException(
             'Holiday update failed',
@@ -86,7 +93,10 @@ export class UpdateHolidayUseCase {
         }
 
         // Retrieve the updated holiday
-        const updated_result = await this.holidayRepository.findById(id, manager);
+        const updated_result = await this.holidayRepository.findById(
+          id,
+          manager,
+        );
 
         // Capture after state for logging
         const after_state = extractEntityState(updated_result, tracking_config);

@@ -42,7 +42,7 @@ import { ROLES } from '@/core/domain/constants';
 export class SeedAdminAccount {
   private readonly logger = new Logger(SeedAdminAccount.name);
 
-  constructor(private readonly entityManager: EntityManager) { }
+  constructor(private readonly entityManager: EntityManager) {}
 
   /**
    * Executes the seed operation to create default admin account.
@@ -66,8 +66,7 @@ export class SeedAdminAccount {
     const adminUsername =
       process.env.ADMIN_USERNAME?.trim().toLowerCase() || 'admin';
     const adminEmail =
-      process.env.ADMIN_EMAIL?.trim().toLowerCase() ||
-      'admin@example.com';
+      process.env.ADMIN_EMAIL?.trim().toLowerCase() || 'admin@example.com';
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
     const adminFirstName = process.env.ADMIN_FIRST_NAME || 'System';
     const adminLastName = process.env.ADMIN_LAST_NAME || 'Administrator';
@@ -140,15 +139,12 @@ export class SeedAdminAccount {
     }
 
     // Ensure Admin role is assigned to admin user
-    const existingUserRole = await this.entityManager.findOne(
-      UserRoleEntity,
-      {
-        where: {
-          user_id: adminUserId,
-          role_id: adminRoleId,
-        },
+    const existingUserRole = await this.entityManager.findOne(UserRoleEntity, {
+      where: {
+        user_id: adminUserId,
+        role_id: adminRoleId,
       },
-    );
+    });
 
     if (!existingUserRole) {
       const userRole = this.entityManager.create(UserRoleEntity, {
@@ -163,9 +159,7 @@ export class SeedAdminAccount {
         `Assigned Admin role to user: ${adminUsername} (ID: ${adminUserId})`,
       );
     } else {
-      this.logger.log(
-        `Admin role already assigned to user: ${adminUsername}`,
-      );
+      this.logger.log(`Admin role already assigned to user: ${adminUsername}`);
     }
   }
 }

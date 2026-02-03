@@ -2,7 +2,10 @@ import { RequiredStringValidation } from '@/core/infrastructure/decorators';
 import { OptionalStringValidation } from '@/core/infrastructure/decorators';
 import { IsOptional, IsBoolean } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { IsDateStringCustom, transformDateString } from '@/core/utils/date.util';
+import {
+  IsDateStringCustom,
+  transformDateString,
+} from '@/core/utils/date.util';
 
 export class UpdateHolidayDto {
   @RequiredStringValidation({

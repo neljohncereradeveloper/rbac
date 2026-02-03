@@ -28,14 +28,14 @@ export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private rbacService: RbacService,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Get required roles from decorator
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     // If no roles required, allow access
     if (!requiredRoles || requiredRoles.length === 0) {

@@ -1,7 +1,10 @@
 import { IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { OptionalStringValidation, RequiredNumberValidation } from '../decorators';
+import {
+  OptionalStringValidation,
+  RequiredNumberValidation,
+} from '../decorators';
 
 export class PaginationQueryDto {
   @ApiPropertyOptional({
@@ -34,7 +37,6 @@ export class PaginationQueryDto {
     allow_zero: true,
     allow_negative: false,
     transform: true,
-
   })
   page: number;
 

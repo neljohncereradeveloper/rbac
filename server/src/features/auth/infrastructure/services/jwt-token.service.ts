@@ -13,7 +13,7 @@ export class JwtTokenService implements JwtTokenPort {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   /**
    * Generate a JWT token from payload

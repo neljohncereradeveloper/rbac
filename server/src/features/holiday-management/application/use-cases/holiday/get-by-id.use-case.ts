@@ -17,7 +17,7 @@ export class GetHolidayByIdUseCase {
     private readonly holidayRepository: HolidayRepository,
     @Inject(TOKENS_CORE.TRANSACTIONPORT)
     private readonly transactionHelper: TransactionPort,
-  ) { }
+  ) {}
 
   async execute(id: number): Promise<Holiday> {
     return this.transactionHelper.executeTransaction(

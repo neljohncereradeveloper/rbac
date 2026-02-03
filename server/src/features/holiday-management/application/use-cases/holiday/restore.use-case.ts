@@ -23,7 +23,7 @@ export class RestoreHolidayUseCase {
     private readonly holidayRepository: HolidayRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
@@ -42,7 +42,11 @@ export class RestoreHolidayUseCase {
         holiday.restore();
 
         // Update the entity
-        const success = await this.holidayRepository.update(id, holiday, manager);
+        const success = await this.holidayRepository.update(
+          id,
+          holiday,
+          manager,
+        );
         if (!success) {
           throw new HolidayBusinessException(
             'Holiday restore failed',
@@ -57,8 +61,9 @@ export class RestoreHolidayUseCase {
           details: JSON.stringify({
             id,
             name: holiday.name,
-            explanation: `Holiday with ID : ${id} restored by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `Holiday with ID : ${id} restored by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             restored_by: requestInfo?.user_name || '',
             restored_at: getPHDateTime(new Date()),
           }),

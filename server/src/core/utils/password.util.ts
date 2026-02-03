@@ -13,7 +13,10 @@ export class PasswordUtil {
    * @param saltRounds Number of salt rounds (default: 10)
    * @returns Hashed password
    */
-  static async hash(plainPassword: string, saltRounds: number = 10): Promise<string> {
+  static async hash(
+    plainPassword: string,
+    saltRounds: number = 10,
+  ): Promise<string> {
     return bcrypt.hash(plainPassword, saltRounds);
   }
 

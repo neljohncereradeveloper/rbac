@@ -41,7 +41,6 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
     GetHolidayByIdUseCase,
     GetPaginatedHolidayUseCase,
     ComboboxHolidayUseCase,
-
   ],
   exports: [
     // Export use cases for use in controllers or other modules
@@ -54,4 +53,4 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
     ComboboxHolidayUseCase,
   ],
 })
-export class HolidayManagementModule { }
+export class HolidayManagementModule {}

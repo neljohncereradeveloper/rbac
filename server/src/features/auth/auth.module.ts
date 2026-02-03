@@ -35,7 +35,7 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
         return {
           secret,
           signOptions: {
-            expiresIn: expiresIn as string,
+            expiresIn: expiresIn,
           },
         } as JwtModuleOptions;
       },
@@ -73,11 +73,6 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     },
     JwtTokenService,
   ],
-  exports: [
-    LoginUseCase,
-    JwtTokenService,
-    RbacService,
-    AUTH_TOKENS.RBAC,
-  ],
+  exports: [LoginUseCase, JwtTokenService, RbacService, AUTH_TOKENS.RBAC],
 })
-export class AuthModule { }
+export class AuthModule {}

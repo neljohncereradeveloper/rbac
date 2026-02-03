@@ -3,12 +3,14 @@ import { DataSource, EntityManager } from 'typeorm';
 import { PermissionRepository } from '@/features/rbac/domain/repositories';
 import { Permission } from '@/features/rbac/domain/models';
 import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
-import { PaginatedResult, calculatePagination } from '@/core/utils/pagination.util';
+import {
+  PaginatedResult,
+  calculatePagination,
+} from '@/core/utils/pagination.util';
 
 @Injectable()
-export class PermissionRepositoryImpl
-  implements PermissionRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) { }
+export class PermissionRepositoryImpl implements PermissionRepository<EntityManager> {
+  constructor(private readonly dataSource: DataSource) {}
 
   async create(
     permission: Permission,

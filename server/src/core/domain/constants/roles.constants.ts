@@ -19,4 +19,4 @@ export const ROLES = {
 /**
  * Type for role names
  */
-export type RoleName = typeof ROLES[keyof typeof ROLES];
+export type RoleName = (typeof ROLES)[keyof typeof ROLES];

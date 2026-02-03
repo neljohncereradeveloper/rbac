@@ -18,7 +18,7 @@ export class AssignPermissionsToRoleDto {
   @Transform(({ value }) => {
     if (value === 'true' || value === true) return true;
     if (value === 'false' || value === false) return false;
-    return value;
+    return undefined;
   })
   replace?: boolean;
 }

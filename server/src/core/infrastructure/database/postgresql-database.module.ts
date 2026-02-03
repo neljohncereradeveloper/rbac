@@ -17,4 +17,4 @@ import { allEntities } from './entities/all-entities';
   ],
   exports: [TypeOrmModule], // Export TypeOrmModule for use in other modules
 })
-export class PostgresqlDatabaseModule { }
+export class PostgresqlDatabaseModule {}

@@ -27,7 +27,7 @@ export class RbacService {
     @Inject(RBAC_TOKENS.ROLE)
     private readonly roleRepository: RoleRepository,
     private readonly dataSource: DataSource,
-  ) { }
+  ) {}
 
   /**
    * Check if user has any of the specified roles
@@ -121,8 +121,10 @@ export class RbacService {
       }
 
       // Get user-specific permission overrides
-      const userPermissions =
-        await this.userPermissionRepository.findByUserId(userId, manager);
+      const userPermissions = await this.userPermissionRepository.findByUserId(
+        userId,
+        manager,
+      );
 
       // Check user permission overrides (grants and denials)
       const grantedPermissionIds = new Set<number>();
@@ -201,8 +203,10 @@ export class RbacService {
       }
 
       // Get user-specific permission overrides
-      const userPermissions =
-        await this.userPermissionRepository.findByUserId(userId, manager);
+      const userPermissions = await this.userPermissionRepository.findByUserId(
+        userId,
+        manager,
+      );
 
       // Check user permission overrides (grants and denials)
       const grantedPermissionIds = new Set<number>();

@@ -29,7 +29,7 @@ export class AssignRolesToUserUseCase {
     private readonly userRoleRepository: UserRoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     command: AssignRolesToUserCommand,

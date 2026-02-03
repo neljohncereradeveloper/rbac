@@ -26,7 +26,7 @@ import { ROLES, PERMISSIONS } from '@/core/domain/constants';
 export class SeedRolePermissions {
   private readonly logger = new Logger(SeedRolePermissions.name);
 
-  constructor(private readonly entityManager: EntityManager) { }
+  constructor(private readonly entityManager: EntityManager) {}
 
   /**
    * Executes the seed operation to create default role-permission links.

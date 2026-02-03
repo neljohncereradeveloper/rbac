@@ -5,11 +5,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 @Injectable()
-export class ActivityLogRepositoryImpl
-  implements ActivityLogRepository<EntityManager> {
+export class ActivityLogRepositoryImpl implements ActivityLogRepository<EntityManager> {
   private readonly logger = new Logger(ActivityLogRepositoryImpl.name);
 
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) {}
 
   async create(log: ActivityLog, manager: EntityManager): Promise<ActivityLog> {
     // Validate that details is valid JSON before storing

@@ -24,7 +24,7 @@ export class VerifyEmailUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     command: VerifyEmailCommand,
@@ -34,7 +34,10 @@ export class VerifyEmailUseCase {
       USER_ACTIONS.VERIFY_EMAIL,
       async (manager) => {
         // Validate user existence
-        const user = await this.userRepository.findById(command.user_id, manager);
+        const user = await this.userRepository.findById(
+          command.user_id,
+          manager,
+        );
         if (!user) {
           throw new UserBusinessException(
             `User with ID ${command.user_id} not found.`,

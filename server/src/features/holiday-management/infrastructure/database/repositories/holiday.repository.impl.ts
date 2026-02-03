@@ -9,14 +9,10 @@ import {
 } from '@/core/utils/pagination.util';
 
 @Injectable()
-export class HolidayRepositoryImpl
-  implements HolidayRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) { }
+export class HolidayRepositoryImpl implements HolidayRepository<EntityManager> {
+  constructor(private readonly dataSource: DataSource) {}
 
-  async create(
-    holiday: Holiday,
-    manager: EntityManager,
-  ): Promise<Holiday> {
+  async create(holiday: Holiday, manager: EntityManager): Promise<Holiday> {
     const query = `
       INSERT INTO ${HOLIDAY_MANAGEMENT_DATABASE_MODELS.HOLIDAYS} (
         name, date, type, description, is_recurring, deleted_by, deleted_at,
@@ -103,10 +99,7 @@ export class HolidayRepositoryImpl
     return result.length > 0;
   }
 
-  async findById(
-    id: number,
-    manager: EntityManager,
-  ): Promise<Holiday | null> {
+  async findById(id: number, manager: EntityManager): Promise<Holiday | null> {
     const query = `
       SELECT *
       FROM ${HOLIDAY_MANAGEMENT_DATABASE_MODELS.HOLIDAYS}

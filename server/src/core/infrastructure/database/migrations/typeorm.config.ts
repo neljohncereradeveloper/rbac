@@ -14,9 +14,7 @@ export default new DataSource({
   // password: config_service.get('DB_PASSWORD'),
   // database: config_service.get('DB_DATABASE'),
   entities: allEntities,
-  migrations: [
-    'dist/core/infrastructure/database/migrations/files/*.{ts,js}',
-  ],
+  migrations: ['dist/core/infrastructure/database/migrations/files/*.{ts,js}'],
   logging: config_service.get('NODE_ENV') === 'development',
   synchronize: false,
   extra: {

@@ -72,7 +72,10 @@ export class RoleEntity {
   /**
    * RELATIONS
    */
-  @OneToMany(() => RolePermissionEntity, (rolePermission) => rolePermission.role)
+  @OneToMany(
+    () => RolePermissionEntity,
+    (rolePermission) => rolePermission.role,
+  )
   role_permissions?: RolePermissionEntity[];
 
   @OneToMany(() => UserRoleEntity, (userRole) => userRole.role)

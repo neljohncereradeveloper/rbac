@@ -1,6 +1,4 @@
-import {
-  OptionalStringValidation,
-} from '@/core/infrastructure/decorators';
+import { OptionalStringValidation } from '@/core/infrastructure/decorators';
 import { IsOptional, IsBoolean, IsEmail, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 import {

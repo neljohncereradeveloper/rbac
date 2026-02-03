@@ -30,7 +30,7 @@ export class UpdateUserUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(
     id: number,
@@ -82,7 +82,8 @@ export class UpdateUserUseCase {
           phone: command.phone ?? user.phone,
           date_of_birth: command.date_of_birth ?? user.date_of_birth,
           is_active: command.is_active ?? user.is_active,
-          is_email_verified: command.is_email_verified ?? user.is_email_verified,
+          is_email_verified:
+            command.is_email_verified ?? user.is_email_verified,
           updated_by: requestInfo?.user_name || null,
         });
 

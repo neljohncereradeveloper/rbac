@@ -5,14 +5,10 @@ import { UserRole } from '@/features/rbac/domain/models';
 import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
 
 @Injectable()
-export class UserRoleRepositoryImpl
-  implements UserRoleRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) { }
+export class UserRoleRepositoryImpl implements UserRoleRepository<EntityManager> {
+  constructor(private readonly dataSource: DataSource) {}
 
-  async create(
-    user_role: UserRole,
-    manager: EntityManager,
-  ): Promise<UserRole> {
+  async create(user_role: UserRole, manager: EntityManager): Promise<UserRole> {
     const query = `
       INSERT INTO ${RBAC_DATABASE_MODELS.USER_ROLES} (
         user_id, role_id, created_by, created_at

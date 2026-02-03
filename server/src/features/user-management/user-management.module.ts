@@ -59,4 +59,4 @@ import { UserController } from './presentation/controllers';
     ComboboxUserUseCase,
   ],
 })
-export class UserManagementModule { }
+export class UserManagementModule {}

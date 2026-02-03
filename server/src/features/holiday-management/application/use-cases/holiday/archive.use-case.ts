@@ -23,7 +23,7 @@ export class ArchiveHolidayUseCase {
     private readonly holidayRepository: HolidayRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) { }
+  ) {}
 
   async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
@@ -42,7 +42,11 @@ export class ArchiveHolidayUseCase {
         holiday.archive(requestInfo?.user_name || '');
 
         // Update the entity
-        const success = await this.holidayRepository.update(id, holiday, manager);
+        const success = await this.holidayRepository.update(
+          id,
+          holiday,
+          manager,
+        );
         if (!success) {
           throw new HolidayBusinessException(
             'Holiday archive failed',
@@ -57,8 +61,9 @@ export class ArchiveHolidayUseCase {
           details: JSON.stringify({
             id,
             name: holiday.name,
-            explanation: `Holiday with ID : ${id} archived by USER : ${requestInfo?.user_name || ''
-              }`,
+            explanation: `Holiday with ID : ${id} archived by USER : ${
+              requestInfo?.user_name || ''
+            }`,
             archived_by: requestInfo?.user_name || '',
             archived_at: getPHDateTime(holiday.deleted_at || new Date()),
           }),

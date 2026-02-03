@@ -3,12 +3,14 @@ import { DataSource, EntityManager } from 'typeorm';
 import { UserRepository } from '@/features/user-management/domain/repositories';
 import { User } from '@/features/user-management/domain/models';
 import { USER_MANAGEMENT_DATABASE_MODELS } from '@/features/user-management/domain/constants';
-import { PaginatedResult, calculatePagination } from '@/core/utils/pagination.util';
+import {
+  PaginatedResult,
+  calculatePagination,
+} from '@/core/utils/pagination.util';
 
 @Injectable()
 export class UserRepositoryImpl implements UserRepository<EntityManager> {
-
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) {}
 
   async create(user: User, manager: EntityManager): Promise<User> {
     const query = `
@@ -259,7 +261,10 @@ export class UserRepositoryImpl implements UserRepository<EntityManager> {
     return this.entityToModel(result[0]);
   }
 
-  async findByEmail(email: string, manager: EntityManager): Promise<User | null> {
+  async findByEmail(
+    email: string,
+    manager: EntityManager,
+  ): Promise<User | null> {
     const query = `
       SELECT *
       FROM ${USER_MANAGEMENT_DATABASE_MODELS.USERS}
