@@ -7,7 +7,7 @@
 5. update the .env file with production setup ( note: no script running ).
 6. make sure that the synchronize mode in the typeorm setup is off ( note: no script running ).
 7. run
-   - yarn migration:generate src/core/infrastructure/database/typeorm/postgresql/migrations/files/PRODUCTIONV1
+   - yarn migration:generate src/core/infrastructure/database/migrations/files/PRODUCTIONV1
 
 8. after successfull migration, check the migration file for checking the changes 
    that will override the database (note make sure that the database is backup before migration).

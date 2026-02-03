@@ -8,6 +8,7 @@
 import { coreEntities } from './core.entities';
 import { userManagementEntities } from '@/features/user-management/infrastructure/database/entities/user-management.entities';
 import { rbacEntities } from '@/features/rbac/infrastructure/database/entities/rbac.entities';
+import { holidayManagementEntities } from '@/features/holiday-management/infrastructure/database/entities/holiday-management.entities';
 
 // Re-export individual entities for convenience
 export * from './activity-log.entity';
@@ -17,6 +18,7 @@ export * from '@/features/rbac/infrastructure/database/entities/permission.entit
 export * from '@/features/rbac/infrastructure/database/entities/role-permission.entity';
 export * from '@/features/rbac/infrastructure/database/entities/user-role.entity';
 export * from '@/features/rbac/infrastructure/database/entities/user-permission.entity';
+export * from '@/features/holiday-management/infrastructure/database/entities/holiday.entity';
 
 /**
  * Array of all entities for TypeORM configuration
@@ -27,4 +29,5 @@ export const allEntities = [
   ...coreEntities,
   ...userManagementEntities,
   ...rbacEntities,
+  ...holidayManagementEntities,
 ];
