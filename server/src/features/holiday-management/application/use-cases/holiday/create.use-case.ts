@@ -14,7 +14,7 @@ import {
   HOLIDAY_MANAGEMENT_TOKENS,
   HOLIDAY_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/holiday-management/domain/constants';
-import { CreateHolidayDto } from '../../dto/holiday/create-holiday.dto';
+import { CreateHolidayCommand } from '../../commands/holiday/create-holiday.command';
 
 @Injectable()
 export class CreateHolidayUseCase {
@@ -28,7 +28,7 @@ export class CreateHolidayUseCase {
   ) { }
 
   async execute(
-    dto: CreateHolidayDto,
+    command: CreateHolidayCommand,
     requestInfo?: RequestInfo,
   ): Promise<Holiday> {
     return this.transactionHelper.executeTransaction(
@@ -36,11 +36,11 @@ export class CreateHolidayUseCase {
       async (manager) => {
         // Create domain model (validates automatically)
         const new_holiday = Holiday.create({
-          name: dto.name,
-          date: dto.date,
-          type: dto.type,
-          description: dto.description ?? null,
-          is_recurring: dto.is_recurring ?? false,
+          name: command.name,
+          date: command.date,
+          type: command.type,
+          description: command.description ?? null,
+          is_recurring: command.is_recurring ?? false,
           created_by: requestInfo?.user_name || null,
         });
 

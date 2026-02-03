@@ -19,7 +19,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { AssignPermissionsToRoleDto } from '../../dto/role-permission/assign-permissions-to-role.dto';
+import { AssignPermissionsToRoleCommand } from '../../commands/role-permission/assign-permissions-to-role.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -37,25 +37,25 @@ export class AssignPermissionsToRoleUseCase {
     private readonly rolePermissionRepository: RolePermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: AssignPermissionsToRoleDto,
+    command: AssignPermissionsToRoleCommand,
     requestInfo?: RequestInfo,
   ): Promise<void> {
     return this.transactionHelper.executeTransaction(
       ROLE_PERMISSION_ACTIONS.ASSIGN_TO_ROLE,
       async (manager) => {
         // Validate role existence
-        const role = await this.roleRepository.findById(dto.role_id, manager);
+        const role = await this.roleRepository.findById(command.role_id, manager);
         if (!role) {
           throw new RoleBusinessException(
-            `Role with ID ${dto.role_id} not found.`,
+            `Role with ID ${command.role_id} not found.`,
             HTTP_STATUS.NOT_FOUND,
           );
         }
 
-        if (!dto.permission_ids || dto.permission_ids.length === 0) {
+        if (!command.permission_ids || command.permission_ids.length === 0) {
           throw new RolePermissionBusinessException(
             'At least one permission ID is required.',
             HTTP_STATUS.BAD_REQUEST,
@@ -65,7 +65,7 @@ export class AssignPermissionsToRoleUseCase {
         // Get current permission IDs (before state)
         const before_permission_ids =
           await this.rolePermissionRepository.findPermissionIdsByRoleId(
-            dto.role_id,
+            command.role_id,
             manager,
           );
 
@@ -85,16 +85,16 @@ export class AssignPermissionsToRoleUseCase {
 
         // Assign permissions to role
         await this.rolePermissionRepository.assignToRole(
-          dto.role_id,
-          dto.permission_ids,
+          command.role_id,
+          command.permission_ids,
           manager,
-          dto.replace,
+          command.replace,
         );
 
         // Get updated permission IDs (after state)
         const after_permission_ids =
           await this.rolePermissionRepository.findPermissionIdsByRoleId(
-            dto.role_id,
+            command.role_id,
             manager,
           );
 
@@ -112,10 +112,10 @@ export class AssignPermissionsToRoleUseCase {
           action: ROLE_PERMISSION_ACTIONS.ASSIGN_TO_ROLE,
           entity: RBAC_DATABASE_MODELS.ROLE_PERMISSIONS,
           details: JSON.stringify({
-            role_id: dto.role_id,
+            role_id: command.role_id,
             role_name: role.name,
             changed_fields: changed_fields,
-            replace: dto.replace || false,
+            replace: command.replace || false,
             assigned_by: requestInfo?.user_name || '',
             assigned_at: getPHDateTime(new Date()),
           }),

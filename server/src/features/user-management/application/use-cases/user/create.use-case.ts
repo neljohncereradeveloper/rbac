@@ -14,7 +14,7 @@ import {
   USER_MANAGEMENT_TOKENS,
   USER_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/user-management/domain/constants';
-import { CreateUserDto } from '../../dto/user/create-user.dto';
+import { CreateUserCommand } from '../../commands/user/create-user.command';
 
 @Injectable()
 export class CreateUserUseCase {
@@ -25,24 +25,24 @@ export class CreateUserUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
-  async execute(dto: CreateUserDto, requestInfo?: RequestInfo): Promise<User> {
+  async execute(command: CreateUserCommand, requestInfo?: RequestInfo): Promise<User> {
     return this.transactionHelper.executeTransaction(
       USER_ACTIONS.CREATE,
       async (manager) => {
         // Create domain model (validates automatically)
         const new_user = User.create({
-          username: dto.username,
-          email: dto.email,
-          password: dto.password,
-          first_name: dto.first_name ?? null,
-          middle_name: dto.middle_name ?? null,
-          last_name: dto.last_name ?? null,
-          phone: dto.phone ?? null,
-          date_of_birth: dto.date_of_birth ?? null,
-          is_active: dto.is_active ?? true,
-          is_email_verified: dto.is_email_verified ?? false,
+          username: command.username,
+          email: command.email,
+          password: command.password,
+          first_name: command.first_name ?? null,
+          middle_name: command.middle_name ?? null,
+          last_name: command.last_name ?? null,
+          phone: command.phone ?? null,
+          date_of_birth: command.date_of_birth ?? null,
+          is_active: command.is_active ?? true,
+          is_email_verified: command.is_email_verified ?? false,
           created_by: requestInfo?.user_name || null,
         });
 

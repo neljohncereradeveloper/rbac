@@ -14,7 +14,7 @@ import {
   USER_MANAGEMENT_TOKENS,
   USER_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/user-management/domain/constants';
-import { UpdateUserDto } from '../../dto/user/update-user.dto';
+import { UpdateUserCommand } from '../../commands/user/update-user.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -30,11 +30,11 @@ export class UpdateUserUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     id: number,
-    dto: UpdateUserDto,
+    command: UpdateUserCommand,
     requestInfo?: RequestInfo,
   ): Promise<User | null> {
     return this.transactionHelper.executeTransaction(
@@ -75,15 +75,15 @@ export class UpdateUserUseCase {
 
         // Use domain model method to update (encapsulates business logic and validation)
         user.update({
-          username: dto.username,
-          email: dto.email,
-          first_name: dto.first_name ?? user.first_name,
-          middle_name: dto.middle_name ?? user.middle_name,
-          last_name: dto.last_name ?? user.last_name,
-          phone: dto.phone ?? user.phone,
-          date_of_birth: dto.date_of_birth ?? user.date_of_birth,
-          is_active: dto.is_active ?? user.is_active,
-          is_email_verified: dto.is_email_verified ?? user.is_email_verified,
+          username: command.username,
+          email: command.email,
+          first_name: command.first_name ?? user.first_name,
+          middle_name: command.middle_name ?? user.middle_name,
+          last_name: command.last_name ?? user.last_name,
+          phone: command.phone ?? user.phone,
+          date_of_birth: command.date_of_birth ?? user.date_of_birth,
+          is_active: command.is_active ?? user.is_active,
+          is_email_verified: command.is_email_verified ?? user.is_email_verified,
           updated_by: requestInfo?.user_name || null,
         });
 

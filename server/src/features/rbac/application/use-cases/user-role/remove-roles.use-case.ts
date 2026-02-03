@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { RemoveRolesFromUserDto } from '../../dto/user-role/remove-roles-from-user.dto';
+import { RemoveRolesFromUserCommand } from '../../commands/user-role/remove-roles-from-user.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,16 +29,16 @@ export class RemoveRolesFromUserUseCase {
     private readonly userRoleRepository: UserRoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: RemoveRolesFromUserDto,
+    command: RemoveRolesFromUserCommand,
     requestInfo?: RequestInfo,
   ): Promise<void> {
     return this.transactionHelper.executeTransaction(
       USER_ROLE_ACTIONS.REMOVE_FROM_USER,
       async (manager) => {
-        if (!dto.role_ids || dto.role_ids.length === 0) {
+        if (!command.role_ids || command.role_ids.length === 0) {
           throw new UserRoleBusinessException(
             'At least one role ID is required.',
             HTTP_STATUS.BAD_REQUEST,
@@ -48,7 +48,7 @@ export class RemoveRolesFromUserUseCase {
         // Get current role IDs (before state)
         const before_role_ids =
           await this.userRoleRepository.findRoleIdsByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
 
@@ -68,15 +68,15 @@ export class RemoveRolesFromUserUseCase {
 
         // Remove roles from user
         await this.userRoleRepository.removeFromUser(
-          dto.user_id,
-          dto.role_ids,
+          command.user_id,
+          command.role_ids,
           manager,
         );
 
         // Get updated role IDs (after state)
         const after_role_ids =
           await this.userRoleRepository.findRoleIdsByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
 
@@ -94,7 +94,7 @@ export class RemoveRolesFromUserUseCase {
           action: USER_ROLE_ACTIONS.REMOVE_FROM_USER,
           entity: RBAC_DATABASE_MODELS.USER_ROLES,
           details: JSON.stringify({
-            user_id: dto.user_id,
+            user_id: command.user_id,
             changed_fields: changed_fields,
             removed_by: requestInfo?.user_name || '',
             removed_at: getPHDateTime(new Date()),

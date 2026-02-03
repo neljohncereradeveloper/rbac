@@ -14,7 +14,7 @@ import {
   HOLIDAY_MANAGEMENT_TOKENS,
   HOLIDAY_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/holiday-management/domain/constants';
-import { UpdateHolidayDto } from '../../dto/holiday/update-holiday.dto';
+import { UpdateHolidayCommand } from '../../commands/holiday/update-holiday.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -34,7 +34,7 @@ export class UpdateHolidayUseCase {
 
   async execute(
     id: number,
-    dto: UpdateHolidayDto,
+    command: UpdateHolidayCommand,
     requestInfo?: RequestInfo,
   ): Promise<Holiday | null> {
     return this.transactionHelper.executeTransaction(
@@ -68,11 +68,11 @@ export class UpdateHolidayUseCase {
 
         // Use domain model method to update (encapsulates business logic and validation)
         holiday.update({
-          name: dto.name,
-          date: dto.date,
-          type: dto.type,
-          description: dto.description ?? null,
-          is_recurring: dto.is_recurring ?? false,
+          name: command.name,
+          date: command.date,
+          type: command.type,
+          description: command.description ?? null,
+          is_recurring: command.is_recurring ?? false,
           updated_by: requestInfo?.user_name || null,
         });
 

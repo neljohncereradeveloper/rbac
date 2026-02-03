@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { UpdatePermissionDto } from '../../dto/permission/update-permission.dto';
+import { UpdatePermissionCommand } from '../../commands/permission/update-permission.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -30,7 +30,7 @@ export class UpdatePermissionUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     id: number,
@@ -70,10 +70,10 @@ export class UpdatePermissionUseCase {
 
         // Use domain model method to update (encapsulates business logic and validation)
         permission.update({
-          name: dto.name,
-          resource: dto.resource,
-          action: dto.action,
-          description: dto.description ?? null,
+          name: command.name,
+          resource: command.resource,
+          action: command.action,
+          description: command.description ?? null,
           updated_by: requestInfo?.user_name || null,
         });
 

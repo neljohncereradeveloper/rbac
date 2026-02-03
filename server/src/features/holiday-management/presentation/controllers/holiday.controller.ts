@@ -28,9 +28,9 @@ import {
   UpdateHolidayDto as UpdateHolidayPresentationDto,
 } from '../dto';
 import {
-  CreateHolidayDto,
-  UpdateHolidayDto,
-} from '../../application/dto';
+  CreateHolidayCommand,
+  UpdateHolidayCommand,
+} from '../../application/commands';
 import { Holiday } from '../../domain/models';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
@@ -55,15 +55,15 @@ export class HolidayController {
     @Req() request: Request,
   ): Promise<Holiday> {
     const requestInfo = createRequestInfo(request);
-    // Map presentation DTO to application DTO
-    const dto: CreateHolidayDto = {
+    // Map presentation DTO to application command
+    const command: CreateHolidayCommand = {
       name: presentationDto.name,
       date: presentationDto.date,
       type: presentationDto.type,
       description: presentationDto.description ?? null,
       is_recurring: presentationDto.is_recurring ?? false,
     };
-    return this.createHolidayUseCase.execute(dto, requestInfo);
+    return this.createHolidayUseCase.execute(command, requestInfo);
   }
 
   @Put(':id')
@@ -74,15 +74,15 @@ export class HolidayController {
     @Req() request: Request,
   ): Promise<Holiday | null> {
     const requestInfo = createRequestInfo(request);
-    // Map presentation DTO to application DTO
-    const dto: UpdateHolidayDto = {
+    // Map presentation DTO to application command
+    const command: UpdateHolidayCommand = {
       name: presentationDto.name,
       date: presentationDto.date,
       type: presentationDto.type,
       description: presentationDto.description ?? null,
       is_recurring: presentationDto.is_recurring ?? false,
     };
-    return this.updateHolidayUseCase.execute(id, dto, requestInfo);
+    return this.updateHolidayUseCase.execute(id, command, requestInfo);
   }
 
   @Delete(':id')

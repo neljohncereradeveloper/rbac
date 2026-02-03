@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { GrantPermissionsToUserDto } from '../../dto/user-permission/grant-permissions-to-user.dto';
+import { GrantPermissionsToUserCommand } from '../../commands/user-permission/grant-permissions-to-user.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,16 +29,16 @@ export class GrantPermissionsToUserUseCase {
     private readonly userPermissionRepository: UserPermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: GrantPermissionsToUserDto,
+    command: GrantPermissionsToUserCommand,
     requestInfo?: RequestInfo,
   ): Promise<void> {
     return this.transactionHelper.executeTransaction(
       USER_PERMISSION_ACTIONS.GRANT_TO_USER,
       async (manager) => {
-        if (!dto.permission_ids || dto.permission_ids.length === 0) {
+        if (!command.permission_ids || command.permission_ids.length === 0) {
           throw new UserPermissionBusinessException(
             'At least one permission ID is required.',
             HTTP_STATUS.BAD_REQUEST,
@@ -48,7 +48,7 @@ export class GrantPermissionsToUserUseCase {
         // Get current granted permission IDs (before state)
         const before_granted_permissions =
           await this.userPermissionRepository.findAllowedByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
         const before_granted_ids = before_granted_permissions.map(
@@ -71,15 +71,15 @@ export class GrantPermissionsToUserUseCase {
 
         // Grant permissions to user (is_allowed: true)
         await this.userPermissionRepository.grantToUser(
-          dto.user_id,
-          dto.permission_ids,
+          command.user_id,
+          command.permission_ids,
           manager,
         );
 
         // Get updated granted permission IDs (after state)
         const after_granted_permissions =
           await this.userPermissionRepository.findAllowedByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
         const after_granted_ids = after_granted_permissions.map(
@@ -100,7 +100,7 @@ export class GrantPermissionsToUserUseCase {
           action: USER_PERMISSION_ACTIONS.GRANT_TO_USER,
           entity: RBAC_DATABASE_MODELS.USER_PERMISSIONS,
           details: JSON.stringify({
-            user_id: dto.user_id,
+            user_id: command.user_id,
             changed_fields: changed_fields,
             is_allowed: true,
             granted_by: requestInfo?.user_name || '',

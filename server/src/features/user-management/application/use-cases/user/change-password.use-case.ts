@@ -13,7 +13,7 @@ import {
   USER_MANAGEMENT_TOKENS,
   USER_MANAGEMENT_DATABASE_MODELS,
 } from '@/features/user-management/domain/constants';
-import { ChangePasswordDto } from '../../dto/user/change-password.dto';
+import { ChangePasswordCommand } from '../../commands/user/change-password.command';
 
 @Injectable()
 export class ChangePasswordUseCase {
@@ -24,30 +24,30 @@ export class ChangePasswordUseCase {
     private readonly userRepository: UserRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: ChangePasswordDto,
+    command: ChangePasswordCommand,
     requestInfo?: RequestInfo,
   ): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
       USER_ACTIONS.CHANGE_PASSWORD,
       async (manager) => {
         // Validate user existence
-        const user = await this.userRepository.findById(dto.user_id, manager);
+        const user = await this.userRepository.findById(command.user_id, manager);
         if (!user) {
           throw new UserBusinessException(
-            `User with ID ${dto.user_id} not found.`,
+            `User with ID ${command.user_id} not found.`,
             HTTP_STATUS.NOT_FOUND,
           );
         }
 
         // Use domain method to change password (validates automatically)
-        user.changePassword(dto.new_password, requestInfo?.user_name || null);
+        user.changePassword(command.new_password, requestInfo?.user_name || null);
 
         // Update the user in the database
         const success = await this.userRepository.changePassword(
-          dto.user_id,
+          command.user_id,
           user,
           manager,
         );
@@ -63,11 +63,10 @@ export class ChangePasswordUseCase {
           action: USER_ACTIONS.CHANGE_PASSWORD,
           entity: USER_MANAGEMENT_DATABASE_MODELS.USERS,
           details: JSON.stringify({
-            user_id: dto.user_id,
+            user_id: command.user_id,
             username: user.username,
-            explanation: `Password changed for user with ID : ${dto.user_id} by USER : ${
-              requestInfo?.user_name || ''
-            }`,
+            explanation: `Password changed for user with ID : ${command.user_id} by USER : ${requestInfo?.user_name || ''
+              }`,
             change_password_by: requestInfo?.user_name || '',
             change_password_at: getPHDateTime(
               user.change_password_at || new Date(),

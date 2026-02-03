@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { AssignRolesToUserDto } from '../../dto/user-role/assign-roles-to-user.dto';
+import { AssignRolesToUserCommand } from '../../commands/user-role/assign-roles-to-user.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,16 +29,16 @@ export class AssignRolesToUserUseCase {
     private readonly userRoleRepository: UserRoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: AssignRolesToUserDto,
+    command: AssignRolesToUserCommand,
     requestInfo?: RequestInfo,
   ): Promise<void> {
     return this.transactionHelper.executeTransaction(
       USER_ROLE_ACTIONS.ASSIGN_TO_USER,
       async (manager) => {
-        if (!dto.role_ids || dto.role_ids.length === 0) {
+        if (!command.role_ids || command.role_ids.length === 0) {
           throw new UserRoleBusinessException(
             'At least one role ID is required.',
             HTTP_STATUS.BAD_REQUEST,
@@ -48,7 +48,7 @@ export class AssignRolesToUserUseCase {
         // Get current role IDs (before state)
         const before_role_ids =
           await this.userRoleRepository.findRoleIdsByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
 
@@ -68,16 +68,16 @@ export class AssignRolesToUserUseCase {
 
         // Assign roles to user
         await this.userRoleRepository.assignToUser(
-          dto.user_id,
-          dto.role_ids,
+          command.user_id,
+          command.role_ids,
           manager,
-          dto.replace,
+          command.replace,
         );
 
         // Get updated role IDs (after state)
         const after_role_ids =
           await this.userRoleRepository.findRoleIdsByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
 
@@ -95,9 +95,9 @@ export class AssignRolesToUserUseCase {
           action: USER_ROLE_ACTIONS.ASSIGN_TO_USER,
           entity: RBAC_DATABASE_MODELS.USER_ROLES,
           details: JSON.stringify({
-            user_id: dto.user_id,
+            user_id: command.user_id,
             changed_fields: changed_fields,
-            replace: dto.replace || false,
+            replace: command.replace || false,
             assigned_by: requestInfo?.user_name || '',
             assigned_at: getPHDateTime(new Date()),
           }),

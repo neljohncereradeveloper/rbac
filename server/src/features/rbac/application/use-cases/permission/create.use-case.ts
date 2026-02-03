@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { CreatePermissionDto } from '../../dto/permission/create-permission.dto';
+import { CreatePermissionCommand } from '../../commands/permission/create-permission.command';
 
 @Injectable()
 export class CreatePermissionUseCase {
@@ -25,10 +25,10 @@ export class CreatePermissionUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: CreatePermissionDto,
+    command: CreatePermissionCommand,
     requestInfo?: RequestInfo,
   ): Promise<Permission> {
     return this.transactionHelper.executeTransaction(
@@ -36,10 +36,10 @@ export class CreatePermissionUseCase {
       async (manager) => {
         // Create domain model (validates automatically)
         const new_permission = Permission.create({
-          name: dto.name,
-          resource: dto.resource,
-          action: dto.action,
-          description: dto.description ?? null,
+          name: command.name,
+          resource: command.resource,
+          action: command.action,
+          description: command.description ?? null,
           created_by: requestInfo?.user_name || null,
         });
 

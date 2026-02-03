@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { CreateRoleDto } from '../../dto/role/create-role.dto';
+import { CreateRoleCommand } from '../../commands/role/create-role.command';
 
 @Injectable()
 export class CreateRoleUseCase {
@@ -25,16 +25,16 @@ export class CreateRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
-  async execute(dto: CreateRoleDto, requestInfo?: RequestInfo): Promise<Role> {
+  async execute(command: CreateRoleCommand, requestInfo?: RequestInfo): Promise<Role> {
     return this.transactionHelper.executeTransaction(
       ROLE_ACTIONS.CREATE,
       async (manager) => {
         // Create domain model (validates automatically)
         const new_role = Role.create({
-          name: dto.name,
-          description: dto.description ?? null,
+          name: command.name,
+          description: command.description ?? null,
           created_by: requestInfo?.user_name || null,
         });
 
@@ -42,7 +42,7 @@ export class CreateRoleUseCase {
         const created_role = await this.roleRepository.create(
           new_role,
           manager,
-          dto.permission_ids,
+          command.permission_ids,
         );
 
         if (!created_role) {
@@ -62,7 +62,7 @@ export class CreateRoleUseCase {
             description: created_role.description,
             created_by: requestInfo?.user_name || '',
             created_at: getPHDateTime(created_role.created_at),
-            permission_ids: dto.permission_ids || [],
+            permission_ids: command.permission_ids || [],
           }),
           request_info: requestInfo || { user_name: '' },
         });

@@ -19,7 +19,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { RemovePermissionsFromRoleDto } from '../../dto/role-permission/remove-permissions-from-role.dto';
+import { RemovePermissionsFromRoleCommand } from '../../commands/role-permission/remove-permissions-from-role.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -37,25 +37,25 @@ export class RemovePermissionsFromRoleUseCase {
     private readonly rolePermissionRepository: RolePermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: RemovePermissionsFromRoleDto,
+    command: RemovePermissionsFromRoleCommand,
     requestInfo?: RequestInfo,
   ): Promise<void> {
     return this.transactionHelper.executeTransaction(
       ROLE_PERMISSION_ACTIONS.REMOVE_FROM_ROLE,
       async (manager) => {
         // Validate role existence
-        const role = await this.roleRepository.findById(dto.role_id, manager);
+        const role = await this.roleRepository.findById(command.role_id, manager);
         if (!role) {
           throw new RoleBusinessException(
-            `Role with ID ${dto.role_id} not found.`,
+            `Role with ID ${command.role_id} not found.`,
             HTTP_STATUS.NOT_FOUND,
           );
         }
 
-        if (!dto.permission_ids || dto.permission_ids.length === 0) {
+        if (!command.permission_ids || command.permission_ids.length === 0) {
           throw new RolePermissionBusinessException(
             'At least one permission ID is required.',
             HTTP_STATUS.BAD_REQUEST,
@@ -65,7 +65,7 @@ export class RemovePermissionsFromRoleUseCase {
         // Get current permission IDs (before state)
         const before_permission_ids =
           await this.rolePermissionRepository.findPermissionIdsByRoleId(
-            dto.role_id,
+            command.role_id,
             manager,
           );
 
@@ -85,15 +85,15 @@ export class RemovePermissionsFromRoleUseCase {
 
         // Remove permissions from role
         await this.rolePermissionRepository.removeFromRole(
-          dto.role_id,
-          dto.permission_ids,
+          command.role_id,
+          command.permission_ids,
           manager,
         );
 
         // Get updated permission IDs (after state)
         const after_permission_ids =
           await this.rolePermissionRepository.findPermissionIdsByRoleId(
-            dto.role_id,
+            command.role_id,
             manager,
           );
 
@@ -111,7 +111,7 @@ export class RemovePermissionsFromRoleUseCase {
           action: ROLE_PERMISSION_ACTIONS.REMOVE_FROM_ROLE,
           entity: RBAC_DATABASE_MODELS.ROLE_PERMISSIONS,
           details: JSON.stringify({
-            role_id: dto.role_id,
+            role_id: command.role_id,
             role_name: role.name,
             changed_fields: changed_fields,
             removed_by: requestInfo?.user_name || '',

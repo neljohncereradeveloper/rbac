@@ -24,7 +24,7 @@ src/
       application/
         use_cases/
           <model_name>/        # e.g. role/, permission/, user-role/
-        dto/
+        commands/
           <model_name>/        # e.g. role/, permission/, user-role/
       infrastructure/
         entities/             # persistence/ORM entities (DB-specific)
@@ -44,7 +44,7 @@ src/
 
 ## Application Layer Structure
 
-Organize use cases and DTOs by model/aggregate. Each model has its own folder in `use_cases/` and `dto/`:
+Organize use cases and commands by model/aggregate. Each model has its own folder in `use_cases/` and `commands/`:
 
 ```
 application/
@@ -78,34 +78,37 @@ application/
       remove-overrides.use-case.ts
       index.ts
     index.ts                   # Export all use cases
-  dto/
-    role/                      # Role-related DTOs
-      create-role.dto.ts
-      update-role.dto.ts
+  commands/
+    role/                      # Role-related commands (interfaces/types only)
+      create-role.command.ts
+      update-role.command.ts
       index.ts
-    permission/                # Permission-related DTOs
-      create-permission.dto.ts
-      update-permission.dto.ts
+    permission/                # Permission-related commands (interfaces/types only)
+      create-permission.command.ts
+      update-permission.command.ts
       index.ts
-    role-permission/           # Role-Permission DTOs
-      assign-permissions-to-role.dto.ts
+    role-permission/           # Role-Permission commands (interfaces/types only)
+      assign-permissions-to-role.command.ts
       index.ts
-    user-role/                 # User-Role DTOs
-      assign-roles-to-user.dto.ts
+    user-role/                 # User-Role commands (interfaces/types only)
+      assign-roles-to-user.command.ts
       index.ts
-    user-permission/           # User-Permission DTOs
-      grant-permissions-to-user.dto.ts
-      deny-permissions-to-user.dto.ts
+    user-permission/           # User-Permission commands (interfaces/types only)
+      grant-permissions-to-user.command.ts
+      deny-permissions-to-user.command.ts
       index.ts
-    index.ts                   # Export all DTOs
+    index.ts                   # Export all commands
 ```
 
-- **Each model/aggregate has its own folder** in both `use_cases/` and `dto/`.
+- **Each model/aggregate has its own folder** in both `use_cases/` and `commands/`.
 - **Group related operations** together (e.g., all role operations in `use_cases/role/`).
 - **Use case file names exclude the model name** since they're already in a model-specific folder (e.g., `create.use-case.ts` in `role/`, not `create-role.use-case.ts`).
-- **DTO file names include the model name** for clarity when importing (e.g., `create-role.dto.ts`).
-- **Use kebab-case** for file names (e.g., `create.use-case.ts`, `assign-permissions-to-role.dto.ts`).
+- **Command file names include the model name** for clarity when importing (e.g., `create-role.command.ts`).
+- **Use kebab-case** for file names (e.g., `create.use-case.ts`, `assign-permissions-to-role.command.ts`).
+- **Commands are TypeScript interfaces/types only** - no validation decorators (validation belongs in presentation layer DTOs).
 - **Include index.ts** in each folder to export its contents, and a root index.ts to export all.
+
+**Note:** Application layer uses **commands** (interfaces/types), while presentation layer uses **DTOs** (classes with validation decorators). Controllers map presentation DTOs to application commands before calling use cases.
 
 ## Feature-Specific Tokens and Database Models
 
@@ -253,7 +256,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from "@/features/rbac/domain/constants";
-import { CreateRoleDto } from "../dto/role/create-role.dto";
+import { CreateRoleCommand } from "../commands/role/create-role.command";
 
 @Injectable()
 export class CreateRoleUseCase {
@@ -266,14 +269,17 @@ export class CreateRoleUseCase {
     private readonly activityLogRepository: ActivityLogRepository
   ) {}
 
-  async execute(dto: CreateRoleDto, requestInfo?: RequestInfo): Promise<Role> {
+  async execute(
+    command: CreateRoleCommand,
+    requestInfo?: RequestInfo
+  ): Promise<Role> {
     return this.transactionHelper.executeTransaction(
       ROLE_ACTIONS.CREATE,
       async (manager) => {
         // Create domain model (validates automatically)
         const new_role = Role.create({
-          name: dto.name,
-          description: dto.description ?? null,
+          name: command.name,
+          description: command.description ?? null,
           created_by: requestInfo?.user_name || null,
         });
 
@@ -281,7 +287,7 @@ export class CreateRoleUseCase {
         const created_role = await this.roleRepository.create(
           new_role,
           manager,
-          dto.permission_ids
+          command.permission_ids
         );
 
         if (!created_role) {
@@ -323,7 +329,7 @@ export class CreateRoleUseCase {
 - Throw domain exceptions (`<Model>BusinessException`) with appropriate HTTP status codes:
   - `HTTP_STATUS.INTERNAL_SERVER_ERROR` if creation fails
 - Pass `RequestInfo` for audit trail (user_name, ip_address, etc.).
-- Include optional fields like `permission_ids` in DTO if creating with relationships.
+- Include optional fields like `permission_ids` in command if creating with relationships.
 
 ## Use Case Pattern: Restore
 
@@ -541,7 +547,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from "@/features/rbac/domain/constants";
-import { UpdateRoleDto } from "../dto/role/update-role.dto";
+import { UpdateRoleCommand } from "../commands/role/update-role.command";
 import {
   getChangedFields,
   extractEntityState,
@@ -561,7 +567,7 @@ export class UpdateRoleUseCase {
 
   async execute(
     id: number,
-    dto: UpdateRoleDto,
+    command: UpdateRoleCommand,
     requestInfo?: RequestInfo
   ): Promise<Role | null> {
     return this.transactionHelper.executeTransaction(
@@ -592,8 +598,8 @@ export class UpdateRoleUseCase {
 
         // Use domain model method to update (encapsulates business logic and validation)
         role.update({
-          name: dto.name,
-          description: dto.description ?? null,
+          name: command.name,
+          description: command.description ?? null,
           updated_by: requestInfo?.user_name || null,
         });
 
@@ -946,7 +952,7 @@ updated_at: Date;
 - One folder per feature; name folders in snake_case (e.g. `user_management`, `order_processing`).
 - **Domain is independent.** The domain layer must have no dependencies on application, infrastructure, or external libraries. Domain contains only models, constants, exceptions, value objects, repository interfaces, and events. Domain may depend on `@/core` (e.g. `DomainException`) and `@/core/domain/constants` (e.g. `HTTP_STATUS`) for exceptions only.
 - **Constants for each model live in `domain/constants/`.** Put model-specific constants (e.g. status codes, validation limits, default values) in the feature’s domain—one file per model (e.g. `barangay-constants.ts`) or grouped under constants. Shared constants used by more than one feature go in `core/domain/constants/`.
-- **Use cases and DTOs are organized by model.** Each model/aggregate has its own folder in `application/use_cases/` and `application/dto/`. Group related operations together (e.g., all role operations in `use_cases/role/`, all role DTOs in `dto/role/`).
+- **Use cases and commands are organized by model.** Each model/aggregate has its own folder in `application/use_cases/` and `application/commands/`. Group related operations together (e.g., all role operations in `use_cases/role/`, all role commands in `commands/role/`). Commands are simple TypeScript interfaces/types without validation decorators - validation belongs in presentation layer DTOs.
 - **Dependencies live in infrastructure.** All framework, database, ORM, and external-service dependencies belong in the infrastructure layer. Domain models are mapped to infrastructure entities (e.g. ORM/DB entities) via mappers.
 - **If it’s used in more than one feature, it belongs in `core/`.** Do not duplicate shared logic across features—extract to core and import from there.
 - **Reusable utilities for all features live in `core/utils/`.** Put cross-feature helpers (formatting, validation, date/time, string helpers, etc.) in `core/utils/`. Feature-specific utilities stay in the feature; only shared ones go in core.

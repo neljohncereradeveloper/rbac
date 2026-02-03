@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { RemovePermissionsFromUserDto } from '../../dto/user-permission/remove-permissions-from-user.dto';
+import { RemovePermissionsFromUserCommand } from '../../commands/user-permission/remove-permissions-from-user.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,16 +29,16 @@ export class RemovePermissionsFromUserUseCase {
     private readonly userPermissionRepository: UserPermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: RemovePermissionsFromUserDto,
+    command: RemovePermissionsFromUserCommand,
     requestInfo?: RequestInfo,
   ): Promise<void> {
     return this.transactionHelper.executeTransaction(
       USER_PERMISSION_ACTIONS.REMOVE_FROM_USER,
       async (manager) => {
-        if (!dto.permission_ids || dto.permission_ids.length === 0) {
+        if (!command.permission_ids || command.permission_ids.length === 0) {
           throw new UserPermissionBusinessException(
             'At least one permission ID is required.',
             HTTP_STATUS.BAD_REQUEST,
@@ -48,7 +48,7 @@ export class RemovePermissionsFromUserUseCase {
         // Get current user permission overrides (before state)
         const before_user_permissions =
           await this.userPermissionRepository.findByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
         const before_permission_ids = before_user_permissions.map(
@@ -71,15 +71,15 @@ export class RemovePermissionsFromUserUseCase {
 
         // Remove permission overrides from user
         await this.userPermissionRepository.removeFromUser(
-          dto.user_id,
-          dto.permission_ids,
+          command.user_id,
+          command.permission_ids,
           manager,
         );
 
         // Get updated user permission overrides (after state)
         const after_user_permissions =
           await this.userPermissionRepository.findByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
         const after_permission_ids = after_user_permissions.map(
@@ -100,7 +100,7 @@ export class RemovePermissionsFromUserUseCase {
           action: USER_PERMISSION_ACTIONS.REMOVE_FROM_USER,
           entity: RBAC_DATABASE_MODELS.USER_PERMISSIONS,
           details: JSON.stringify({
-            user_id: dto.user_id,
+            user_id: command.user_id,
             changed_fields: changed_fields,
             removed_by: requestInfo?.user_name || '',
             removed_at: getPHDateTime(new Date()),

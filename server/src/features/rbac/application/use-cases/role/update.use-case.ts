@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { UpdateRoleDto } from '../../dto/role/update-role.dto';
+import { UpdateRoleCommand } from '../../commands/role/update-role.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -30,11 +30,11 @@ export class UpdateRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     id: number,
-    dto: UpdateRoleDto,
+    command: UpdateRoleCommand,
     requestInfo?: RequestInfo,
   ): Promise<Role | null> {
     return this.transactionHelper.executeTransaction(
@@ -65,8 +65,8 @@ export class UpdateRoleUseCase {
 
         // Use domain model method to update (encapsulates business logic and validation)
         role.update({
-          name: dto.name,
-          description: dto.description ?? null,
+          name: command.name,
+          description: command.description ?? null,
           updated_by: requestInfo?.user_name || null,
         });
 

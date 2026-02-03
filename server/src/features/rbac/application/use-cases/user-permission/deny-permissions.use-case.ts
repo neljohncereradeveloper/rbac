@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { DenyPermissionsToUserDto } from '../../dto/user-permission/deny-permissions-to-user.dto';
+import { DenyPermissionsToUserCommand } from '../../commands/user-permission/deny-permissions-to-user.command';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,16 +29,16 @@ export class DenyPermissionsToUserUseCase {
     private readonly userPermissionRepository: UserPermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
-    dto: DenyPermissionsToUserDto,
+    command: DenyPermissionsToUserCommand,
     requestInfo?: RequestInfo,
   ): Promise<void> {
     return this.transactionHelper.executeTransaction(
       USER_PERMISSION_ACTIONS.DENY_TO_USER,
       async (manager) => {
-        if (!dto.permission_ids || dto.permission_ids.length === 0) {
+        if (!command.permission_ids || command.permission_ids.length === 0) {
           throw new UserPermissionBusinessException(
             'At least one permission ID is required.',
             HTTP_STATUS.BAD_REQUEST,
@@ -48,7 +48,7 @@ export class DenyPermissionsToUserUseCase {
         // Get current denied permission IDs (before state)
         const before_denied_permissions =
           await this.userPermissionRepository.findDeniedByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
         const before_denied_ids = before_denied_permissions.map(
@@ -71,15 +71,15 @@ export class DenyPermissionsToUserUseCase {
 
         // Deny permissions to user (is_allowed: false)
         await this.userPermissionRepository.denyToUser(
-          dto.user_id,
-          dto.permission_ids,
+          command.user_id,
+          command.permission_ids,
           manager,
         );
 
         // Get updated denied permission IDs (after state)
         const after_denied_permissions =
           await this.userPermissionRepository.findDeniedByUserId(
-            dto.user_id,
+            command.user_id,
             manager,
           );
         const after_denied_ids = after_denied_permissions.map(
@@ -100,7 +100,7 @@ export class DenyPermissionsToUserUseCase {
           action: USER_PERMISSION_ACTIONS.DENY_TO_USER,
           entity: RBAC_DATABASE_MODELS.USER_PERMISSIONS,
           details: JSON.stringify({
-            user_id: dto.user_id,
+            user_id: command.user_id,
             changed_fields: changed_fields,
             is_allowed: false,
             denied_by: requestInfo?.user_name || '',
