@@ -1,0 +1,123 @@
+@token = 
+@host = http://localhost:3000/api/v1
+
+##########################################
+# USERS
+##########################################
+
+###
+# CREATE USER
+POST {{host}}/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "username": "johndoe",
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123!",
+  "first_name": "John",
+  "middle_name": "Michael",
+  "last_name": "Doe",
+  "phone": "+1234567890",
+  "date_of_birth": "1990-01-15",
+  "is_active": true,
+  "is_email_verified": false
+}
+
+###
+# CREATE USER - MINIMAL FIELDS
+POST {{host}}/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "username": "janedoe",
+  "email": "jane.doe@example.com",
+  "password": "SecurePassword123!"
+}
+
+###
+# GET USER BY ID
+GET {{host}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED USERS
+GET {{host}}/users?term=&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED USERS - WITH SEARCH TERM
+GET {{host}}/users?term=john&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED USERS - ARCHIVED ONLY
+GET {{host}}/users?term=&page=1&limit=10&is_archived=true
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET USERS COMBOBOX
+GET {{host}}/users/combobox/list
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# UPDATE USER
+PUT {{host}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "email": "john.updated@example.com",
+  "first_name": "John",
+  "middle_name": "Michael",
+  "last_name": "Doe",
+  "phone": "+1234567890",
+  "date_of_birth": "1990-01-15",
+  "is_active": true,
+  "is_email_verified": true
+}
+
+###
+# UPDATE USER - PARTIAL UPDATE
+PUT {{host}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "email": "john.newemail@example.com",
+  "is_active": false
+}
+
+###
+# CHANGE USER PASSWORD
+POST {{host}}/users/1/change-password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "new_password": "NewSecurePassword123!"
+}
+
+###
+# VERIFY USER EMAIL
+POST {{host}}/users/1/verify-email
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# ARCHIVE USER
+DELETE {{host}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# RESTORE USER
+POST {{host}}/users/1/restore
+Content-Type: application/json
+Authorization: Bearer {{token}}

@@ -1,0 +1,316 @@
+@token = 
+@host = http://localhost:3000/api/v1
+
+##########################################
+# ROLES
+##########################################
+
+###
+# CREATE ROLE
+POST {{host}}/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Admin",
+  "description": "Administrator role with full access",
+  "permission_ids": [1, 2, 3]
+}
+
+###
+# CREATE ROLE - WITHOUT PERMISSIONS
+POST {{host}}/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Viewer",
+  "description": "Read-only access role"
+}
+
+###
+# GET ROLE BY ID
+GET {{host}}/roles/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED ROLES
+GET {{host}}/roles?term=&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED ROLES - WITH SEARCH TERM
+GET {{host}}/roles?term=Admin&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED ROLES - ARCHIVED ONLY
+GET {{host}}/roles?term=&page=1&limit=10&is_archived=true
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET ROLES COMBOBOX
+GET {{host}}/roles/combobox/list
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# UPDATE ROLE
+PUT {{host}}/roles/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Updated Admin",
+  "description": "Updated administrator role"
+}
+
+###
+# UPDATE ROLE - PARTIAL UPDATE
+PUT {{host}}/roles/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Super Admin"
+}
+
+###
+# ARCHIVE ROLE
+DELETE {{host}}/roles/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# RESTORE ROLE
+POST {{host}}/roles/1/restore
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+##########################################
+# PERMISSIONS
+##########################################
+
+###
+# CREATE PERMISSION
+POST {{host}}/permissions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Create User",
+  "resource": "users",
+  "action": "create",
+  "description": "Permission to create new users"
+}
+
+###
+# CREATE PERMISSION - WITHOUT DESCRIPTION
+POST {{host}}/permissions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Update User",
+  "resource": "users",
+  "action": "update"
+}
+
+###
+# GET PERMISSION BY ID
+GET {{host}}/permissions/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED PERMISSIONS
+GET {{host}}/permissions?term=&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED PERMISSIONS - WITH SEARCH TERM
+GET {{host}}/permissions?term=Create&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED PERMISSIONS - ARCHIVED ONLY
+GET {{host}}/permissions?term=&page=1&limit=10&is_archived=true
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PERMISSIONS COMBOBOX
+GET {{host}}/permissions/combobox/list
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# UPDATE PERMISSION
+PUT {{host}}/permissions/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Update User",
+  "resource": "users",
+  "action": "update",
+  "description": "Permission to update users"
+}
+
+###
+# UPDATE PERMISSION - PARTIAL UPDATE
+PUT {{host}}/permissions/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Edit User"
+}
+
+###
+# ARCHIVE PERMISSION
+DELETE {{host}}/permissions/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# RESTORE PERMISSION
+POST {{host}}/permissions/1/restore
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+##########################################
+# ROLE-PERMISSIONS
+##########################################
+
+###
+# ASSIGN PERMISSIONS TO ROLE
+POST {{host}}/roles/1/permissions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [1, 2, 3],
+  "replace": false
+}
+
+###
+# ASSIGN PERMISSIONS TO ROLE - REPLACE EXISTING
+POST {{host}}/roles/1/permissions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [4, 5, 6],
+  "replace": true
+}
+
+###
+# REMOVE PERMISSIONS FROM ROLE
+DELETE {{host}}/roles/1/permissions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [1, 2]
+}
+
+##########################################
+# USER-ROLES
+##########################################
+
+###
+# ASSIGN ROLES TO USER
+POST {{host}}/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "role_ids": [1, 2],
+  "replace": false
+}
+
+###
+# ASSIGN ROLES TO USER - REPLACE EXISTING
+POST {{host}}/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "role_ids": [3],
+  "replace": true
+}
+
+###
+# REMOVE ROLES FROM USER
+DELETE {{host}}/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "role_ids": [1]
+}
+
+##########################################
+# USER-PERMISSIONS
+##########################################
+
+###
+# GRANT PERMISSIONS TO USER
+POST {{host}}/users/1/permissions/grant
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [1, 2, 3],
+  "replace": false
+}
+
+###
+# GRANT PERMISSIONS TO USER - REPLACE EXISTING
+POST {{host}}/users/1/permissions/grant
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [4, 5],
+  "replace": true
+}
+
+###
+# DENY PERMISSIONS TO USER
+POST {{host}}/users/1/permissions/deny
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [1, 2],
+  "replace": false
+}
+
+###
+# DENY PERMISSIONS TO USER - REPLACE EXISTING
+POST {{host}}/users/1/permissions/deny
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [3, 4],
+  "replace": true
+}
+
+###
+# REMOVE PERMISSION OVERRIDES FROM USER
+DELETE {{host}}/users/1/permissions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "permission_ids": [1, 2]
+}

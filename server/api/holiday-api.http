@@ -1,0 +1,109 @@
+@token = 
+@host = http://localhost:3000/api/v1
+
+##########################################
+# HOLIDAYS
+##########################################
+
+###
+# CREATE HOLIDAY
+POST {{host}}/holidays
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "New Year's Day",
+  "date": "2025-01-01",
+  "type": "regular_holiday",
+  "description": "New Year celebration",
+  "is_recurring": true
+}
+
+###
+# CREATE HOLIDAY - WITHOUT DESCRIPTION AND RECURRING
+POST {{host}}/holidays
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Independence Day",
+  "date": "2024-06-12",
+  "type": "regular_holiday"
+}
+
+###
+# GET HOLIDAY BY ID
+GET {{host}}/holidays/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED HOLIDAYS
+GET {{host}}/holidays?term=&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED HOLIDAYS - WITH SEARCH TERM
+GET {{host}}/holidays?term=New Year&page=1&limit=10&is_archived=false
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET PAGINATED HOLIDAYS - ARCHIVED ONLY
+GET {{host}}/holidays?term=&page=1&limit=10&is_archived=true
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# GET HOLIDAYS COMBOBOX
+GET {{host}}/holidays/combobox
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# UPDATE HOLIDAY
+PUT {{host}}/holidays/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "New Year's Day Updated",
+  "date": "2025-01-01",
+  "type": "regular_holiday",
+  "description": "Updated New Year celebration description",
+  "is_recurring": true
+}
+
+###
+# UPDATE HOLIDAY - PARTIAL UPDATE
+PUT {{host}}/holidays/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "New Year's Day"
+}
+
+###
+# UPDATE HOLIDAY - UPDATE DATE ONLY
+PUT {{host}}/holidays/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "date": "2025-01-02"
+}
+
+###
+# ARCHIVE HOLIDAY
+DELETE {{host}}/holidays/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# RESTORE HOLIDAY
+POST {{host}}/holidays/1/restore
+Content-Type: application/json
+Authorization: Bearer {{token}}
+

@@ -17,6 +17,7 @@ import { getPHDateTime } from '@/core/utils/date.util';
  * - Roles: create, read, update, archive, restore, assign_permissions, remove_permissions, combobox, paginated_list
  * - Permissions: create, read, update, archive, restore, combobox, paginated_list
  * - Users: create, read, update, archive, restore, change_password, verify_email, combobox, paginated_list
+ * - Holidays: create, read, update, archive, restore, combobox, paginated_list
  *
  * NOTE:
  * The seed is idempotent - running it multiple times will not create duplicates.
@@ -228,6 +229,49 @@ export class SeedPermissions {
         resource: 'user_permissions',
         action: 'remove_overrides',
         description: 'Remove permission overrides from users',
+      },
+      // Holiday permissions
+      {
+        name: 'holidays:create',
+        resource: 'holidays',
+        action: 'create',
+        description: 'Create new holidays',
+      },
+      {
+        name: 'holidays:read',
+        resource: 'holidays',
+        action: 'read',
+        description: 'View holiday details',
+      },
+      {
+        name: 'holidays:update',
+        resource: 'holidays',
+        action: 'update',
+        description: 'Update holiday information',
+      },
+      {
+        name: 'holidays:archive',
+        resource: 'holidays',
+        action: 'archive',
+        description: 'Archive (soft delete) holidays',
+      },
+      {
+        name: 'holidays:restore',
+        resource: 'holidays',
+        action: 'restore',
+        description: 'Restore archived holidays',
+      },
+      {
+        name: 'holidays:combobox',
+        resource: 'holidays',
+        action: 'combobox',
+        description: 'Get holidays list for dropdowns',
+      },
+      {
+        name: 'holidays:paginated_list',
+        resource: 'holidays',
+        action: 'paginated_list',
+        description: 'Get paginated list of holidays',
       },
     ];
 

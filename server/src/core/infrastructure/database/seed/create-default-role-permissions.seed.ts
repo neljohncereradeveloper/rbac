@@ -14,9 +14,9 @@ import { getPHDateTime } from '@/core/utils/date.util';
  *
  * USAGE:
  * This seed creates role-permission links:
- * - Admin: All permissions
- * - Editor: Create, read, update permissions (no archive/restore)
- * - Viewer: Read-only permissions (read, combobox, paginated_list)
+ * - Admin: All permissions (roles, permissions, users, user_roles, user_permissions, holidays)
+ * - Editor: Create, read, update permissions (no archive/restore) for roles, permissions, users, holidays
+ * - Viewer: Read-only permissions (read, combobox, paginated_list) for roles, permissions, users, holidays
  *
  * NOTE:
  * The seed is idempotent - running it multiple times will not create duplicates.
@@ -86,6 +86,14 @@ export class SeedRolePermissions {
         'user_permissions:grant_permissions',
         'user_permissions:deny_permissions',
         'user_permissions:remove_overrides',
+        // All holiday permissions
+        'holidays:create',
+        'holidays:read',
+        'holidays:update',
+        'holidays:archive',
+        'holidays:restore',
+        'holidays:combobox',
+        'holidays:paginated_list',
       ],
       Editor: [
         // Role permissions (no archive/restore)
@@ -106,6 +114,12 @@ export class SeedRolePermissions {
         'users:update',
         'users:combobox',
         'users:paginated_list',
+        // Holiday permissions (no archive/restore)
+        'holidays:create',
+        'holidays:read',
+        'holidays:update',
+        'holidays:combobox',
+        'holidays:paginated_list',
       ],
       Viewer: [
         // Read-only role permissions
@@ -120,6 +134,10 @@ export class SeedRolePermissions {
         'users:read',
         'users:combobox',
         'users:paginated_list',
+        // Read-only holiday permissions
+        'holidays:read',
+        'holidays:combobox',
+        'holidays:paginated_list',
       ],
     };
 
