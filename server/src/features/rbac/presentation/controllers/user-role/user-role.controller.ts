@@ -8,9 +8,17 @@ import {
   HttpStatus,
   Version,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { RequestInfo, createRequestInfo } from '@/core/utils/request-info.util';
+import {
+  RolesGuard,
+  PermissionsGuard,
+  RequireRoles,
+  RequirePermissions,
+} from '@/features/auth';
+import { ROLES, PERMISSIONS } from '@/core/domain/constants';
 import {
   AssignRolesToUserUseCase,
   RemoveRolesFromUserUseCase,
@@ -25,6 +33,7 @@ import {
 } from '../../../application/commands';
 
 @Controller('users/:userId/roles')
+@UseGuards(RolesGuard, PermissionsGuard)
 export class UserRoleController {
   constructor(
     private readonly assignRolesToUserUseCase: AssignRolesToUserUseCase,
@@ -53,6 +62,8 @@ export class UserRoleController {
   @Delete()
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.USER_ROLES.REMOVE_ROLES)
   async removeRoles(
     @Param('userId') userId: number,
     @Body() presentationDto: RemoveRolesFromUserPresentationDto,

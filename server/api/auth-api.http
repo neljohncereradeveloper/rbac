@@ -1,0 +1,46 @@
+@token = 
+@host = http://localhost:3000/api/v1
+
+##########################################
+# AUTHENTICATION
+##########################################
+
+###
+# LOGIN - WITH USERNAME
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username_or_email": "admin",
+  "password": "password123"
+}
+
+###
+# LOGIN - WITH EMAIL
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username_or_email": "admin@example.com",
+  "password": "password123"
+}
+
+###
+# LOGIN - INVALID CREDENTIALS
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username_or_email": "admin",
+  "password": "wrongpassword"
+}
+
+###
+# LOGIN - USER NOT FOUND
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username_or_email": "nonexistent",
+  "password": "password123"
+}

@@ -3,6 +3,7 @@ import { TOKENS_CORE } from '@/core/domain/constants';
 import { ActivityLogRepository } from '@/core/domain/repositories';
 import { RequestInfo } from '@/core/utils/request-info.util';
 import { getPHDateTime } from '@/core/utils/date.util';
+import { PasswordUtil } from '@/core/utils/password.util';
 import { ActivityLog } from '@/core/domain/models';
 import { TransactionPort } from '@/core/domain/ports';
 import { HTTP_STATUS } from '@/core/domain/constants';
@@ -42,8 +43,11 @@ export class ChangePasswordUseCase {
           );
         }
 
+        // Hash new password before changing
+        const hashedPassword = await PasswordUtil.hash(command.new_password);
+
         // Use domain method to change password (validates automatically)
-        user.changePassword(command.new_password, requestInfo?.user_name || null);
+        user.changePassword(hashedPassword, requestInfo?.user_name || null);
 
         // Update the user in the database
         const success = await this.userRepository.changePassword(

@@ -11,9 +11,17 @@ import {
   HttpStatus,
   Version,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { RequestInfo, createRequestInfo } from '@/core/utils/request-info.util';
+import {
+  RolesGuard,
+  PermissionsGuard,
+  RequireRoles,
+  RequirePermissions,
+} from '@/features/auth';
+import { ROLES, PERMISSIONS } from '@/core/domain/constants';
 import {
   CreateRoleUseCase,
   UpdateRoleUseCase,
@@ -36,6 +44,7 @@ import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
 
 @Controller('roles')
+@UseGuards(RolesGuard, PermissionsGuard)
 export class RoleController {
   constructor(
     private readonly createRoleUseCase: CreateRoleUseCase,
@@ -50,6 +59,8 @@ export class RoleController {
   @Post()
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+  @RequirePermissions(PERMISSIONS.ROLES.CREATE)
   async create(
     @Body() presentationDto: CreateRolePresentationDto,
     @Req() request: Request,
@@ -66,6 +77,8 @@ export class RoleController {
 
   @Put(':id')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+  @RequirePermissions(PERMISSIONS.ROLES.UPDATE)
   async update(
     @Param('id') id: number,
     @Body() presentationDto: UpdateRolePresentationDto,
@@ -95,6 +108,8 @@ export class RoleController {
   @Post(':id/restore')
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.ROLES.RESTORE)
   async restore(
     @Param('id') id: number,
     @Req() request: Request,
@@ -106,6 +121,8 @@ export class RoleController {
 
   @Get(':id')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.ROLES.READ)
   async getById(@Param('id') id: number): Promise<Role> {
     return this.getRoleByIdUseCase.execute(id);
   }
@@ -125,6 +142,8 @@ export class RoleController {
 
   @Get('combobox/list')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.ROLES.COMBOBOX)
   async getCombobox(): Promise<{ value: string; label: string }[]> {
     return this.comboboxRoleUseCase.execute();
   }

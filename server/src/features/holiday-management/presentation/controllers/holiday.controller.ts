@@ -11,9 +11,17 @@ import {
   HttpStatus,
   Version,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
+import {
+  RolesGuard,
+  PermissionsGuard,
+  RequireRoles,
+  RequirePermissions,
+} from '@/features/auth';
+import { ROLES, PERMISSIONS } from '@/core/domain/constants';
 import {
   CreateHolidayUseCase,
   UpdateHolidayUseCase,
@@ -36,6 +44,7 @@ import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
 
 @Controller('holidays')
+@UseGuards(RolesGuard, PermissionsGuard)
 export class HolidayController {
   constructor(
     private readonly createHolidayUseCase: CreateHolidayUseCase,
@@ -50,6 +59,8 @@ export class HolidayController {
   @Post()
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+  @RequirePermissions(PERMISSIONS.HOLIDAYS.CREATE)
   async create(
     @Body() presentationDto: CreateHolidayPresentationDto,
     @Req() request: Request,
@@ -68,6 +79,8 @@ export class HolidayController {
 
   @Put(':id')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+  @RequirePermissions(PERMISSIONS.HOLIDAYS.UPDATE)
   async update(
     @Param('id') id: number,
     @Body() presentationDto: UpdateHolidayPresentationDto,
@@ -88,6 +101,8 @@ export class HolidayController {
   @Delete(':id')
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.HOLIDAYS.ARCHIVE)
   async archive(
     @Param('id') id: number,
     @Req() request: Request,
@@ -100,6 +115,8 @@ export class HolidayController {
   @Post(':id/restore')
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.HOLIDAYS.RESTORE)
   async restore(
     @Param('id') id: number,
     @Req() request: Request,
@@ -111,12 +128,16 @@ export class HolidayController {
 
   @Get(':id')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.HOLIDAYS.READ)
   async getById(@Param('id') id: number): Promise<Holiday> {
     return this.getHolidayByIdUseCase.execute(id);
   }
 
   @Get()
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.HOLIDAYS.PAGINATED_LIST)
   async getPaginated(
     @Query() query: PaginationQueryDto
   ): Promise<PaginatedResult<Holiday>> {
@@ -130,6 +151,8 @@ export class HolidayController {
 
   @Get('combobox')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.HOLIDAYS.COMBOBOX)
   async getCombobox(): Promise<{ value: string; label: string }[]> {
     return this.comboboxHolidayUseCase.execute();
   }

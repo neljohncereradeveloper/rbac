@@ -3,6 +3,7 @@ import { TOKENS_CORE } from '@/core/domain/constants';
 import { ActivityLogRepository } from '@/core/domain/repositories';
 import { RequestInfo } from '@/core/utils/request-info.util';
 import { getPHDateTime } from '@/core/utils/date.util';
+import { PasswordUtil } from '@/core/utils/password.util';
 import { ActivityLog } from '@/core/domain/models';
 import { TransactionPort } from '@/core/domain/ports';
 import { HTTP_STATUS } from '@/core/domain/constants';
@@ -31,11 +32,14 @@ export class CreateUserUseCase {
     return this.transactionHelper.executeTransaction(
       USER_ACTIONS.CREATE,
       async (manager) => {
+        // Hash password before creating user
+        const hashedPassword = await PasswordUtil.hash(command.password);
+
         // Create domain model (validates automatically)
         const new_user = User.create({
           username: command.username,
           email: command.email,
-          password: command.password,
+          password: hashedPassword,
           first_name: command.first_name ?? null,
           middle_name: command.middle_name ?? null,
           last_name: command.last_name ?? null,

@@ -114,6 +114,12 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
     RemovePermissionsFromUserUseCase,
   ],
   exports: [
+    // Export repository tokens for use in other modules (e.g., AuthModule)
+    RBAC_TOKENS.ROLE,
+    RBAC_TOKENS.PERMISSION,
+    RBAC_TOKENS.ROLE_PERMISSION,
+    RBAC_TOKENS.USER_ROLE,
+    RBAC_TOKENS.USER_PERMISSION,
     // Export use cases for use in controllers or other modules
     // Role use cases
     CreateRoleUseCase,

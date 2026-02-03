@@ -2,6 +2,7 @@ import { EntityManager } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { RoleEntity } from '@/features/rbac/infrastructure/database/entities/role.entity';
 import { getPHDateTime } from '@/core/utils/date.util';
+import { ROLES } from '@/core/domain/constants';
 
 /**
  * SeedRoles
@@ -45,17 +46,17 @@ export class SeedRoles {
      */
     const roles = [
       {
-        name: 'Admin',
+        name: ROLES.ADMIN,
         description:
           'Administrator role with full access to all resources and permissions',
       },
       {
-        name: 'Editor',
+        name: ROLES.EDITOR,
         description:
           'Editor role with create, read, and update access (no delete/archive)',
       },
       {
-        name: 'Viewer',
+        name: ROLES.VIEWER,
         description: 'Viewer role with read-only access to resources',
       },
     ];

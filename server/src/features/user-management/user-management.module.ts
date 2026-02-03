@@ -47,6 +47,8 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
     ComboboxUserUseCase,
   ],
   exports: [
+    // Export repository token for use in other modules (e.g., AuthModule)
+    USER_MANAGEMENT_TOKENS.USER,
     // Export use cases for use in controllers or other modules
     CreateUserUseCase,
     UpdateUserUseCase,

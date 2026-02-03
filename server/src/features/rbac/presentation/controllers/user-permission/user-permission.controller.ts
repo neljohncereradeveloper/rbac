@@ -8,9 +8,17 @@ import {
   HttpStatus,
   Version,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { RequestInfo, createRequestInfo } from '@/core/utils/request-info.util';
+import {
+  RolesGuard,
+  PermissionsGuard,
+  RequireRoles,
+  RequirePermissions,
+} from '@/features/auth';
+import { ROLES, PERMISSIONS } from '@/core/domain/constants';
 import {
   GrantPermissionsToUserUseCase,
   DenyPermissionsToUserUseCase,
@@ -28,6 +36,7 @@ import {
 } from '../../../application/commands';
 
 @Controller('users/:userId/permissions')
+@UseGuards(RolesGuard, PermissionsGuard)
 export class UserPermissionController {
   constructor(
     private readonly grantPermissionsToUserUseCase: GrantPermissionsToUserUseCase,
@@ -57,6 +66,8 @@ export class UserPermissionController {
   @Post('deny')
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.USER_PERMISSIONS.DENY_PERMISSIONS)
   async denyPermissions(
     @Param('userId') userId: number,
     @Body() presentationDto: DenyPermissionsToUserPresentationDto,
@@ -76,6 +87,8 @@ export class UserPermissionController {
   @Delete()
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.USER_PERMISSIONS.REMOVE_OVERRIDES)
   async removeOverrides(
     @Param('userId') userId: number,
     @Body() presentationDto: RemovePermissionsFromUserPresentationDto,

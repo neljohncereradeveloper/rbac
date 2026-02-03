@@ -8,9 +8,17 @@ import {
   HttpStatus,
   Version,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { RequestInfo, createRequestInfo } from '@/core/utils/request-info.util';
+import {
+  RolesGuard,
+  PermissionsGuard,
+  RequireRoles,
+  RequirePermissions,
+} from '@/features/auth';
+import { ROLES, PERMISSIONS } from '@/core/domain/constants';
 import {
   AssignPermissionsToRoleUseCase,
   RemovePermissionsFromRoleUseCase,
@@ -25,6 +33,7 @@ import {
 } from '../../../application/commands';
 
 @Controller('roles/:roleId/permissions')
+@UseGuards(RolesGuard, PermissionsGuard)
 export class RolePermissionController {
   constructor(
     private readonly assignPermissionsToRoleUseCase: AssignPermissionsToRoleUseCase,
@@ -34,6 +43,8 @@ export class RolePermissionController {
   @Post()
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.ROLES.ASSIGN_PERMISSIONS)
   async assignPermissions(
     @Param('roleId') roleId: number,
     @Body() presentationDto: AssignPermissionsToRolePresentationDto,
@@ -53,6 +64,8 @@ export class RolePermissionController {
   @Delete()
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.ROLES.REMOVE_PERMISSIONS)
   async removePermissions(
     @Param('roleId') roleId: number,
     @Body() presentationDto: RemovePermissionsFromRolePresentationDto,
