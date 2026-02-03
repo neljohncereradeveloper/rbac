@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { RemovePermissionsFromUserCommand } from '../../commands/user-permission/remove-permissions-from-user.command';
+import { RemovePermissionsFromUserCommand } from '../../commands/user-permission';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,7 +29,7 @@ export class RemovePermissionsFromUserUseCase {
     private readonly userPermissionRepository: UserPermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     command: RemovePermissionsFromUserCommand,

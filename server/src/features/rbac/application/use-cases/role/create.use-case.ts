@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { CreateRoleCommand } from '../../commands/role/create-role.command';
+import { CreateRoleCommand } from '../../commands/role';
 
 @Injectable()
 export class CreateRoleUseCase {
@@ -25,7 +25,7 @@ export class CreateRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     command: CreateRoleCommand,

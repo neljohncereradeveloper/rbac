@@ -6,6 +6,12 @@ import {
   HttpStatus,
   Version,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+} from '@nestjs/swagger';
 import { Public } from '../../infrastructure/decorators/public.decorator';
 import { LoginDto } from '../dto/login/login.dto';
 import { LoginUseCase } from '../../application/use-cases/login/login.use-case';
@@ -15,18 +21,20 @@ import { LoginCommand } from '../../application/commands/login/login.command';
  * Authentication Controller
  * Handles authentication endpoints (login, etc.)
  */
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly loginUseCase: LoginUseCase) {}
+  constructor(private readonly loginUseCase: LoginUseCase) { }
 
-  /**
-   * Login endpoint
-   * Authenticates user and returns JWT token
-   */
-  @Public()
-  @Post('login')
   @Version('1')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Public()
+  @ApiOperation({ summary: 'Authenticate user and get JWT token' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto) {
     const command: LoginCommand = {
       username_or_email: loginDto.username_or_email,

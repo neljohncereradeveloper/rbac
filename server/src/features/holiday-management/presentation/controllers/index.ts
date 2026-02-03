@@ -4,6 +4,7 @@ import {
   Post,
   Put,
   Delete,
+  Patch,
   Body,
   Param,
   Query,
@@ -11,7 +12,17 @@ import {
   HttpStatus,
   Version,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
@@ -40,6 +51,7 @@ import { Holiday } from '../../domain/models';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
 
+@ApiTags('Holiday')
 @Controller('holidays')
 export class HolidayController {
   constructor(
@@ -50,13 +62,19 @@ export class HolidayController {
     private readonly getHolidayByIdUseCase: GetHolidayByIdUseCase,
     private readonly getPaginatedHolidayUseCase: GetPaginatedHolidayUseCase,
     private readonly comboboxHolidayUseCase: ComboboxHolidayUseCase,
-  ) {}
+  ) { }
 
-  @Post()
   @Version('1')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
   @RequirePermissions(PERMISSIONS.HOLIDAYS.CREATE)
+  @ApiOperation({ summary: 'Create a new holiday' })
+  @ApiBody({ type: CreateHolidayPresentationDto })
+  @ApiResponse({ status: 201, description: 'Holiday created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async create(
     @Body() presentationDto: CreateHolidayPresentationDto,
     @Req() request: Request,
@@ -73,12 +91,20 @@ export class HolidayController {
     return this.createHolidayUseCase.execute(command, requestInfo);
   }
 
-  @Put(':id')
   @Version('1')
+  @Put(':id')
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
   @RequirePermissions(PERMISSIONS.HOLIDAYS.UPDATE)
+  @ApiOperation({ summary: 'Update holiday information' })
+  @ApiParam({ name: 'id', description: 'Holiday ID', example: 1 })
+  @ApiBody({ type: UpdateHolidayPresentationDto })
+  @ApiResponse({ status: 200, description: 'Holiday updated successfully' })
+  @ApiResponse({ status: 404, description: 'Holiday not found' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() presentationDto: UpdateHolidayPresentationDto,
     @Req() request: Request,
   ): Promise<Holiday | null> {
@@ -94,27 +120,42 @@ export class HolidayController {
     return this.updateHolidayUseCase.execute(id, command, requestInfo);
   }
 
-  @Delete(':id')
   @Version('1')
+  @Delete(':id/archive')
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.HOLIDAYS.ARCHIVE)
+  @ApiOperation({ summary: 'Archive a holiday' })
+  @ApiParam({ name: 'id', description: 'Holiday ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'Holiday archived successfully' })
+  @ApiResponse({ status: 404, description: 'Holiday not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async archive(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Req() request: Request,
-  ): Promise<boolean> {
+  ): Promise<{ success: boolean }> {
     const requestInfo = createRequestInfo(request);
     await this.archiveHolidayUseCase.execute(id, requestInfo);
-    return true;
+    return { success: true };
   }
 
-  @Post(':id/restore')
   @Version('1')
+  @Patch(':id/restore')
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.HOLIDAYS.RESTORE)
+  @ApiOperation({ summary: 'Restore a holiday' })
+  @ApiParam({ name: 'id', description: 'Holiday ID', example: 1 })
+  @ApiResponse({
+    status: 200,
+    description: 'Holiday restored successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Holiday not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async restore(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Req() request: Request,
   ): Promise<{ success: boolean }> {
     const requestInfo = createRequestInfo(request);
@@ -122,18 +163,32 @@ export class HolidayController {
     return { success: true };
   }
 
-  @Get(':id')
   @Version('1')
+  @Get(':id')
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.HOLIDAYS.READ)
-  async getById(@Param('id') id: number): Promise<Holiday> {
+  @ApiOperation({ summary: 'Get holiday by ID' })
+  @ApiParam({ name: 'id', description: 'Holiday ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'Holiday retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Holiday not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
+  async getById(@Param('id', ParseIntPipe) id: number): Promise<Holiday> {
     return this.getHolidayByIdUseCase.execute(id);
   }
 
-  @Get()
   @Version('1')
+  @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.HOLIDAYS.READ)
+  @ApiOperation({ summary: 'Get paginated list of holidays' })
+  @ApiResponse({
+    status: 200,
+    description: 'Holidays retrieved successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async getPaginated(
     @Query() query: PaginationQueryDto,
   ): Promise<PaginatedResult<Holiday>> {
@@ -145,10 +200,17 @@ export class HolidayController {
     );
   }
 
-  @Get('combobox')
   @Version('1')
+  @Get('combobox')
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.HOLIDAYS.READ)
+  @ApiOperation({ summary: 'Get holidays combobox list' })
+  @ApiResponse({
+    status: 200,
+    description: 'Holidays combobox retrieved successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async getCombobox(): Promise<{ value: string; label: string }[]> {
     return this.comboboxHolidayUseCase.execute();
   }

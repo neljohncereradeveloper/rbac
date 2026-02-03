@@ -1,7 +1,13 @@
 import { IsArray, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class AssignRolesToUserDto {
+  @ApiProperty({
+    description: 'Array of role IDs to assign to the user',
+    example: [1, 2, 3],
+    type: [Number],
+  })
   @IsArray()
   @IsNumber({}, { each: true })
   @Transform(({ value }) => {
@@ -13,6 +19,11 @@ export class AssignRolesToUserDto {
   })
   role_ids: number[];
 
+  @ApiPropertyOptional({
+    description: 'Whether to replace existing roles',
+    example: false,
+    type: Boolean,
+  })
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => {

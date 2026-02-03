@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { RemoveRolesFromUserCommand } from '../../commands/user-role/remove-roles-from-user.command';
+import { RemoveRolesFromUserCommand } from '../../commands/user-role';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,7 +29,7 @@ export class RemoveRolesFromUserUseCase {
     private readonly userRoleRepository: UserRoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     command: RemoveRolesFromUserCommand,

@@ -4,6 +4,7 @@ import {
   Post,
   Put,
   Delete,
+  Patch,
   Body,
   Param,
   Query,
@@ -11,7 +12,17 @@ import {
   HttpStatus,
   Version,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
@@ -45,6 +56,7 @@ import { User } from '../../domain/models';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
 
+@ApiTags('User')
 @Controller('users')
 export class UserController {
   constructor(
@@ -57,13 +69,19 @@ export class UserController {
     private readonly getUserByIdUseCase: GetUserByIdUseCase,
     private readonly getPaginatedUserUseCase: GetPaginatedUserUseCase,
     private readonly comboboxUserUseCase: ComboboxUserUseCase,
-  ) {}
+  ) { }
 
-  @Post()
   @Version('1')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.CREATE)
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiBody({ type: CreateUserPresentationDto })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async create(
     @Body() presentationDto: CreateUserPresentationDto,
     @Req() request: Request,
@@ -85,12 +103,20 @@ export class UserController {
     return this.createUserUseCase.execute(command, requestInfo);
   }
 
-  @Put(':id')
   @Version('1')
+  @Put(':id')
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.UPDATE)
+  @ApiOperation({ summary: 'Update user information' })
+  @ApiParam({ name: 'id', description: 'User ID', example: 1 })
+  @ApiBody({ type: UpdateUserPresentationDto })
+  @ApiResponse({ status: 200, description: 'User updated successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() presentationDto: UpdateUserPresentationDto,
     @Req() request: Request,
   ): Promise<User | null> {
@@ -110,13 +136,21 @@ export class UserController {
     return this.updateUserUseCase.execute(id, command, requestInfo);
   }
 
-  @Post(':id/change-password')
   @Version('1')
+  @Post(':id/change-password')
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.CHANGE_PASSWORD)
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiParam({ name: 'id', description: 'User ID', example: 1 })
+  @ApiBody({ type: ChangePasswordPresentationDto })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async changePassword(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() presentationDto: ChangePasswordPresentationDto,
     @Req() request: Request,
   ): Promise<{ success: boolean }> {
@@ -130,13 +164,19 @@ export class UserController {
     return { success: true };
   }
 
-  @Post(':id/verify-email')
   @Version('1')
+  @Post(':id/verify-email')
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.VERIFY_EMAIL)
+  @ApiOperation({ summary: 'Verify user email' })
+  @ApiParam({ name: 'id', description: 'User ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'Email verified successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async verifyEmail(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Req() request: Request,
   ): Promise<{ success: boolean }> {
     const requestInfo = createRequestInfo(request);
@@ -148,13 +188,19 @@ export class UserController {
     return { success: true };
   }
 
-  @Delete(':id')
   @Version('1')
+  @Delete(':id/archive')
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.ARCHIVE)
+  @ApiOperation({ summary: 'Archive a user' })
+  @ApiParam({ name: 'id', description: 'User ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'User archived successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async archive(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Req() request: Request,
   ): Promise<{ success: boolean }> {
     const requestInfo = createRequestInfo(request);
@@ -162,13 +208,19 @@ export class UserController {
     return { success: true };
   }
 
-  @Post(':id/restore')
   @Version('1')
+  @Patch(':id/restore')
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.RESTORE)
+  @ApiOperation({ summary: 'Restore a user' })
+  @ApiParam({ name: 'id', description: 'User ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'User restored successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async restore(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Req() request: Request,
   ): Promise<{ success: boolean }> {
     const requestInfo = createRequestInfo(request);
@@ -176,18 +228,32 @@ export class UserController {
     return { success: true };
   }
 
-  @Get(':id')
   @Version('1')
+  @Get(':id')
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.READ)
-  async getById(@Param('id') id: number): Promise<User> {
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiParam({ name: 'id', description: 'User ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'User retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
+  async getById(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.getUserByIdUseCase.execute(id);
   }
 
-  @Get()
   @Version('1')
+  @Get()
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.READ)
+  @ApiOperation({ summary: 'Get paginated list of users' })
+  @ApiResponse({
+    status: 200,
+    description: 'Users retrieved successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async getPaginated(
     @Query() query: PaginationQueryDto,
   ): Promise<PaginatedResult<User>> {
@@ -199,10 +265,17 @@ export class UserController {
     );
   }
 
-  @Get('combobox/list')
   @Version('1')
+  @Get('combobox/list')
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USERS.READ)
+  @ApiOperation({ summary: 'Get users combobox list' })
+  @ApiResponse({
+    status: 200,
+    description: 'Users combobox retrieved successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async getCombobox(): Promise<{ value: string; label: string }[]> {
     return this.comboboxUserUseCase.execute();
   }

@@ -1,7 +1,13 @@
 import { IsArray, IsNumber } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RemoveRolesFromUserDto {
+  @ApiProperty({
+    description: 'Array of role IDs to remove from the user',
+    example: [1, 2, 3],
+    type: [Number],
+  })
   @IsArray()
   @IsNumber({}, { each: true })
   @Transform(({ value }) => {

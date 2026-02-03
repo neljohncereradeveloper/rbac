@@ -8,15 +8,22 @@ import {
   HttpStatus,
   Version,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
-  AssignRolesToUserCommand,
   AssignRolesToUserUseCase,
-  RemoveRolesFromUserCommand,
   RemoveRolesFromUserUseCase,
-} from '@/features/rbac/application';
+} from '@/features/rbac/application/use-cases/user-role';
 import {
   AssignRolesToUserDto,
   RemoveRolesFromUserDto,
@@ -26,21 +33,31 @@ import {
   RequireRoles,
 } from '@/features/auth/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
+import { AssignRolesToUserCommand, RemoveRolesFromUserCommand } from '@/features/rbac/application/commands/user-role';
 
+@ApiTags('User-Role')
 @Controller('users/:userId/roles')
 export class UserRoleController {
   constructor(
     private readonly assignRolesToUserUseCase: AssignRolesToUserUseCase,
     private readonly removeRolesFromUserUseCase: RemoveRolesFromUserUseCase,
-  ) {}
+  ) { }
 
-  @Post()
   @Version('1')
+  @Post()
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USER_ROLES.ASSIGN_ROLES)
+  @ApiOperation({ summary: 'Assign roles to a user' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: 1 })
+  @ApiBody({ type: AssignRolesToUserDto })
+  @ApiResponse({ status: 200, description: 'Roles assigned successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async assignRoles(
-    @Param('userId') userId: number,
+    @Param('userId', ParseIntPipe) userId: number,
     @Body() dto: AssignRolesToUserDto,
     @Req() request: Request,
   ): Promise<{ success: boolean }> {
@@ -55,13 +72,21 @@ export class UserRoleController {
     return { success: true };
   }
 
-  @Delete()
   @Version('1')
+  @Delete()
   @HttpCode(HttpStatus.OK)
   @RequireRoles(ROLES.ADMIN)
   @RequirePermissions(PERMISSIONS.USER_ROLES.REMOVE_ROLES)
+  @ApiOperation({ summary: 'Remove roles from a user' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: 1 })
+  @ApiBody({ type: RemoveRolesFromUserDto })
+  @ApiResponse({ status: 200, description: 'Roles removed successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
   async removeRoles(
-    @Param('userId') userId: number,
+    @Param('userId', ParseIntPipe) userId: number,
     @Body() dto: RemoveRolesFromUserDto,
     @Req() request: Request,
   ): Promise<{ success: boolean }> {

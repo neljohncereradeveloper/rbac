@@ -6,7 +6,6 @@ import { PostgresqlDatabaseModule } from '@/core/infrastructure/database/postgre
 import { JwtStrategy } from './infrastructure/strategies';
 import { JwtTokenService, RbacService } from './infrastructure/services';
 import { AuthController } from './presentation/controllers';
-import { LoginUseCase } from './application/use-cases';
 import { TOKENS_CORE } from '@/core/domain/constants';
 import { AUTH_TOKENS } from './domain/constants';
 import { RbacModule } from '@/features/rbac/rbac.module';
@@ -14,6 +13,7 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
 import { TransactionAdapter } from '@/core/infrastructure/database/adapters/transaction-helper.adapter';
 import { UserRepositoryImpl } from '../user-management/infrastructure/database/repositories';
 import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
+import { LoginUseCase } from './application/use-cases/login';
 
 /**
  * Authentication Module
@@ -75,4 +75,4 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
   ],
   exports: [LoginUseCase, JwtTokenService, RbacService, AUTH_TOKENS.RBAC],
 })
-export class AuthModule {}
+export class AuthModule { }

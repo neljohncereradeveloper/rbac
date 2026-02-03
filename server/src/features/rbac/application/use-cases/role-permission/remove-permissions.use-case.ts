@@ -19,7 +19,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { RemovePermissionsFromRoleCommand } from '../../commands/role-permission/remove-permissions-from-role.command';
+import { RemovePermissionsFromRoleCommand } from '../../commands/role-permission';
 import {
   getChangedFields,
   extractEntityState,
@@ -37,7 +37,7 @@ export class RemovePermissionsFromRoleUseCase {
     private readonly rolePermissionRepository: RolePermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     command: RemovePermissionsFromRoleCommand,

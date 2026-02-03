@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { UpdateRoleCommand } from '../../commands/role/update-role.command';
+import { UpdateRoleCommand } from '../../commands/role';
 import {
   getChangedFields,
   extractEntityState,
@@ -30,7 +30,7 @@ export class UpdateRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     id: number,

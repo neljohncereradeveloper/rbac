@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { UpdatePermissionCommand } from '../../commands/permission/update-permission.command';
+import { UpdatePermissionCommand } from '../../commands/permission';
 import {
   getChangedFields,
   extractEntityState,
@@ -30,7 +30,7 @@ export class UpdatePermissionUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     id: number,

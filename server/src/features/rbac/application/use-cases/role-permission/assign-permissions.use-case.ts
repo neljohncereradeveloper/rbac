@@ -19,7 +19,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { AssignPermissionsToRoleCommand } from '../../commands/role-permission/assign-permissions-to-role.command';
+import { AssignPermissionsToRoleCommand } from '../../commands/role-permission';
 import {
   getChangedFields,
   extractEntityState,
@@ -37,7 +37,7 @@ export class AssignPermissionsToRoleUseCase {
     private readonly rolePermissionRepository: RolePermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     command: AssignPermissionsToRoleCommand,

@@ -17,6 +17,8 @@ import {
   GetRoleByIdUseCase,
   GetPaginatedRoleUseCase,
   ComboboxRoleUseCase,
+} from './application/use-cases/role';
+import {
   // Permission use cases
   CreatePermissionUseCase,
   UpdatePermissionUseCase,
@@ -25,17 +27,23 @@ import {
   GetPermissionByIdUseCase,
   GetPaginatedPermissionUseCase,
   ComboboxPermissionUseCase,
+} from './application/use-cases/permission';
+import {
   // Role-Permission use cases
   AssignPermissionsToRoleUseCase,
   RemovePermissionsFromRoleUseCase,
+} from './application/use-cases/role-permission';
+import {
   // User-Role use cases
   AssignRolesToUserUseCase,
   RemoveRolesFromUserUseCase,
+} from './application/use-cases/user-role';
+import {
   // User-Permission use cases
   GrantPermissionsToUserUseCase,
   DenyPermissionsToUserUseCase,
   RemovePermissionsFromUserUseCase,
-} from './application/use-cases';
+} from './application/use-cases/user-permission';
 import { TransactionAdapter } from '@/core/infrastructure/database/adapters/transaction-helper.adapter';
 import { TOKENS_CORE } from '@/core/domain/constants';
 import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/repositories';
@@ -152,4 +160,4 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     RemovePermissionsFromUserUseCase,
   ],
 })
-export class RbacModule {}
+export class RbacModule { }

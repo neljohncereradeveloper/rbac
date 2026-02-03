@@ -1,6 +1,13 @@
 import { RequiredStringValidation } from '@/core/infrastructure/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ChangePasswordDto {
+  @ApiProperty({
+    description: 'New password',
+    example: 'SecurePassword123!',
+    minLength: 8,
+    maxLength: 255,
+  })
   @RequiredStringValidation({
     field_name: 'New password',
     min_length: 8,

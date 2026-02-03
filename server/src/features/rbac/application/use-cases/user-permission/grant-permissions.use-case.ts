@@ -13,7 +13,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { GrantPermissionsToUserCommand } from '../../commands/user-permission/grant-permissions-to-user.command';
+import { GrantPermissionsToUserCommand } from '../../commands/user-permission';
 import {
   getChangedFields,
   extractEntityState,
@@ -29,7 +29,7 @@ export class GrantPermissionsToUserUseCase {
     private readonly userPermissionRepository: UserPermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     command: GrantPermissionsToUserCommand,

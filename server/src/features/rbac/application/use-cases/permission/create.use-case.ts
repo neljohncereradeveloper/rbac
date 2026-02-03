@@ -14,7 +14,7 @@ import {
   RBAC_TOKENS,
   RBAC_DATABASE_MODELS,
 } from '@/features/rbac/domain/constants';
-import { CreatePermissionCommand } from '../../commands/permission/create-permission.command';
+import { CreatePermissionCommand } from '../../commands/permission';
 
 @Injectable()
 export class CreatePermissionUseCase {
@@ -25,7 +25,7 @@ export class CreatePermissionUseCase {
     private readonly permissionRepository: PermissionRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(
     command: CreatePermissionCommand,

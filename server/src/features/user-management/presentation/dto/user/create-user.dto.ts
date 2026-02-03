@@ -8,8 +8,16 @@ import {
   IsDateStringCustom,
   transformDateString,
 } from '@/core/utils/date.util';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
+  @ApiProperty({
+    description: 'Username',
+    example: 'john_doe',
+    minLength: 3,
+    maxLength: 100,
+    pattern: '^[a-zA-Z0-9_]+$',
+  })
   @RequiredStringValidation({
     field_name: 'Username',
     min_length: 3,
@@ -21,6 +29,12 @@ export class CreateUserDto {
   })
   username: string;
 
+  @ApiProperty({
+    description: 'Email address',
+    example: 'john.doe@example.com',
+    minLength: 1,
+    maxLength: 255,
+  })
   @IsEmail({}, { message: 'Email must be a valid email address' })
   @Length(1, 255, {
     message: 'Email must be between 1 and 255 characters',
@@ -33,6 +47,12 @@ export class CreateUserDto {
   })
   email: string;
 
+  @ApiProperty({
+    description: 'Password',
+    example: 'SecurePassword123!',
+    minLength: 8,
+    maxLength: 255,
+  })
   @RequiredStringValidation({
     field_name: 'Password',
     min_length: 8,
@@ -43,6 +63,11 @@ export class CreateUserDto {
   })
   password: string;
 
+  @ApiPropertyOptional({
+    description: 'First name',
+    example: 'John',
+    maxLength: 100,
+  })
   @OptionalStringValidation({
     field_name: 'First name',
     max_length: 100,
@@ -52,6 +77,11 @@ export class CreateUserDto {
   })
   first_name?: string | null;
 
+  @ApiPropertyOptional({
+    description: 'Middle name',
+    example: 'Michael',
+    maxLength: 100,
+  })
   @OptionalStringValidation({
     field_name: 'Middle name',
     max_length: 100,
@@ -61,6 +91,11 @@ export class CreateUserDto {
   })
   middle_name?: string | null;
 
+  @ApiPropertyOptional({
+    description: 'Last name',
+    example: 'Doe',
+    maxLength: 100,
+  })
   @OptionalStringValidation({
     field_name: 'Last name',
     max_length: 100,
@@ -70,6 +105,11 @@ export class CreateUserDto {
   })
   last_name?: string | null;
 
+  @ApiPropertyOptional({
+    description: 'Phone number',
+    example: '+1-555-123-4567',
+    maxLength: 20,
+  })
   @OptionalStringValidation({
     field_name: 'Phone',
     max_length: 20,
@@ -79,11 +119,21 @@ export class CreateUserDto {
   })
   phone?: string | null;
 
+  @ApiPropertyOptional({
+    description: 'Date of birth',
+    example: '1990-01-01',
+    type: Date,
+  })
   @Transform(({ value }) => transformDateString(value))
   @IsOptional()
   @IsDateStringCustom({ message: 'Date of birth must be a valid date' })
   date_of_birth?: Date | null;
 
+  @ApiPropertyOptional({
+    description: 'Whether the user is active',
+    example: true,
+    type: Boolean,
+  })
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => {
@@ -93,6 +143,11 @@ export class CreateUserDto {
   })
   is_active?: boolean;
 
+  @ApiPropertyOptional({
+    description: 'Whether the email is verified',
+    example: false,
+    type: Boolean,
+  })
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => {

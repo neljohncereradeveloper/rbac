@@ -4,8 +4,16 @@ import {
 } from '@/core/infrastructure/decorators';
 import { IsOptional, IsArray, IsNumber } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateRoleDto {
+  @ApiProperty({
+    description: 'Role name',
+    example: 'Administrator',
+    minLength: 1,
+    maxLength: 100,
+    pattern: "^[a-zA-Z0-9\\s\\-_&.,()']+$",
+  })
   @RequiredStringValidation({
     field_name: 'Role name',
     min_length: 2,
@@ -16,6 +24,11 @@ export class CreateRoleDto {
   })
   name: string;
 
+  @ApiPropertyOptional({
+    description: 'Description of the role',
+    example: 'Full system access',
+    maxLength: 1000,
+  })
   @OptionalStringValidation({
     field_name: 'Description',
     max_length: 500,
@@ -25,6 +38,11 @@ export class CreateRoleDto {
   })
   description?: string | null;
 
+  @ApiPropertyOptional({
+    description: 'Array of permission IDs to assign to the role',
+    example: [1, 2, 3],
+    type: [Number],
+  })
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })

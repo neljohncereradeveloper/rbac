@@ -1,10 +1,18 @@
 import { RequiredStringValidation } from '@/core/infrastructure/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Login DTO
  * Used for user authentication
  */
 export class LoginDto {
+  @ApiProperty({
+    description: 'Username or Email',
+    example: 'john_doe',
+    minLength: 3,
+    maxLength: 100,
+    pattern: '^[a-zA-Z0-9_]+$',
+  })
   @RequiredStringValidation({
     field_name: 'Username or Email',
     min_length: 3,
@@ -16,6 +24,12 @@ export class LoginDto {
   })
   username_or_email: string;
 
+  @ApiProperty({
+    description: 'Password',
+    example: 'SecurePassword123!',
+    minLength: 8,
+    maxLength: 255,
+  })
   @RequiredStringValidation({
     field_name: 'Password',
     min_length: 8,
