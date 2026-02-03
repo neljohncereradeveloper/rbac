@@ -10,7 +10,7 @@ import {
   GetHolidayByIdUseCase,
   GetPaginatedHolidayUseCase,
   ComboboxHolidayUseCase,
-} from './application/use-cases';
+} from './application/use-cases/holiday';
 import { HolidayController } from './presentation/controllers';
 import { TransactionAdapter } from '@/core/infrastructure/database/adapters/transaction-helper.adapter';
 import { TOKENS_CORE } from '@/core/domain/constants';
@@ -41,6 +41,7 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
     GetHolidayByIdUseCase,
     GetPaginatedHolidayUseCase,
     ComboboxHolidayUseCase,
+
   ],
   exports: [
     // Export use cases for use in controllers or other modules

@@ -3,7 +3,7 @@ import {
   ValidationOptions,
   ValidationArguments,
 } from 'class-validator';
-import { DecoratorValidationException } from '@/core/domain/exceptions/decorator';
+import { DecoratorValidationException } from '@/core/domain/exceptions/decorator/decorator-validation.exception';
 
 /**
  * Custom validator for decimal places

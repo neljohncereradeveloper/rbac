@@ -12,11 +12,11 @@ import {
   GetUserByIdUseCase,
   GetPaginatedUserUseCase,
   ComboboxUserUseCase,
-} from './application/use-cases';
-import { UserController } from './presentation/controllers';
+} from './application/use-cases/user';
 import { TransactionAdapter } from '@/core/infrastructure/database/adapters/transaction-helper.adapter';
 import { TOKENS_CORE } from '@/core/domain/constants';
 import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/repositories';
+import { UserController } from './presentation/controllers';
 
 @Module({
   imports: [PostgresqlDatabaseModule],
@@ -47,8 +47,6 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
     ComboboxUserUseCase,
   ],
   exports: [
-    // Export repository token for use in other modules (e.g., AuthModule)
-    USER_MANAGEMENT_TOKENS.USER,
     // Export use cases for use in controllers or other modules
     CreateUserUseCase,
     UpdateUserUseCase,

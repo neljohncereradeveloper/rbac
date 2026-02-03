@@ -36,16 +36,14 @@ import {
   DenyPermissionsToUserUseCase,
   RemovePermissionsFromUserUseCase,
 } from './application/use-cases';
-import {
-  RoleController,
-  PermissionController,
-  RolePermissionController,
-  UserRoleController,
-  UserPermissionController,
-} from './presentation/controllers';
 import { TransactionAdapter } from '@/core/infrastructure/database/adapters/transaction-helper.adapter';
 import { TOKENS_CORE } from '@/core/domain/constants';
 import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/repositories';
+import { RoleController } from './presentation/controllers/role';
+import { PermissionController } from './presentation/controllers/permission';
+import { RolePermissionController } from './presentation/controllers/role-permission';
+import { UserRoleController } from './presentation/controllers/user-role';
+import { UserPermissionController } from './presentation/controllers/user-permission';
 
 @Module({
   imports: [PostgresqlDatabaseModule],
@@ -114,14 +112,6 @@ import { ActivityLogRepositoryImpl } from '@/core/infrastructure/database/reposi
     RemovePermissionsFromUserUseCase,
   ],
   exports: [
-    // Export repository tokens for use in other modules (e.g., AuthModule)
-    RBAC_TOKENS.ROLE,
-    RBAC_TOKENS.PERMISSION,
-    RBAC_TOKENS.ROLE_PERMISSION,
-    RBAC_TOKENS.USER_ROLE,
-    RBAC_TOKENS.USER_PERMISSION,
-    // Export use cases for use in controllers or other modules
-    // Role use cases
     CreateRoleUseCase,
     UpdateRoleUseCase,
     ArchiveRoleUseCase,

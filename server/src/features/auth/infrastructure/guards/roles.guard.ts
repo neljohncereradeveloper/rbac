@@ -5,8 +5,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/require-roles.decorator';
 import { RbacService } from '../services/rbac.service';
+import { ROLES_KEY } from '../decorators';
 
 /**
  * Roles Guard

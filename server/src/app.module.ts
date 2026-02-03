@@ -11,7 +11,7 @@ import {
   ErrorLoggerMiddleware,
   RequestLoggerMiddleware,
 } from '@/core/infrastructure/middlewares';
-import { AuthModule, JwtAuthGuard } from '@/features/auth';
+import { AuthModule, JwtAuthGuard, PermissionsGuard, RolesGuard } from '@/features/auth';
 import { HolidayManagementModule } from './features/holiday-management/holiday-management.module';
 import { UserManagementModule } from './features/user-management/user-management.module';
 import { RbacModule } from './features/rbac/rbac.module';
@@ -31,6 +31,14 @@ import { RbacModule } from './features/rbac/rbac.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
     },
   ],
 })

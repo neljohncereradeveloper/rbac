@@ -27,9 +27,9 @@ export const PERMISSIONS_KEY = 'permissions';
  * }
  * ```
  */
-export const RequirePermissions = (
+export function RequirePermissions(
   ...permissions: (string | boolean)[]
-): MethodDecorator => {
+): MethodDecorator {
   // Check if last argument is boolean (requireAll flag)
   const lastArg = permissions[permissions.length - 1];
   const requireAll = typeof lastArg === 'boolean' ? lastArg : false;
@@ -41,4 +41,4 @@ export const RequirePermissions = (
     permissions: permissionNames,
     requireAll,
   });
-};
+}

@@ -21,7 +21,8 @@
       "@/core/domain/*": ["src/core/domain/*"],
       "@/core/infrastructure/*": ["src/core/infrastructure/*"],
       "@/core/utils/*": ["src/core/utils/*"],
-      "@/features/*": ["src/features/*"]
+      "@/features/*": ["src/features/*"],
+      "@/features/auth/*": ["src/features/auth/*"]
     },
     "incremental": true,
     "skipLibCheck": true
