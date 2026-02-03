@@ -64,6 +64,9 @@ async function bootstrap() {
       },
       'JWT-auth',
     )
+    // Health Check
+    .addTag('Health', 'Health check endpoints')
+
     // Authentication
     .addTag('Auth', 'Authentication endpoints')
 
@@ -93,6 +96,12 @@ async function bootstrap() {
 
   // Add tag groups for better organization
   (document as any)['x-tagGroups'] = [
+    {
+      name: 'System',
+      tags: [
+        'Health',
+      ],
+    },
     {
       name: 'Authentication & Authorization',
       tags: [

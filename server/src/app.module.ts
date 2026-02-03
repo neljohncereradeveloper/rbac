@@ -20,12 +20,14 @@ import {
 import { HolidayManagementModule } from './features/holiday-management/holiday-management.module';
 import { UserManagementModule } from './features/user-management/user-management.module';
 import { RbacModule } from './features/rbac/rbac.module';
+import { HealthCheckModule } from './features/health-check/health-check.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PostgresqlDatabaseModule,
     AuthModule,
+    HealthCheckModule,
     HolidayManagementModule,
     UserManagementModule,
     RbacModule,

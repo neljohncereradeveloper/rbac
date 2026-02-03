@@ -1,98 +1,537 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# HRIS API Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Human Resource Information System API built with NestJS, following Domain-Driven Design (DDD) principles and feature-based architecture.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
 
-## Description
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Setup](#setup)
+- [Environment Variables](#environment-variables)
+- [API Documentation](#api-documentation)
+- [Development](#development)
+- [Database Migrations](#database-migrations)
+- [Testing](#testing)
+- [Project Structure](#project-structure)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Overview
 
-## Project setup
+This is a RESTful API server built with NestJS that provides:
 
-```bash
-$ yarn install
+- **Authentication & Authorization**: JWT-based authentication with Role-Based Access Control (RBAC)
+- **User Management**: Complete user lifecycle management
+- **RBAC System**: Roles, permissions, and their relationships
+- **Holiday Management**: Holiday calendar management
+
+The application follows Domain-Driven Design principles with a clean architecture organized by features.
+
+## Features
+
+### 1. Authentication (`auth`)
+
+**Purpose**: User authentication and JWT token management
+
+**Endpoints**:
+
+- `POST /api/v1/auth/login` - Authenticate user and get JWT token
+
+**Key Components**:
+
+- JWT token generation and validation
+- Password hashing with bcrypt
+- Public route decorator for unauthenticated endpoints
+
+### 2. User Management (`user-management`)
+
+**Purpose**: Complete user account lifecycle management
+
+**Endpoints**:
+
+- `POST /api/v1/users` - Create a new user
+- `GET /api/v1/users` - Get paginated list of users
+- `GET /api/v1/users/:id` - Get user by ID
+- `PUT /api/v1/users/:id` - Update user information
+- `POST /api/v1/users/:id/change-password` - Change user password
+- `POST /api/v1/users/:id/verify-email` - Verify user email
+- `DELETE /api/v1/users/:id/archive` - Archive a user (soft delete)
+- `PATCH /api/v1/users/:id/restore` - Restore an archived user
+- `GET /api/v1/users/combobox/list` - Get users combobox list
+
+**Key Features**:
+
+- User CRUD operations
+- Email verification
+- Password management
+- Soft delete (archive/restore)
+- Pagination and search
+- Combobox data for dropdowns
+
+### 3. RBAC - Role-Based Access Control (`rbac`)
+
+**Purpose**: Manage roles, permissions, and access control
+
+#### 3.1 Roles (`Role`)
+
+**Endpoints**:
+
+- `POST /api/v1/roles` - Create a new role
+- `GET /api/v1/roles` - Get paginated list of roles
+- `GET /api/v1/roles/:id` - Get role by ID
+- `PUT /api/v1/roles/:id` - Update role information
+- `DELETE /api/v1/roles/:id/archive` - Archive a role
+- `PATCH /api/v1/roles/:id/restore` - Restore an archived role
+- `GET /api/v1/roles/combobox/list` - Get roles combobox list
+
+#### 3.2 Permissions (`Permission`)
+
+**Endpoints**:
+
+- `POST /api/v1/permissions` - Create a new permission
+- `GET /api/v1/permissions` - Get paginated list of permissions
+- `GET /api/v1/permissions/:id` - Get permission by ID
+- `PUT /api/v1/permissions/:id` - Update permission information
+- `DELETE /api/v1/permissions/:id/archive` - Archive a permission
+- `PATCH /api/v1/permissions/:id/restore` - Restore an archived permission
+- `GET /api/v1/permissions/combobox/list` - Get permissions combobox list
+
+#### 3.3 Role-Permission Relationships (`Role-Permission`)
+
+**Endpoints**:
+
+- `POST /api/v1/roles/:roleId/permissions` - Assign permissions to a role
+- `DELETE /api/v1/roles/:roleId/permissions` - Remove permissions from a role
+
+#### 3.4 User-Role Relationships (`User-Role`)
+
+**Endpoints**:
+
+- `POST /api/v1/users/:userId/roles` - Assign roles to a user
+- `DELETE /api/v1/users/:userId/roles` - Remove roles from a user
+
+#### 3.5 User-Permission Overrides (`User-Permission`)
+
+**Endpoints**:
+
+- `POST /api/v1/users/:userId/permissions/grant` - Grant permissions to a user (override)
+- `POST /api/v1/users/:userId/permissions/deny` - Deny permissions to a user (override)
+- `DELETE /api/v1/users/:userId/permissions` - Remove permission overrides from a user
+
+**Key Features**:
+
+- Hierarchical permission system (roles → permissions)
+- User-level permission overrides (grant/deny)
+- Permission inheritance through roles
+- Complete audit trail via activity logs
+
+### 4. Holiday Management (`holiday-management`)
+
+**Purpose**: Manage holiday calendar and recurring holidays
+
+**Endpoints**:
+
+- `POST /api/v1/holidays` - Create a new holiday
+- `GET /api/v1/holidays` - Get paginated list of holidays
+- `GET /api/v1/holidays/:id` - Get holiday by ID
+- `PUT /api/v1/holidays/:id` - Update holiday information
+- `DELETE /api/v1/holidays/:id/archive` - Archive a holiday
+- `PATCH /api/v1/holidays/:id/restore` - Restore an archived holiday
+- `GET /api/v1/holidays/combobox` - Get holidays combobox list
+
+**Key Features**:
+
+- Holiday CRUD operations
+- Recurring holiday support
+- Soft delete (archive/restore)
+- Pagination and search
+
+## Architecture
+
+### Design Principles
+
+- **Domain-Driven Design (DDD)**: Business logic encapsulated in domain models
+- **Feature-Based Structure**: Code organized by feature/bounded context
+- **Clean Architecture**: Separation of concerns across layers
+- **Dependency Inversion**: Domain layer independent of infrastructure
+
+### Layer Structure
+
+```
+features/
+  <feature-name>/
+    domain/          # Pure business logic (no framework dependencies)
+      models/        # Domain entities
+      repositories/  # Repository interfaces
+      exceptions/    # Domain exceptions
+      constants/     # Feature constants
+    application/     # Use cases and commands
+      use-cases/     # Application logic
+      commands/      # Command interfaces
+    infrastructure/  # Framework implementations
+      database/      # ORM entities and repositories
+      services/      # External service integrations
+    presentation/    # Controllers and DTOs
+      controllers/   # HTTP endpoints
+      dto/           # Request/response DTOs
 ```
 
-## Compile and run the project
+### Core Components
+
+- **Core Module**: Shared utilities, domain models, and infrastructure
+- **Transaction Management**: Database transactions via TransactionPort
+- **Activity Logging**: Audit trail for all operations
+- **Exception Handling**: Global exception filters
+- **Request Logging**: Winston-based request/error logging
+
+## Prerequisites
+
+- **Node.js**: v18.x or higher
+- **Yarn**: v1.22.x or higher (package manager)
+- **PostgreSQL**: v12.x or higher
+- **TypeScript**: v5.x
+
+## Setup
+
+### 1. Clone the Repository
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+git clone <repository-url>
+cd rbac/server
 ```
 
-## Run tests
+### 2. Install Dependencies
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+yarn install
 ```
 
-## Deployment
+### 3. Environment Configuration
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Copy `.env` file and configure environment variables (see [Environment Variables](#environment-variables) section):
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Database Setup
 
-## Resources
+Ensure PostgreSQL is running and create the database:
 
-Check out a few resources that may come in handy when working with NestJS:
+```sql
+CREATE DATABASE rbac;
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 5. Run Migrations
 
-## Support
+```bash
+# Build the project first
+yarn build
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Run migrations
+yarn migration:run
+```
 
-## Stay in touch
+### 6. Seed Default Data
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Create default admin user and initial data:
+
+```bash
+yarn seed:run
+```
+
+### 7. Start Development Server
+
+```bash
+yarn start:dev
+```
+
+The API will be available at `http://localhost:3220` (or your configured PORT).
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Application Environment
+NODE_ENV=development
+PORT=3220
+SERVER=localhost
+CORS_ORIGINS=*
+
+# Database Configuration
+DB_URL=postgresql://username:password@localhost:5432/rbac
+
+# JWT Configuration
+JWT_SECRET=your-secret-key-here
+JWT_EXPIRATION=8H
+
+# Admin Account (for seeding)
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=admin123
+ADMIN_FIRST_NAME=System
+ADMIN_LAST_NAME=Administrator
+```
+
+### Environment Variable Descriptions
+
+| Variable         | Description                                      | Required | Default     |
+| ---------------- | ------------------------------------------------ | -------- | ----------- |
+| `NODE_ENV`       | Application environment (development/production) | No       | development |
+| `PORT`           | Server port                                      | No       | 3000        |
+| `SERVER`         | Server hostname                                  | No       | localhost   |
+| `CORS_ORIGINS`   | Comma-separated list of allowed CORS origins     | No       | \*          |
+| `DB_URL`         | PostgreSQL connection string                     | Yes      | -           |
+| `JWT_SECRET`     | Secret key for JWT token signing                 | Yes      | -           |
+| `JWT_EXPIRATION` | JWT token expiration time                        | No       | 1d          |
+| `ADMIN_*`        | Default admin account credentials for seeding    | No       | -           |
+
+## API Documentation
+
+### Swagger UI
+
+Once the server is running, access the interactive API documentation at:
+
+```
+http://localhost:3220/api/docs
+```
+
+The Swagger UI provides:
+
+- Complete API endpoint documentation
+- Request/response schemas
+- Try-it-out functionality
+- Authentication support (JWT Bearer token)
+
+### API Base URL
+
+All API endpoints are prefixed with `/api/v1`:
+
+```
+Base URL: http://localhost:3220/api/v1
+```
+
+### Authentication
+
+Most endpoints require JWT authentication. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+**Public Endpoints** (no authentication required):
+
+- `POST /api/v1/auth/login`
+
+### API Versioning
+
+The API uses URI versioning:
+
+- Current version: `v1`
+- All endpoints: `/api/v1/{resource}`
+
+### Pagination
+
+List endpoints support pagination via query parameters:
+
+```
+GET /api/v1/users?page=1&limit=10&term=search&is_archived=false
+```
+
+**Query Parameters**:
+
+- `page` (number): Page number (default: 1)
+- `limit` (number): Items per page (default: 10, max: 100)
+- `term` (string): Search term (optional)
+- `is_archived` (string): Filter archived records ('true'/'false')
+
+**Response Format**:
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total_records": 100,
+    "total_pages": 10,
+    "next_page": 2,
+    "previous_page": null
+  }
+}
+```
+
+## Development
+
+### Project Scripts
+
+```bash
+# Development
+yarn start:dev          # Start development server with hot reload
+yarn start:debug        # Start with debugging enabled
+
+# Production
+yarn build              # Build for production
+yarn start:prod         # Start production server
+
+# Code Quality
+yarn lint               # Run ESLint
+yarn format             # Format code with Prettier
+
+# Testing
+yarn test               # Run unit tests
+yarn test:watch         # Run tests in watch mode
+yarn test:cov           # Run tests with coverage
+yarn test:e2e           # Run end-to-end tests
+
+# Database
+yarn migration:create  # Create a new migration
+yarn migration:generate # Generate migration from entities
+yarn migration:run      # Run pending migrations
+yarn migration:revert   # Revert last migration
+yarn migration:show     # Show migration status
+yarn seed:run           # Run database seeds
+```
+
+### Code Style
+
+The project follows:
+
+- **File naming**: kebab-case (e.g., `user-repository.ts`)
+- **Folder naming**: kebab-case (e.g., `user-management/`)
+- **TypeScript**: Strict mode enabled
+- **ESLint**: Configured with Prettier integration
+
+### Adding a New Feature
+
+1. Create feature folder structure:
+
+   ```
+   features/
+     <feature-name>/
+       domain/
+       application/
+       infrastructure/
+       presentation/
+   ```
+
+2. Follow the patterns in existing features (see `rbac` or `user-management`)
+
+3. Register the feature module in `app.module.ts`
+
+4. Add Swagger tags in `main.ts`
+
+5. Create controllers with proper Swagger decorators
+
+## Database Migrations
+
+### Creating Migrations
+
+```bash
+# Create empty migration
+yarn migration:create src/core/infrastructure/database/migrations/MigrationName
+
+# Generate migration from entity changes
+yarn migration:generate src/core/infrastructure/database/migrations/MigrationName
+```
+
+### Running Migrations
+
+```bash
+# Run pending migrations
+yarn migration:run
+
+# Revert last migration
+yarn migration:revert
+
+# Show migration status
+yarn migration:show
+```
+
+## Testing
+
+### Unit Tests
+
+```bash
+yarn test
+```
+
+### E2E Tests
+
+```bash
+yarn test:e2e
+```
+
+### Test Coverage
+
+```bash
+yarn test:cov
+```
+
+## Project Structure
+
+```
+server/
+├── src/
+│   ├── core/                    # Shared/core functionality
+│   │   ├── domain/              # Core domain models, ports, constants
+│   │   ├── application/         # Core application services
+│   │   ├── infrastructure/      # Core infrastructure (DB, logging, etc.)
+│   │   └── utils/              # Shared utilities
+│   ├── features/                # Feature modules
+│   │   ├── auth/               # Authentication feature
+│   │   ├── user-management/    # User management feature
+│   │   ├── rbac/               # RBAC feature
+│   │   └── holiday-management/ # Holiday management feature
+│   ├── app.module.ts           # Root application module
+│   └── main.ts                 # Application entry point
+├── test/                        # E2E tests
+├── docs/                        # Additional documentation
+├── api/                         # HTTP request files for testing
+├── .env                         # Environment variables
+├── package.json                 # Dependencies and scripts
+└── tsconfig.json               # TypeScript configuration
+```
+
+## Key Technologies
+
+- **NestJS**: Progressive Node.js framework
+- **TypeORM**: Object-Relational Mapping
+- **PostgreSQL**: Relational database
+- **JWT**: JSON Web Tokens for authentication
+- **Swagger/OpenAPI**: API documentation
+- **Winston**: Logging library
+- **class-validator**: Validation decorators
+- **class-transformer**: Object transformation
+
+## Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Password Hashing**: bcrypt for password encryption
+- **RBAC**: Role-Based Access Control for authorization
+- **Input Validation**: Request validation via class-validator
+- **CORS**: Configurable Cross-Origin Resource Sharing
+- **Global Guards**: JWT, Roles, and Permissions guards
+- **Soft Delete**: Archive instead of hard delete for data retention
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+UNLICENSED
+
+## Documentation
+
+Additional detailed documentation is available in the `docs/` folder:
+
+- **[Setup Guide](docs/setup-guide.md)** - Complete setup instructions from scratch
+- **[API Usage Guide](docs/api-usage-guide.md)** - How to use the API endpoints
+- **[Architecture Guide](docs/architecture-guide.md)** - Detailed architecture and design patterns
+- **[Development Guide](docs/development-guide.md)** - Guide for developers
+- **[Deployment Guide](docs/deployment-guide.md)** - Production deployment instructions
+- **[Permissions Management](docs/permissions-management.md)** - Managing permissions (seeders vs APIs)
+- **[Permissions Quick Guide](docs/permissions-quick-guide.md)** - Quick guide for permission management
+
+## Support
+
+For issues and questions, please refer to the project documentation in the `docs/` folder or create an issue in the repository.
