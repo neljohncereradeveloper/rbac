@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { WinstonModule } from 'nest-winston';
 import { winston_config } from '@/core/infrastructure/logger';
 import { ConfigService } from '@nestjs/config';
@@ -13,10 +14,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     snapshot: true,
     logger: WinstonModule.createLogger(winston_config),
   });
+
+  // Trust proxy to get correct IP address from X-Forwarded-For header
+  // This is important for rate limiting when behind a proxy/load balancer
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
 
   app.enableVersioning({
     type: VersioningType.URI,
@@ -50,8 +55,12 @@ async function bootstrap() {
 
   // Swagger configuration
   const config = new DocumentBuilder()
-    .setTitle('HRIS API')
-    .setDescription('Human Resource Information System API Documentation')
+    .setTitle('RBAC API')
+    .setDescription(
+      'Role-Based Access Control (RBAC) API - A comprehensive system for managing user authentication, authorization, roles, and permissions. ' +
+      'This API provides complete RBAC functionality including user management, role assignment, permission management, and fine-grained access control. ' +
+      'All endpoints are protected by JWT authentication and enforce role-based and permission-based access policies.',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {

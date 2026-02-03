@@ -6,11 +6,13 @@ import {
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { PostgresqlDatabaseModule } from '@/core/infrastructure/database/postgresql-database.module';
 import {
   ErrorLoggerMiddleware,
   RequestLoggerMiddleware,
 } from '@/core/infrastructure/middlewares';
+import { IpThrottlerGuard } from '@/core/infrastructure/guards';
 import { AuthModule } from '@/features/auth/auth.module';
 import {
   JwtAuthGuard,
@@ -25,6 +27,20 @@ import { HealthCheckModule } from './features/health-check/health-check.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          name: 'default',
+          ttl: 60000, // Time window in milliseconds (60 seconds)
+          limit: 100, // Max requests per time window
+        },
+        {
+          name: 'login',
+          ttl: 60000, // Time window in milliseconds (60 seconds)
+          limit: 5, // Max requests per time window for login
+        },
+      ],
+    }),
     PostgresqlDatabaseModule,
     AuthModule,
     HealthCheckModule,
@@ -46,6 +62,12 @@ import { HealthCheckModule } from './features/health-check/health-check.module';
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,
+    },
+    // Set IP-based Throttler Guard as global (applies rate limiting per IP address)
+    // Use @SkipThrottle() decorator on routes that should skip rate limiting
+    {
+      provide: APP_GUARD,
+      useClass: IpThrottlerGuard,
     },
   ],
 })

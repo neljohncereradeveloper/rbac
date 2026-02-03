@@ -12,6 +12,7 @@ import {
   ApiResponse,
   ApiBody,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { Public } from '../../infrastructure/decorators/public.decorator';
 import { LoginDto } from '../dto/login/login.dto';
 import { LoginUseCase } from '../../application/use-cases/login/login.use-case';
@@ -30,6 +31,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @Public()
+  @Throttle({ login: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Authenticate user and get JWT token' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({ status: 200, description: 'Login successful' })
