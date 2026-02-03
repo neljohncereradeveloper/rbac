@@ -21,6 +21,8 @@ import {
     AssignRolesToUserDto,
     RemoveRolesFromUserDto
 } from '@/features/rbac/presentation/dto/user-role';
+import { RequirePermissions, RequireRoles } from '@/features/auth';
+import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 
 
 @Controller('users/:userId/roles')
@@ -33,6 +35,8 @@ export class UserRoleController {
     @Post()
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USER_ROLES.ASSIGN_ROLES)
     async assignRoles(
         @Param('userId') userId: number,
         @Body() dto: AssignRolesToUserDto,
@@ -52,6 +56,8 @@ export class UserRoleController {
     @Delete()
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USER_ROLES.REMOVE_ROLES)
     async removeRoles(
         @Param('userId') userId: number,
         @Body() dto: RemoveRolesFromUserDto,

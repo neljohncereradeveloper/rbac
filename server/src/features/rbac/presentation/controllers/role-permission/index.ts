@@ -13,6 +13,8 @@ import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import { AssignPermissionsToRoleCommand, AssignPermissionsToRoleUseCase, RemovePermissionsFromRoleCommand, RemovePermissionsFromRoleUseCase } from '@/features/rbac/application';
 import { AssignPermissionsToRoleDto, RemovePermissionsFromRoleDto } from '../../dto/role-permission';
+import { RequirePermissions, RequireRoles } from '@/features/auth';
+import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 
 
 @Controller('roles/:roleId/permissions')
@@ -25,6 +27,8 @@ export class RolePermissionController {
     @Post()
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.ROLES.ASSIGN_PERMISSIONS)
     async assignPermissions(
         @Param('roleId') roleId: number,
         @Body() dto: AssignPermissionsToRoleDto,
@@ -44,6 +48,8 @@ export class RolePermissionController {
     @Delete()
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.ROLES.REMOVE_PERMISSIONS)
     async removePermissions(
         @Param('roleId') roleId: number,
         @Body() dto: RemovePermissionsFromRoleDto,

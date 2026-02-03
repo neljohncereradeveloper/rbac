@@ -11,8 +11,8 @@ POST {{host}}/auth/login
 Content-Type: application/json
 
 {
-  "username_or_email": "admin",
-  "password": "admin123"
+  "username_or_email": "viewer",
+  "password": "viewer123"
 }
 
 ###

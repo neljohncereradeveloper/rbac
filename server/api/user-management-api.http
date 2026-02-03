@@ -1,5 +1,5 @@
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiaWF0IjoxNzcwMDk4NTMzLCJleHAiOjE3NzAxODQ5MzN9.xSo277myvoOlAE2WBU7Vey3joVN0SONqIfRtXGtvRBs
-@host = http://localhost:3000/api/v1
+@host = http://localhost:3220/api/v1
 
 ##########################################
 # USERS
@@ -12,10 +12,10 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "username": "editor",
-  "email": "editor@example.com",
-  "password": "editor123",
-  "first_name": "Editor",
+  "username": "viewer",
+  "email": "viewer@example.com",
+  "password": "viewer123",
+  "first_name": "Viewer",
   "middle_name": "",
   "last_name": "Account",
   "phone": "",
@@ -126,12 +126,12 @@ Authorization: Bearer {{token}}
 
 ###
 # ASSIGN ROLES TO USER
-POST {{host}}/users/1/roles
+POST {{host}}/users/3/roles
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "role_ids": [1, 2],
+  "role_ids": [3],
   "replace": false
 }
 

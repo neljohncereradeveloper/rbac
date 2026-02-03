@@ -16,6 +16,8 @@ import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
+import { RequirePermissions, RequireRoles } from '@/features/auth';
+import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
   ArchivePermissionUseCase,
   ComboboxPermissionUseCase,
@@ -45,6 +47,8 @@ export class PermissionController {
   @Post()
   @Version('1')
   @HttpCode(HttpStatus.CREATED)
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.CREATE)
   async create(
     @Body() dto: CreatePermissionDto,
     @Req() request: Request,
@@ -62,6 +66,8 @@ export class PermissionController {
 
   @Put(':id')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.UPDATE)
   async update(
     @Param('id') id: number,
     @Body() dto: UpdatePermissionDto,
@@ -81,6 +87,8 @@ export class PermissionController {
   @Delete(':id')
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.ARCHIVE)
   async archive(
     @Param('id') id: number,
     @Req() request: Request,
@@ -93,6 +101,8 @@ export class PermissionController {
   @Post(':id/restore')
   @Version('1')
   @HttpCode(HttpStatus.OK)
+  @RequireRoles(ROLES.ADMIN)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.RESTORE)
   async restore(
     @Param('id') id: number,
     @Req() request: Request,
@@ -104,12 +114,16 @@ export class PermissionController {
 
   @Get(':id')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.READ)
   async getById(@Param('id') id: number): Promise<Permission> {
     return this.getPermissionByIdUseCase.execute(id);
   }
 
   @Get()
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.READ)
   async getPaginated(
     @Query() query: PaginationQueryDto,
   ): Promise<PaginatedResult<Permission>> {
@@ -123,6 +137,8 @@ export class PermissionController {
 
   @Get('combobox/list')
   @Version('1')
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.READ)
   async getCombobox(): Promise<{ value: string; label: string }[]> {
     return this.comboboxPermissionUseCase.execute();
   }

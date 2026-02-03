@@ -16,6 +16,8 @@ import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
+import { RequirePermissions, RequireRoles } from '@/features/auth';
+import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
     ArchiveRoleUseCase,
     ComboboxRoleUseCase,
@@ -45,6 +47,8 @@ export class RoleController {
     @Post()
     @Version('1')
     @HttpCode(HttpStatus.CREATED)
+    @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+    @RequirePermissions(PERMISSIONS.ROLES.CREATE)
     async create(
         @Body() dto: CreateRoleDto,
         @Req() request: Request,
@@ -61,6 +65,8 @@ export class RoleController {
 
     @Put(':id')
     @Version('1')
+    @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
+    @RequirePermissions(PERMISSIONS.ROLES.UPDATE)
     async update(
         @Param('id') id: number,
         @Body() dto: UpdateRoleDto,
@@ -78,6 +84,8 @@ export class RoleController {
     @Delete(':id')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.ROLES.ARCHIVE)
     async archive(
         @Param('id') id: number,
         @Req() request: Request,
@@ -90,6 +98,8 @@ export class RoleController {
     @Post(':id/restore')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.ROLES.RESTORE)
     async restore(
         @Param('id') id: number,
         @Req() request: Request,
@@ -101,12 +111,16 @@ export class RoleController {
 
     @Get(':id')
     @Version('1')
+    @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+    @RequirePermissions(PERMISSIONS.ROLES.READ)
     async getById(@Param('id') id: number): Promise<Role> {
         return this.getRoleByIdUseCase.execute(id);
     }
 
     @Get()
     @Version('1')
+    @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+    @RequirePermissions(PERMISSIONS.ROLES.READ)
     async getPaginated(
         @Query() query: PaginationQueryDto,
     ): Promise<PaginatedResult<Role>> {
@@ -120,6 +134,8 @@ export class RoleController {
 
     @Get('combobox/list')
     @Version('1')
+    @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+    @RequirePermissions(PERMISSIONS.ROLES.READ)
     async getCombobox(): Promise<{ value: string; label: string }[]> {
         return this.comboboxRoleUseCase.execute();
     }

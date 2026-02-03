@@ -7,9 +7,9 @@ import { IsDateStringCustom, transformDateString } from '@/core/utils/date.util'
 export class CreateHolidayDto {
   @RequiredStringValidation({
     field_name: 'Holiday name',
-    min_length: 2,
+    min_length: 0,
     max_length: 255,
-    pattern: /^[a-zA-Z0-9\s\-_&.,()!?]+$/,
+    pattern: /^[a-zA-Z0-9\s\-_&.,()!?'"]*$/,
     pattern_message:
       'Holiday name can only contain letters, numbers, spaces, and basic punctuation',
   })
@@ -32,7 +32,7 @@ export class CreateHolidayDto {
   @OptionalStringValidation({
     field_name: 'Description',
     max_length: 500,
-    pattern: /^[a-zA-Z0-9\s\-_&.,()!?]+$/,
+    pattern: /^[a-zA-Z0-9\s\-_&.,()!?'"]*$/,
     pattern_message:
       'Description can only contain letters, numbers, spaces, and basic punctuation',
   })

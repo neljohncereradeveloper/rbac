@@ -24,6 +24,8 @@ import {
     GrantPermissionsToUserDto,
     RemovePermissionsFromUserDto
 } from '@/features/rbac/presentation/dto/user-permission';
+import { RequirePermissions, RequireRoles } from '@/features/auth';
+import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 
 @Controller('users/:userId/permissions')
 export class UserPermissionController {
@@ -36,6 +38,8 @@ export class UserPermissionController {
     @Post('grant')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USER_PERMISSIONS.GRANT_PERMISSIONS)
     async grantPermissions(
         @Param('userId') userId: number,
         @Body() dto: GrantPermissionsToUserDto,
@@ -55,6 +59,8 @@ export class UserPermissionController {
     @Post('deny')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USER_PERMISSIONS.DENY_PERMISSIONS)
     async denyPermissions(
         @Param('userId') userId: number,
         @Body() dto: DenyPermissionsToUserDto,
@@ -74,6 +80,8 @@ export class UserPermissionController {
     @Delete()
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USER_PERMISSIONS.REMOVE_OVERRIDES)
     async removeOverrides(
         @Param('userId') userId: number,
         @Body() dto: RemovePermissionsFromUserDto,

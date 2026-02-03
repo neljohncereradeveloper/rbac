@@ -1,5 +1,5 @@
-@token = 
-@host = http://localhost:3000/api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInVzZXJuYW1lIjoidmlld2VyIiwiZW1haWwiOiJ2aWV3ZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3NzAxMDA1MDIsImV4cCI6MTc3MDE4NjkwMn0.BVhUd2W7Q9lXCxnlXIR6kilXaTsdqV-J8HKKPnTXL3M
+@host = http://localhost:3220/api/v1
 
 ##########################################
 # HOLIDAYS
