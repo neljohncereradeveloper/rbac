@@ -5,6 +5,7 @@ import { allEntities } from '../entities';
 import { SeedPermissions } from './create-default-permissions.seed';
 import { SeedRoles } from './create-default-roles.seed';
 import { SeedRolePermissions } from './create-default-role-permissions.seed';
+import { SeedAdminAccount } from './create-default-admin.seed';
 
 // Load environment variables from .env
 dotenvConfig();
@@ -58,6 +59,12 @@ class SeedRunner {
       );
       await role_permissions_seeder.run(roleMap, permissionMap);
       this.logger.log('Role-permissions seeded');
+
+      // 4. Seed admin account (creates default admin user with Admin role)
+      // Note: Admin role already has all permissions via role-permission links
+      const admin_seeder = new SeedAdminAccount(query_runner.manager);
+      await admin_seeder.run(roleMap);
+      this.logger.log('Admin account seeded');
 
       // Commit the transaction if all seeds succeed
       await query_runner.commitTransaction();

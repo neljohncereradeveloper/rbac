@@ -14,6 +14,8 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
+import { RequirePermissions, RequireRoles } from '@/features/auth';
+import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
     CreateUserUseCase,
     UpdateUserUseCase,
@@ -57,6 +59,8 @@ export class UserController {
     @Post()
     @Version('1')
     @HttpCode(HttpStatus.CREATED)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.CREATE)
     async create(
         @Body() presentationDto: CreateUserPresentationDto,
         @Req() request: Request,
@@ -80,6 +84,8 @@ export class UserController {
 
     @Put(':id')
     @Version('1')
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.UPDATE)
     async update(
         @Param('id') id: number,
         @Body() presentationDto: UpdateUserPresentationDto,
@@ -104,6 +110,8 @@ export class UserController {
     @Post(':id/change-password')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.CHANGE_PASSWORD)
     async changePassword(
         @Param('id') id: number,
         @Body() presentationDto: ChangePasswordPresentationDto,
@@ -122,6 +130,8 @@ export class UserController {
     @Post(':id/verify-email')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.VERIFY_EMAIL)
     async verifyEmail(
         @Param('id') id: number,
         @Req() request: Request,
@@ -138,6 +148,8 @@ export class UserController {
     @Delete(':id')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.ARCHIVE)
     async archive(
         @Param('id') id: number,
         @Req() request: Request,
@@ -150,6 +162,8 @@ export class UserController {
     @Post(':id/restore')
     @Version('1')
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.RESTORE)
     async restore(
         @Param('id') id: number,
         @Req() request: Request,
@@ -161,12 +175,16 @@ export class UserController {
 
     @Get(':id')
     @Version('1')
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.READ)
     async getById(@Param('id') id: number): Promise<User> {
         return this.getUserByIdUseCase.execute(id);
     }
 
     @Get()
     @Version('1')
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.READ)
     async getPaginated(
         @Query() query: PaginationQueryDto,
     ): Promise<PaginatedResult<User>> {
@@ -180,6 +198,8 @@ export class UserController {
 
     @Get('combobox/list')
     @Version('1')
+    @RequireRoles(ROLES.ADMIN)
+    @RequirePermissions(PERMISSIONS.USERS.READ)
     async getCombobox(): Promise<{ value: string; label: string }[]> {
         return this.comboboxUserUseCase.execute();
     }
