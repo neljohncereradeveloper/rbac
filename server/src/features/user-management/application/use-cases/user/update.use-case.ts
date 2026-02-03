@@ -51,7 +51,6 @@ export class UpdateUserUseCase {
 
         // Define fields to track for change logging
         const tracking_config: FieldExtractorConfig[] = [
-          { field: 'username' },
           { field: 'email' },
           { field: 'first_name' },
           { field: 'middle_name' },
@@ -74,8 +73,8 @@ export class UpdateUserUseCase {
         const before_state = extractEntityState(user, tracking_config);
 
         // Use domain model method to update (encapsulates business logic and validation)
+        // Note: Username cannot be updated - it is immutable after creation
         user.update({
-          username: command.username,
           email: command.email,
           first_name: command.first_name ?? user.first_name,
           middle_name: command.middle_name ?? user.middle_name,

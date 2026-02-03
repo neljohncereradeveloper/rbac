@@ -1,9 +1,9 @@
 /**
  * Command for updating a user
  * Application layer command - simple type definition without validation
+ * Note: Username cannot be updated - it is immutable after creation
  */
 export interface UpdateUserCommand {
-  username?: string;
   email?: string;
   first_name?: string | null;
   middle_name?: string | null;
