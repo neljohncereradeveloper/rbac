@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class RoleRepositoryImpl implements RoleRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async create(
     role: Role,
@@ -111,7 +111,7 @@ export class RoleRepositoryImpl implements RoleRepository<EntityManager> {
     const query = `
       UPDATE ${RBAC_DATABASE_MODELS.ROLES}
       SET ${updateFields.join(', ')}
-      WHERE id = $${paramIndex} AND deleted_at IS NULL
+      WHERE id = $${paramIndex}
       RETURNING id
     `;
 
@@ -123,7 +123,7 @@ export class RoleRepositoryImpl implements RoleRepository<EntityManager> {
     const query = `
       SELECT *
       FROM ${RBAC_DATABASE_MODELS.ROLES}
-      WHERE id = $1 AND deleted_at IS NULL
+      WHERE id = $1
     `;
 
     const result = await manager.query(query, [id]);

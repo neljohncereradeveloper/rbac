@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class HolidayRepositoryImpl implements HolidayRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async create(holiday: Holiday, manager: EntityManager): Promise<Holiday> {
     const query = `
@@ -103,7 +103,7 @@ export class HolidayRepositoryImpl implements HolidayRepository<EntityManager> {
     const query = `
       SELECT *
       FROM ${HOLIDAY_MANAGEMENT_DATABASE_MODELS.HOLIDAYS}
-      WHERE id = $1 AND deleted_at IS NULL
+      WHERE id = $1
     `;
 
     const result = await manager.query(query, [id]);

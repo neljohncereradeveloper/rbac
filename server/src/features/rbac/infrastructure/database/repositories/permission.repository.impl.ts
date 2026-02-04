@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class PermissionRepositoryImpl implements PermissionRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async create(
     permission: Permission,
@@ -89,7 +89,7 @@ export class PermissionRepositoryImpl implements PermissionRepository<EntityMana
     const query = `
       UPDATE ${RBAC_DATABASE_MODELS.PERMISSIONS}
       SET ${updateFields.join(', ')}
-      WHERE id = $${paramIndex} AND deleted_at IS NULL
+      WHERE id = $${paramIndex}
       RETURNING id
     `;
 
@@ -104,7 +104,7 @@ export class PermissionRepositoryImpl implements PermissionRepository<EntityMana
     const query = `
       SELECT *
       FROM ${RBAC_DATABASE_MODELS.PERMISSIONS}
-      WHERE id = $1 AND deleted_at IS NULL
+      WHERE id = $1
     `;
 
     const result = await manager.query(query, [id]);

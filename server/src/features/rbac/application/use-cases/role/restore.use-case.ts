@@ -23,7 +23,7 @@ export class RestoreRoleUseCase {
     private readonly roleRepository: RoleRepository,
     @Inject(TOKENS_CORE.ACTIVITYLOGS)
     private readonly activityLogRepository: ActivityLogRepository,
-  ) {}
+  ) { }
 
   async execute(id: number, requestInfo?: RequestInfo): Promise<boolean> {
     return this.transactionHelper.executeTransaction(
@@ -41,6 +41,8 @@ export class RestoreRoleUseCase {
         // Use domain method to restore
         role.restore();
 
+        console.log('role', role);
+
         // Update the entity
         const success = await this.roleRepository.update(id, role, manager);
         if (!success) {
@@ -57,9 +59,8 @@ export class RestoreRoleUseCase {
           details: JSON.stringify({
             id,
             name: role.name,
-            explanation: `Role with ID : ${id} restored by USER : ${
-              requestInfo?.user_name || ''
-            }`,
+            explanation: `Role with ID : ${id} restored by USER : ${requestInfo?.user_name || ''
+              }`,
             restored_by: requestInfo?.user_name || '',
             restored_at: getPHDateTime(new Date()),
           }),

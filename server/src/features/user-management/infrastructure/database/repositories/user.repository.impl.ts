@@ -169,7 +169,7 @@ export class UserRepositoryImpl implements UserRepository<EntityManager> {
     const query = `
       SELECT *
       FROM ${USER_MANAGEMENT_DATABASE_MODELS.USERS}
-      WHERE id = $1 AND deleted_at IS NULL
+      WHERE id = $1
     `;
 
     const result = await manager.query(query, [id]);
