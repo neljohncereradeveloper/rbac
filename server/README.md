@@ -22,7 +22,9 @@ This is a RESTful API server built with NestJS that provides:
 
 - **Authentication & Authorization**: JWT-based authentication with Role-Based Access Control (RBAC)
 - **User Management**: Complete user lifecycle management
-- **RBAC System**: Roles, permissions, and their relationships
+- **RBAC System**: System-defined roles and permissions with user-level permission management
+  - Roles and permissions are statically defined (managed via seeders only)
+  - User permissions can be granted or denied directly on users (overrides role permissions)
 - **Holiday Management**: Holiday calendar management
 
 The application follows Domain-Driven Design principles with a clean architecture organized by features.
@@ -72,36 +74,56 @@ The application follows Domain-Driven Design principles with a clean architectur
 
 **Purpose**: Manage roles, permissions, and access control
 
+**Important**: Roles and permissions are **system-defined** and cannot be modified through the API. They are managed exclusively via database seeders to ensure consistency and prevent breaking authorization checks.
+
 #### 3.1 Roles (`Role`)
+
+**System-Defined Roles**: Admin, Editor, Viewer
+
+**Note**: Roles are statically defined and managed via seeders only. Modifying or archiving them would break authorization checks since role names are hardcoded in controllers.
 
 **Endpoints**:
 
-- `POST /api/v1/roles` - Create a new role
-- `GET /api/v1/roles` - Get paginated list of roles
-- `GET /api/v1/roles/:id` - Get role by ID
-- `PUT /api/v1/roles/:id` - Update role information
-- `DELETE /api/v1/roles/:id/archive` - Archive a role
-- `PATCH /api/v1/roles/:id/restore` - Restore an archived role
+- `GET /api/v1/roles` - Get all roles (no pagination, no filtering)
 - `GET /api/v1/roles/combobox/list` - Get roles combobox list
+
+**Removed Endpoints** (system-defined, managed via seeders only):
+
+- ~~`POST /api/v1/roles`~~ - Create role (removed)
+- ~~`GET /api/v1/roles/:id`~~ - Get role by ID (removed)
+- ~~`PUT /api/v1/roles/:id`~~ - Update role (removed)
+- ~~`DELETE /api/v1/roles/:id/archive`~~ - Archive role (removed)
+- ~~`PATCH /api/v1/roles/:id/restore`~~ - Restore role (removed)
 
 #### 3.2 Permissions (`Permission`)
 
+**Note**: Permissions are statically defined and managed via seeders only. Modifying or archiving them would break authorization checks.
+
 **Endpoints**:
 
-- `POST /api/v1/permissions` - Create a new permission
-- `GET /api/v1/permissions` - Get paginated list of permissions
-- `GET /api/v1/permissions/:id` - Get permission by ID
-- `PUT /api/v1/permissions/:id` - Update permission information
-- `DELETE /api/v1/permissions/:id/archive` - Archive a permission
-- `PATCH /api/v1/permissions/:id/restore` - Restore an archived permission
+- `GET /api/v1/permissions` - Get all permissions (no pagination, no filtering)
 - `GET /api/v1/permissions/combobox/list` - Get permissions combobox list
+
+**Removed Endpoints** (system-defined, managed via seeders only):
+
+- ~~`POST /api/v1/permissions`~~ - Create permission (removed)
+- ~~`GET /api/v1/permissions/:id`~~ - Get permission by ID (removed)
+- ~~`PUT /api/v1/permissions/:id`~~ - Update permission (removed)
+- ~~`DELETE /api/v1/permissions/:id/archive`~~ - Archive permission (removed)
+- ~~`PATCH /api/v1/permissions/:id/restore`~~ - Restore permission (removed)
 
 #### 3.3 Role-Permission Relationships (`Role-Permission`)
 
+**Note**: Role-permission assignments are **managed via seeders only**. The relationship between roles and permissions is statically defined and cannot be modified through the API.
+
 **Endpoints**:
 
-- `POST /api/v1/roles/:roleId/permissions` - Assign permissions to a role
-- `DELETE /api/v1/roles/:roleId/permissions` - Remove permissions from a role
+- `GET /api/v1/roles/:roleId/permissions` - Get permissions assigned to a role (read-only)
+
+**Removed Endpoints** (managed via seeders only):
+
+- ~~`POST /api/v1/roles/:roleId/permissions`~~ - Assign permissions to a role (removed)
+- ~~`DELETE /api/v1/roles/:roleId/permissions`~~ - Remove permissions from a role (removed)
 
 #### 3.4 User-Role Relationships (`User-Role`)
 
@@ -113,19 +135,51 @@ The application follows Domain-Driven Design principles with a clean architectur
 
 #### 3.5 User-Permission Overrides (`User-Permission`)
 
+**Important**: To modify a user's permissions, **grant or deny permissions directly on the user**, not on roles. User permission overrides take precedence over role-based permissions.
+
+**How It Works**:
+
+- Users inherit permissions from their assigned roles
+- User permission overrides can **grant** permissions (even if the role doesn't have them)
+- User permission overrides can **deny** permissions (even if the role grants them)
+- User permission overrides take precedence over role permissions
+
 **Endpoints**:
 
 - `GET /api/v1/users/:userId/permissions` - Get permission overrides for a user
-- `POST /api/v1/users/:userId/permissions/grant` - Grant permissions to a user (override)
-- `POST /api/v1/users/:userId/permissions/deny` - Deny permissions to a user (override)
+- `POST /api/v1/users/:userId/permissions/grant` - **Grant permissions directly to a user** (overrides role permissions)
+- `POST /api/v1/users/:userId/permissions/deny` - **Deny permissions directly to a user** (overrides role permissions)
 - `DELETE /api/v1/users/:userId/permissions` - Remove permission overrides from a user
 
 **Key Features**:
 
 - Hierarchical permission system (roles → permissions)
-- User-level permission overrides (grant/deny)
-- Permission inheritance through roles
+- **User-level permission management**: Grant or deny permissions directly on users
+- Permission inheritance through roles with user-level overrides
 - Complete audit trail via activity logs
+
+#### RBAC System Architecture
+
+**System-Defined Components** (Managed via Seeders Only):
+
+1. **Roles**: Three predefined roles (Admin, Editor, Viewer) with fixed permission sets
+2. **Permissions**: All permissions are statically defined and cannot be modified
+3. **Role-Permission Assignments**: Relationships between roles and permissions are fixed
+
+**Dynamic Components** (Managed via API):
+
+1. **User-Role Assignments**: Assign roles to users dynamically
+2. **User-Permission Overrides**: Grant or deny specific permissions directly on users
+
+**Permission Resolution Logic**:
+
+1. User inherits permissions from assigned roles
+2. User permission overrides are applied:
+   - **Grant**: User gets permission even if role doesn't have it
+   - **Deny**: User is denied permission even if role grants it
+3. User permission overrides take precedence over role permissions
+
+**Best Practice**: To modify a user's access, **grant or deny permissions directly on the user** using the User-Permission endpoints, rather than modifying role-permission assignments (which are fixed).
 
 ### 4. Holiday Management (`holiday-management`)
 
@@ -336,7 +390,7 @@ The API uses URI versioning:
 
 ### Pagination
 
-List endpoints support pagination via query parameters:
+Most list endpoints support pagination via query parameters:
 
 ```
 GET /api/v1/users?page=1&limit=10&term=search&is_archived=false
@@ -364,6 +418,11 @@ GET /api/v1/users?page=1&limit=10&term=search&is_archived=false
   }
 }
 ```
+
+**Note**: Roles and Permissions endpoints do **not** support pagination. They return all records in a single response:
+
+- `GET /api/v1/roles` - Returns all roles (no pagination)
+- `GET /api/v1/permissions` - Returns all permissions (no pagination)
 
 ## Development
 
