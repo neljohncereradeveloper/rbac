@@ -39,6 +39,8 @@ export const queryKeys = {
       [...queryKeys.users.all, "combobox", token] as const,
     roles: (userId: number, token?: string | null) =>
       [...queryKeys.users.all, "roles", userId, token] as const,
+    permissions: (userId: number, token?: string | null) =>
+      [...queryKeys.users.all, "permissions", userId, token] as const,
   },
   permissions: {
     all: ["permissions"] as const,

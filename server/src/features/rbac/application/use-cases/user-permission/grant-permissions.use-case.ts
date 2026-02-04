@@ -70,6 +70,14 @@ export class GrantPermissionsToUserUseCase {
         );
 
         // Grant permissions to user (is_allowed: true)
+        // If replace is true, remove all existing overrides first, then grant new ones
+        if (command.replace) {
+          await this.userPermissionRepository.removeFromUser(
+            command.user_id,
+            [],
+            manager,
+          );
+        }
         await this.userPermissionRepository.grantToUser(
           command.user_id,
           command.permission_ids,

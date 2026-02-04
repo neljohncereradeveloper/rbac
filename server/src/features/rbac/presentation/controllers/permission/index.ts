@@ -179,7 +179,7 @@ export class PermissionController {
   @Version('1')
   @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.READ)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.PAGINATED_LIST)
   @ApiOperation({ summary: 'Get paginated list of permissions' })
   @ApiResponse({
     status: 200,
@@ -202,7 +202,7 @@ export class PermissionController {
   @Version('1')
   @Get('combobox/list')
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.READ)
+  @RequirePermissions(PERMISSIONS.PERMISSIONS.COMBOBOX)
   @ApiOperation({ summary: 'Get permissions combobox list' })
   @ApiResponse({
     status: 200,

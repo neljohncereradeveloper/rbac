@@ -176,7 +176,7 @@ export class RoleController {
   @Version('1')
   @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
-  @RequirePermissions(PERMISSIONS.ROLES.READ)
+  @RequirePermissions(PERMISSIONS.ROLES.PAGINATED_LIST)
   @ApiOperation({ summary: 'Get paginated list of roles' })
   @ApiResponse({
     status: 200,
@@ -188,6 +188,7 @@ export class RoleController {
   async getPaginated(
     @Query() query: PaginationQueryDto,
   ): Promise<PaginatedResult<Role>> {
+    console.log('getPaginated');
     return this.getPaginatedRoleUseCase.execute(
       query.term ?? '',
       query.page,
@@ -199,7 +200,7 @@ export class RoleController {
   @Version('1')
   @Get('combobox/list')
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
-  @RequirePermissions(PERMISSIONS.ROLES.READ)
+  @RequirePermissions(PERMISSIONS.ROLES.COMBOBOX)
   @ApiOperation({ summary: 'Get roles combobox list' })
   @ApiResponse({
     status: 200,

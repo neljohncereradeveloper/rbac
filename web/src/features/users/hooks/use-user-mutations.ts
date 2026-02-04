@@ -10,10 +10,16 @@ import {
   restoreUser,
   assignRolesToUser,
   resetPassword,
+  grantPermissionsToUser,
+  denyPermissionsToUser,
+  removePermissionsFromUser,
   type CreateUserParams,
   type UpdateUserParams,
   type AssignRolesToUserParams,
   type ResetPasswordParams,
+  type GrantPermissionsToUserParams,
+  type DenyPermissionsToUserParams,
+  type RemovePermissionsFromUserParams,
 } from "../api/users-api"
 import type { User } from "../types/user.types"
 
@@ -146,6 +152,90 @@ export function useResetPassword() {
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.detail(variables.userId),
+      })
+    },
+  })
+}
+
+/**
+ * Mutation hook for granting permissions to a user
+ */
+export function useGrantPermissionsToUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      ...params
+    }: { userId: number } & GrantPermissionsToUserParams) =>
+      grantPermissionsToUser(userId, params),
+    onSuccess: (_, variables) => {
+      // Invalidate user queries and user permissions
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.detail(variables.userId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.permissions(variables.userId),
+      })
+      toast.success("Permissions granted successfully", {
+        description: `Permissions have been granted to the user.`,
+      })
+    },
+  })
+}
+
+/**
+ * Mutation hook for denying permissions to a user
+ */
+export function useDenyPermissionsToUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      ...params
+    }: { userId: number } & DenyPermissionsToUserParams) =>
+      denyPermissionsToUser(userId, params),
+    onSuccess: (_, variables) => {
+      // Invalidate user queries and user permissions
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.detail(variables.userId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.permissions(variables.userId),
+      })
+      toast.success("Permissions denied successfully", {
+        description: `Permissions have been denied for the user.`,
+      })
+    },
+  })
+}
+
+/**
+ * Mutation hook for removing permission overrides from a user
+ */
+export function useRemovePermissionsFromUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      ...params
+    }: { userId: number } & RemovePermissionsFromUserParams) =>
+      removePermissionsFromUser(userId, params),
+    onSuccess: (_, variables) => {
+      // Invalidate user queries and user permissions
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.detail(variables.userId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.permissions(variables.userId),
+      })
+      toast.success("Permission overrides removed successfully", {
+        description: `Permission overrides have been removed from the user.`,
       })
     },
   })

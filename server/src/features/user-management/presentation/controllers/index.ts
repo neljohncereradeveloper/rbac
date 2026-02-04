@@ -252,7 +252,7 @@ export class UserController {
   @Version('1')
   @Get()
   @RequireRoles(ROLES.ADMIN)
-  @RequirePermissions(PERMISSIONS.USERS.READ)
+  @RequirePermissions(PERMISSIONS.USERS.PAGINATED_LIST)
   @ApiOperation({ summary: 'Get paginated list of users' })
   @ApiResponse({
     status: 200,
@@ -275,7 +275,7 @@ export class UserController {
   @Version('1')
   @Get('combobox/list')
   @RequireRoles(ROLES.ADMIN)
-  @RequirePermissions(PERMISSIONS.USERS.READ)
+  @RequirePermissions(PERMISSIONS.USERS.COMBOBOX)
   @ApiOperation({ summary: 'Get users combobox list' })
   @ApiResponse({
     status: 200,

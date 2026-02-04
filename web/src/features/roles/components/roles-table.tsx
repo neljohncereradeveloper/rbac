@@ -24,11 +24,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontalIcon, PencilIcon, ArchiveIcon, RotateCcwIcon, KeyIcon, EyeIcon } from "lucide-react"
+import { MoreHorizontalIcon, ArchiveIcon, RotateCcwIcon, KeyIcon, EyeIcon } from "lucide-react"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import type { PaginationMeta } from "@/lib/api/types"
 import type { Role } from "../types/role.types"
-import { UpdateRoleDialog } from "./update-role-dialog"
+// Note: UpdateRoleDialog removed - roles are statically defined in backend
+// (ADMIN, EDITOR, VIEWER) and managed via seeders only
 import { AssignPermissionsDialog } from "./assign-permissions-dialog"
 import { ViewPermissionsDialog } from "./view-permissions-dialog"
 import { useArchiveRole, useRestoreRole } from "../hooks/use-role-mutations"
@@ -58,12 +59,12 @@ export function RolesTable({
   token,
   onActionSuccess,
 }: RolesTableProps) {
-  const [roleToUpdate, setRoleToUpdate] = useState<Role | null>(null)
+  // Note: Edit role removed - roles are statically defined in backend
+  // (ADMIN, EDITOR, VIEWER) and managed via seeders only
   const [roleToAssign, setRoleToAssign] = useState<Role | null>(null)
   const [roleToView, setRoleToView] = useState<Role | null>(null)
   const [roleToArchive, setRoleToArchive] = useState<Role | null>(null)
   const [roleToRestore, setRoleToRestore] = useState<Role | null>(null)
-  const [updateOpen, setUpdateOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
   const [viewOpen, setViewOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
@@ -151,15 +152,7 @@ export function RolesTable({
                         </DropdownMenuItem>
                       ) : (
                         <>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setRoleToUpdate(role)
-                              setUpdateOpen(true)
-                            }}
-                          >
-                            <PencilIcon className="size-4" />
-                            Edit
-                          </DropdownMenuItem>
+                          {/* Edit role removed - roles are statically defined in backend */}
                           <DropdownMenuItem
                             onClick={() => {
                               setRoleToView(role)
@@ -199,13 +192,7 @@ export function RolesTable({
         </TableBody>
       </Table>
       {meta && <DataTablePagination meta={meta} basePath={basePath} />}
-      <UpdateRoleDialog
-        open={updateOpen}
-        onOpenChange={setUpdateOpen}
-        role={roleToUpdate}
-        token={token}
-        onSuccess={onActionSuccess}
-      />
+      {/* UpdateRoleDialog removed - roles are statically defined in backend */}
       <AssignPermissionsDialog
         open={assignOpen}
         onOpenChange={setAssignOpen}

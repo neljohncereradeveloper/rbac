@@ -33,12 +33,14 @@ import {
   CheckIcon,
   XIcon,
   LockIcon,
+  ShieldIcon,
 } from "lucide-react"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import type { PaginationMeta } from "@/lib/api/types"
 import type { User } from "../types/user.types"
 import { UpdateUserDialog } from "./update-user-dialog"
 import { AssignRolesDialog } from "./assign-roles-dialog"
+import { AssignPermissionsDialog } from "./assign-permissions-dialog"
 import { ResetPasswordDialog } from "./reset-password-dialog"
 import { useArchiveUser, useRestoreUser } from "../hooks/use-user-mutations"
 import { ErrorAlert } from "@/components/ui/error-alert"
@@ -93,11 +95,13 @@ export function UsersTable({
 }: UsersTableProps) {
   const [userToUpdate, setUserToUpdate] = useState<User | null>(null)
   const [userToAssign, setUserToAssign] = useState<User | null>(null)
+  const [userToAssignPermissions, setUserToAssignPermissions] = useState<User | null>(null)
   const [userToResetPassword, setUserToResetPassword] = useState<User | null>(null)
   const [userToArchive, setUserToArchive] = useState<User | null>(null)
   const [userToRestore, setUserToRestore] = useState<User | null>(null)
   const [updateOpen, setUpdateOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
+  const [assignPermissionsOpen, setAssignPermissionsOpen] = useState(false)
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [restoreOpen, setRestoreOpen] = useState(false)
@@ -208,6 +212,15 @@ export function UsersTable({
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
+                              setUserToAssignPermissions(user)
+                              setAssignPermissionsOpen(true)
+                            }}
+                          >
+                            <ShieldIcon className="size-4" />
+                            Manage permissions
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
                               setUserToResetPassword(user)
                               setResetPasswordOpen(true)
                             }}
@@ -247,6 +260,16 @@ export function UsersTable({
         open={assignOpen}
         onOpenChange={setAssignOpen}
         user={userToAssign}
+        token={token}
+        onSuccess={onActionSuccess}
+      />
+      <AssignPermissionsDialog
+        open={assignPermissionsOpen}
+        onOpenChange={(open) => {
+          setAssignPermissionsOpen(open)
+          if (!open) setUserToAssignPermissions(null)
+        }}
+        user={userToAssignPermissions}
         token={token}
         onSuccess={onActionSuccess}
       />

@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { PlusIcon, ArchiveIcon, ArchiveRestoreIcon } from "lucide-react"
+import { ArchiveIcon, ArchiveRestoreIcon } from "lucide-react"
 import { PageHeader, PageShell, PageTitle } from "@/components/layout"
 import { Button } from "@/components/ui/button"
 import { DataTableCard } from "@/components/table/data-table-card"
@@ -11,11 +11,9 @@ import { useTableSearchParams } from "@/hooks/use-table-search-params"
 import { useAuth } from "@/features/auth/hooks/use-auth"
 import { useRoles } from "@/features/roles/hooks/use-roles"
 import { RolesTable } from "@/features/roles/components/roles-table"
-import { CreateRoleDialog } from "@/features/roles/components/create-role-dialog"
 import { cn } from "@/lib/utils"
 
 function RolesPageContent() {
-  const [createOpen, setCreateOpen] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const { page, limit, term, is_archived } = useTableSearchParams()
@@ -46,7 +44,7 @@ function RolesPageContent() {
       <PageShell>
         <PageTitle
           title="Roles"
-          description="Manage roles and their permissions."
+          description="View roles and manage their permissions. Roles (Admin, Editor, Viewer) are statically defined and managed via seeders only."
         />
         <DataTableCard
           title="Roles list"
@@ -54,13 +52,9 @@ function RolesPageContent() {
             basePath: "/roles",
             placeholder: "Search roles by name...",
             defaultValue: term,
-            trailingActions:
-              isAuthenticated && is_archived === "false" ? (
-                <Button size="sm" onClick={() => setCreateOpen(true)}>
-                  <PlusIcon className="size-4" />
-                  Create role
-                </Button>
-              ) : undefined,
+            // Note: Create role button removed - roles are statically defined in backend
+            // (ADMIN, EDITOR, VIEWER) and managed via seeders only
+            trailingActions: undefined,
           }}
           isAuthenticated={isAuthenticated}
           isLoading={isLoading}
@@ -118,12 +112,6 @@ function RolesPageContent() {
           )}
         </DataTableCard>
       </PageShell>
-      <CreateRoleDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        token={isAuthenticated ? token : null}
-        onSuccess={refetch}
-      />
     </>
   )
 }

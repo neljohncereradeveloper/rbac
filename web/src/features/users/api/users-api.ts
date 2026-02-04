@@ -5,6 +5,7 @@
 import { apiClient } from "@/lib/api/client"
 import type { PaginatedResult } from "@/lib/api/types"
 import type { User } from "../types/user.types"
+import type { UserPermission } from "../types/user-permission.types"
 
 export interface FetchUsersParams {
   page?: number
@@ -63,6 +64,23 @@ export interface UserRole {
   created_at: string
   username?: string
   role_description?: string | null
+}
+
+export interface GrantPermissionsToUserParams {
+  permission_ids: number[]
+  replace?: boolean
+  token?: string | null
+}
+
+export interface DenyPermissionsToUserParams {
+  permission_ids: number[]
+  replace?: boolean
+  token?: string | null
+}
+
+export interface RemovePermissionsFromUserParams {
+  permission_ids: number[]
+  token?: string | null
 }
 
 export async function fetchUsers(
@@ -221,6 +239,64 @@ export async function resetPassword(
   return apiClient<{ success: boolean }>(`/users/${userId}/change-password`, {
     method: "POST",
     body: JSON.stringify({ new_password }),
+    token,
+  })
+}
+
+export async function fetchUserPermissions(
+  userId: number,
+  token?: string | null
+): Promise<UserPermission[]> {
+  return apiClient<UserPermission[]>(`/users/${userId}/permissions`, { token })
+}
+
+export async function grantPermissionsToUser(
+  userId: number,
+  params: GrantPermissionsToUserParams
+): Promise<{ success: boolean }> {
+  const { permission_ids, replace, token } = params
+  const body: { permission_ids: number[]; replace?: boolean } = {
+    permission_ids,
+  }
+  if (replace !== undefined) {
+    body.replace = replace
+  }
+  return apiClient<{ success: boolean }>(
+    `/users/${userId}/permissions/grant`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      token,
+    }
+  )
+}
+
+export async function denyPermissionsToUser(
+  userId: number,
+  params: DenyPermissionsToUserParams
+): Promise<{ success: boolean }> {
+  const { permission_ids, replace, token } = params
+  const body: { permission_ids: number[]; replace?: boolean } = {
+    permission_ids,
+  }
+  if (replace !== undefined) {
+    body.replace = replace
+  }
+  return apiClient<{ success: boolean }>(`/users/${userId}/permissions/deny`, {
+    method: "POST",
+    body: JSON.stringify(body),
+    token,
+  })
+}
+
+export async function removePermissionsFromUser(
+  userId: number,
+  params: RemovePermissionsFromUserParams
+): Promise<{ success: boolean }> {
+  const { permission_ids, token } = params
+  return apiClient<{ success: boolean }>(`/users/${userId}/permissions`, {
+    method: "DELETE",
+    body: JSON.stringify({ permission_ids }),
     token,
   })
 }

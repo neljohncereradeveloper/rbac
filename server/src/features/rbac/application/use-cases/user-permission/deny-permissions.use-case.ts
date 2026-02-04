@@ -70,6 +70,14 @@ export class DenyPermissionsToUserUseCase {
         );
 
         // Deny permissions to user (is_allowed: false)
+        // If replace is true, remove all existing overrides first, then deny new ones
+        if (command.replace) {
+          await this.userPermissionRepository.removeFromUser(
+            command.user_id,
+            [],
+            manager,
+          );
+        }
         await this.userPermissionRepository.denyToUser(
           command.user_id,
           command.permission_ids,
