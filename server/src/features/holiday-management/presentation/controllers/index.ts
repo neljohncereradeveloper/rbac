@@ -49,9 +49,14 @@ import {
 import { Holiday } from '../../domain/models';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
+import { RATE_LIMIT_MODERATE, RateLimit } from '@/core/infrastructure/decorators';
 
 @ApiTags('Holiday')
 @Controller('holidays')
+@RateLimit({
+  ...RATE_LIMIT_MODERATE,
+  message: 'Too many requests. Please try again later.',
+})
 export class HolidayController {
   constructor(
     private readonly createHolidayUseCase: CreateHolidayUseCase,

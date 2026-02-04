@@ -54,9 +54,17 @@ import {
 import { User } from '../../domain/models';
 import { PaginatedResult } from '@/core/utils/pagination.util';
 import { PaginationQueryDto } from '@/core/infrastructure/dto';
+import {
+  RateLimit,
+  RATE_LIMIT_MODERATE,
+} from '@/core/infrastructure/decorators';
 
 @ApiTags('User')
 @Controller('users')
+@RateLimit({
+  ...RATE_LIMIT_MODERATE,
+  message: 'Too many requests. Please try again later.',
+})
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,

@@ -30,6 +30,10 @@ import {
   RequirePermissions,
   RequireRoles,
 } from '@/features/auth/infrastructure/decorators';
+import {
+  RateLimit,
+  RATE_LIMIT_MODERATE,
+} from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
   ArchivePermissionUseCase,
@@ -46,6 +50,10 @@ import { CreatePermissionCommand, UpdatePermissionCommand } from '@/features/rba
 
 @ApiTags('Permission')
 @Controller('permissions')
+@RateLimit({
+  ...RATE_LIMIT_MODERATE,
+  message: 'Too many requests. Please try again later.',
+})
 export class PermissionController {
   constructor(
     private readonly createPermissionUseCase: CreatePermissionUseCase,

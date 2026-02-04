@@ -30,6 +30,10 @@ import {
   RequirePermissions,
   RequireRoles,
 } from '@/features/auth/infrastructure/decorators';
+import {
+  RateLimit,
+  RATE_LIMIT_MODERATE,
+} from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
   ArchiveRoleUseCase,
@@ -46,6 +50,10 @@ import { CreateRoleCommand, UpdateRoleCommand } from '@/features/rbac/applicatio
 
 @ApiTags('Role')
 @Controller('roles')
+@RateLimit({
+  ...RATE_LIMIT_MODERATE,
+  message: 'Too many requests. Please try again later.',
+})
 export class RoleController {
   constructor(
     private readonly createRoleUseCase: CreateRoleUseCase,

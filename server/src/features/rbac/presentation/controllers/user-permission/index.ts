@@ -34,11 +34,19 @@ import {
   RequirePermissions,
   RequireRoles,
 } from '@/features/auth/infrastructure/decorators';
+import {
+  RateLimit,
+  RATE_LIMIT_MODERATE,
+} from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import { DenyPermissionsToUserCommand, GrantPermissionsToUserCommand, RemovePermissionsFromUserCommand } from '@/features/rbac/application/commands/user-permission';
 
 @ApiTags('User-Permission')
 @Controller('users/:userId/permissions')
+@RateLimit({
+  ...RATE_LIMIT_MODERATE,
+  message: 'Too many requests. Please try again later.',
+})
 export class UserPermissionController {
   constructor(
     private readonly grantPermissionsToUserUseCase: GrantPermissionsToUserUseCase,
