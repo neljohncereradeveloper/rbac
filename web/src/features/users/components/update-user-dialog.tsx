@@ -18,13 +18,13 @@ import {
   FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { getErrorMessage } from "@/lib/react-query"
 import {
   updateUserSchema,
   type UpdateUserFormData,
 } from "../schemas/user.schema"
 import type { User } from "../types/user.types"
 import { useUpdateUser } from "../hooks/use-user-mutations"
+import { ErrorAlert } from "@/components/ui/error-alert"
 
 export interface UpdateUserDialogProps {
   open: boolean
@@ -92,12 +92,23 @@ export function UpdateUserDialog({
           onOpenChange(false)
           onSuccess()
         },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
+        },
       }
     )
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        onOpenChange(open)
+        if (!open) {
+          updateUserMutation.reset()
+        }
+      }}
+    >
       <DialogContent className="max-w-2xl">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
@@ -105,9 +116,7 @@ export function UpdateUserDialog({
           </DialogHeader>
           <div className="space-y-6 py-4">
             {updateUserMutation.error && (
-              <p className="text-destructive text-sm">
-                {getErrorMessage(updateUserMutation.error)}
-              </p>
+              <ErrorAlert error={updateUserMutation.error} />
             )}
             {user && (
               <p className="text-muted-foreground text-sm">

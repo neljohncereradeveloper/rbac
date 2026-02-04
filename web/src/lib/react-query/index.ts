@@ -3,4 +3,8 @@
  */
 
 export { queryKeys } from "./query-keys"
-export { createQueryOptions, getErrorMessage } from "./query-options"
+export {
+  createQueryOptions,
+  getErrorMessage,
+  isAccessDeniedError,
+} from "./query-options"

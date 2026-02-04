@@ -22,6 +22,7 @@ import {
   type AssignPermissionsFormData,
 } from "../schemas/assign-permissions.schema"
 import { useAssignPermissionsToRole } from "../hooks/use-role-mutations"
+import { ErrorAlert } from "@/components/ui/error-alert"
 
 export interface AssignPermissionsDialogProps {
   open: boolean
@@ -174,12 +175,23 @@ export function AssignPermissionsDialog({
           onOpenChange(false)
           onSuccess()
         },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
+        },
       }
     )
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        onOpenChange(open)
+        if (!open) {
+          assignPermissionsMutation.reset()
+        }
+      }}
+    >
       <DialogContent className="flex max-w-5xl max-h-[90vh] flex-col overflow-hidden">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -192,7 +204,13 @@ export function AssignPermissionsDialog({
           </DialogHeader>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden py-4">
             {fetchError && (
-              <p className="text-destructive text-sm">{fetchError}</p>
+              <ErrorAlert error={fetchError} className="mb-4" />
+            )}
+            {assignPermissionsMutation.error && (
+              <ErrorAlert
+                error={assignPermissionsMutation.error}
+                className="mb-4"
+              />
             )}
             <FieldGroup className="min-h-0 flex-1 flex flex-col">
               <Field className="flex min-h-0 flex-1 flex-col">

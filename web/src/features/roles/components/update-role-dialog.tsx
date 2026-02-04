@@ -18,13 +18,13 @@ import {
   FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { getErrorMessage } from "@/lib/react-query"
 import {
   updateRoleSchema,
   type UpdateRoleFormData,
 } from "../schemas/role.schema"
 import type { Role } from "../types/role.types"
 import { useUpdateRole } from "../hooks/use-role-mutations"
+import { ErrorAlert } from "@/components/ui/error-alert"
 
 export interface UpdateRoleDialogProps {
   open: boolean
@@ -78,12 +78,23 @@ export function UpdateRoleDialog({
           onOpenChange(false)
           onSuccess()
         },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
+        },
       }
     )
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        onOpenChange(open)
+        if (!open) {
+          updateRoleMutation.reset()
+        }
+      }}
+    >
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
@@ -91,9 +102,7 @@ export function UpdateRoleDialog({
           </DialogHeader>
           <div className="space-y-6 py-4">
             {updateRoleMutation.error && (
-              <p className="text-destructive text-sm">
-                {getErrorMessage(updateRoleMutation.error)}
-              </p>
+              <ErrorAlert error={updateRoleMutation.error} />
             )}
             <FieldGroup>
               <Field data-invalid={!!errors.name}>

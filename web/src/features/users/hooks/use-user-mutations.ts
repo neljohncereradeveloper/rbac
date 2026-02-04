@@ -8,9 +8,11 @@ import {
   archiveUser,
   restoreUser,
   assignRolesToUser,
+  resetPassword,
   type CreateUserParams,
   type UpdateUserParams,
   type AssignRolesToUserParams,
+  type ResetPasswordParams,
 } from "../api/users-api"
 import type { User } from "../types/user.types"
 
@@ -106,6 +108,28 @@ export function useAssignRolesToUser() {
       })
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.roles(variables.userId),
+      })
+    },
+  })
+}
+
+/**
+ * Mutation hook for resetting a user's password
+ */
+export function useResetPassword() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      ...params
+    }: { userId: number } & ResetPasswordParams) =>
+      resetPassword(userId, params),
+    onSuccess: (_, variables) => {
+      // Invalidate user queries to refresh user data
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.detail(variables.userId),
       })
     },
   })

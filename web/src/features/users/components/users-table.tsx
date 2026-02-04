@@ -32,13 +32,16 @@ import {
   KeyIcon,
   CheckIcon,
   XIcon,
+  LockIcon,
 } from "lucide-react"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import type { PaginationMeta } from "@/lib/api/types"
 import type { User } from "../types/user.types"
 import { UpdateUserDialog } from "./update-user-dialog"
 import { AssignRolesDialog } from "./assign-roles-dialog"
+import { ResetPasswordDialog } from "./reset-password-dialog"
 import { useArchiveUser, useRestoreUser } from "../hooks/use-user-mutations"
+import { ErrorAlert } from "@/components/ui/error-alert"
 
 export interface UsersTableProps {
   users: User[]
@@ -90,10 +93,12 @@ export function UsersTable({
 }: UsersTableProps) {
   const [userToUpdate, setUserToUpdate] = useState<User | null>(null)
   const [userToAssign, setUserToAssign] = useState<User | null>(null)
+  const [userToResetPassword, setUserToResetPassword] = useState<User | null>(null)
   const [userToArchive, setUserToArchive] = useState<User | null>(null)
   const [userToRestore, setUserToRestore] = useState<User | null>(null)
   const [updateOpen, setUpdateOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [restoreOpen, setRestoreOpen] = useState(false)
   const archiveUserMutation = useArchiveUser()
@@ -109,6 +114,9 @@ export function UsersTable({
           setUserToArchive(null)
           onActionSuccess()
         },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
+        },
       }
     )
   }
@@ -122,6 +130,9 @@ export function UsersTable({
           setRestoreOpen(false)
           setUserToRestore(null)
           onActionSuccess()
+        },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
         },
       }
     )
@@ -196,6 +207,15 @@ export function UsersTable({
                             Assign roles
                           </DropdownMenuItem>
                           <DropdownMenuItem
+                            onClick={() => {
+                              setUserToResetPassword(user)
+                              setResetPasswordOpen(true)
+                            }}
+                          >
+                            <LockIcon className="size-4" />
+                            Reset password
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             variant="destructive"
                             onClick={() => {
                               setUserToArchive(user)
@@ -230,11 +250,24 @@ export function UsersTable({
         token={token}
         onSuccess={onActionSuccess}
       />
+      <ResetPasswordDialog
+        open={resetPasswordOpen}
+        onOpenChange={(open) => {
+          setResetPasswordOpen(open)
+          if (!open) setUserToResetPassword(null)
+        }}
+        user={userToResetPassword}
+        token={token}
+        onSuccess={onActionSuccess}
+      />
       <Dialog
         open={archiveOpen}
         onOpenChange={(open) => {
           setArchiveOpen(open)
-          if (!open) setUserToArchive(null)
+          if (!open) {
+            setUserToArchive(null)
+            archiveUserMutation.reset()
+          }
         }}
       >
         <DialogContent>
@@ -246,6 +279,9 @@ export function UsersTable({
               from the Archived tab.
             </DialogDescription>
           </DialogHeader>
+          {archiveUserMutation.error && (
+            <ErrorAlert error={archiveUserMutation.error} />
+          )}
           <DialogFooter>
             <Button
               variant="outline"
@@ -270,7 +306,10 @@ export function UsersTable({
         open={restoreOpen}
         onOpenChange={(open) => {
           setRestoreOpen(open)
-          if (!open) setUserToRestore(null)
+          if (!open) {
+            setUserToRestore(null)
+            restoreUserMutation.reset()
+          }
         }}
       >
         <DialogContent>
@@ -282,6 +321,9 @@ export function UsersTable({
               tab.
             </DialogDescription>
           </DialogHeader>
+          {restoreUserMutation.error && (
+            <ErrorAlert error={restoreUserMutation.error} />
+          )}
           <DialogFooter>
             <Button
               variant="outline"

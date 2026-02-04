@@ -18,12 +18,12 @@ import {
   FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { getErrorMessage } from "@/lib/react-query"
 import {
   createUserSchema,
   type CreateUserFormData,
 } from "../schemas/user.schema"
 import { useCreateUser } from "../hooks/use-user-mutations"
+import { ErrorAlert } from "@/components/ui/error-alert"
 
 export interface CreateUserDialogProps {
   open: boolean
@@ -85,12 +85,23 @@ export function CreateUserDialog({
           onOpenChange(false)
           onSuccess()
         },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
+        },
       }
     )
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        onOpenChange(open)
+        if (!open) {
+          createUserMutation.reset()
+        }
+      }}
+    >
       <DialogContent className="max-w-2xl">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
@@ -98,9 +109,7 @@ export function CreateUserDialog({
           </DialogHeader>
           <div className="space-y-6 py-4">
             {createUserMutation.error && (
-              <p className="text-destructive text-sm">
-                {getErrorMessage(createUserMutation.error)}
-              </p>
+              <ErrorAlert error={createUserMutation.error} />
             )}
             <FieldGroup className="grid grid-cols-2 gap-x-6 gap-y-4">
               <Field data-invalid={!!errors.username}>

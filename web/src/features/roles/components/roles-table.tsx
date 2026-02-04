@@ -32,6 +32,7 @@ import { UpdateRoleDialog } from "./update-role-dialog"
 import { AssignPermissionsDialog } from "./assign-permissions-dialog"
 import { ViewPermissionsDialog } from "./view-permissions-dialog"
 import { useArchiveRole, useRestoreRole } from "../hooks/use-role-mutations"
+import { ErrorAlert } from "@/components/ui/error-alert"
 
 export interface RolesTableProps {
   roles: Role[]
@@ -80,6 +81,9 @@ export function RolesTable({
           setRoleToArchive(null)
           onActionSuccess()
         },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
+        },
       }
     )
   }
@@ -93,6 +97,9 @@ export function RolesTable({
           setRestoreOpen(false)
           setRoleToRestore(null)
           onActionSuccess()
+        },
+        onError: () => {
+          // Error is displayed in the dialog via mutation.error
         },
       }
     )
@@ -216,7 +223,10 @@ export function RolesTable({
         open={archiveOpen}
         onOpenChange={(open) => {
           setArchiveOpen(open)
-          if (!open) setRoleToArchive(null)
+          if (!open) {
+            setRoleToArchive(null)
+            archiveRoleMutation.reset()
+          }
         }}
       >
         <DialogContent>
@@ -228,6 +238,9 @@ export function RolesTable({
               Archived tab.
             </DialogDescription>
           </DialogHeader>
+          {archiveRoleMutation.error && (
+            <ErrorAlert error={archiveRoleMutation.error} />
+          )}
           <DialogFooter>
             <Button
               variant="outline"
@@ -252,7 +265,10 @@ export function RolesTable({
         open={restoreOpen}
         onOpenChange={(open) => {
           setRestoreOpen(open)
-          if (!open) setRoleToRestore(null)
+          if (!open) {
+            setRoleToRestore(null)
+            restoreRoleMutation.reset()
+          }
         }}
       >
         <DialogContent>
@@ -263,6 +279,9 @@ export function RolesTable({
               The role will be active again and visible in the Active tab.
             </DialogDescription>
           </DialogHeader>
+          {restoreRoleMutation.error && (
+            <ErrorAlert error={restoreRoleMutation.error} />
+          )}
           <DialogFooter>
             <Button
               variant="outline"

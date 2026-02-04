@@ -78,5 +78,15 @@ export const updateUserSchema = z.object({
     ),
 })
 
+export const resetPasswordSchema = z.object({
+  new_password: z
+    .string()
+    .min(1, "Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .max(255, "Password must not exceed 255 characters")
+    .regex(/^\S+$/, "Password cannot contain whitespace"),
+})
+
 export type CreateUserFormData = z.infer<typeof createUserSchema>
 export type UpdateUserFormData = z.infer<typeof updateUserSchema>
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>

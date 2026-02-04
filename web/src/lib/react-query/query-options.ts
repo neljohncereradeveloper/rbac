@@ -32,3 +32,24 @@ export function getErrorMessage(error: unknown): string | null {
   if (typeof error === "string") return error
   return "An unknown error occurred"
 }
+
+/**
+ * Checks if an error is an access denied error
+ */
+export function isAccessDeniedError(error: unknown): boolean {
+  if (!error) return false
+
+  const errorMessage =
+    error instanceof Error
+      ? error.message.toLowerCase()
+      : String(error).toLowerCase()
+
+  return (
+    errorMessage.includes("access denied") ||
+    errorMessage.includes("forbidden") ||
+    errorMessage.includes("insufficient permissions") ||
+    errorMessage.includes("don't have permission") ||
+    errorMessage.includes("required role") ||
+    errorMessage.includes("required permission")
+  )
+}

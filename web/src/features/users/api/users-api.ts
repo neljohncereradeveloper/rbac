@@ -46,6 +46,11 @@ export interface AssignRolesToUserParams {
   token?: string | null
 }
 
+export interface ResetPasswordParams {
+  new_password: string
+  token?: string | null
+}
+
 export interface ComboboxItem {
   value: string
   label: string
@@ -204,6 +209,18 @@ export async function removeRolesFromUser(
   return apiClient<{ success: boolean }>(`/users/${userId}/roles`, {
     method: "DELETE",
     body: JSON.stringify({ role_ids }),
+    token,
+  })
+}
+
+export async function resetPassword(
+  userId: number,
+  params: ResetPasswordParams
+): Promise<{ success: boolean }> {
+  const { new_password, token } = params
+  return apiClient<{ success: boolean }>(`/users/${userId}/change-password`, {
+    method: "POST",
+    body: JSON.stringify({ new_password }),
     token,
   })
 }

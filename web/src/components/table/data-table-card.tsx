@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ErrorAlert } from "@/components/ui/error-alert"
 import { TableSearchForm } from "./table-search-form"
 
 export interface DataTableCardSearchConfig {
@@ -58,7 +59,7 @@ export function DataTableCard({
         {!isAuthenticated ? (
           <p className="text-muted-foreground">{unauthenticatedMessage}</p>
         ) : error ? (
-          <p className="text-destructive">{error}</p>
+          <ErrorAlert error={error} />
         ) : isLoading ? (
           <div className="space-y-2">
             <Skeleton className="h-10 w-full" />
