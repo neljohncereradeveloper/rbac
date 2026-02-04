@@ -11,6 +11,14 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -52,27 +60,43 @@ export function RolesTable({
   const [roleToUpdate, setRoleToUpdate] = useState<Role | null>(null)
   const [roleToAssign, setRoleToAssign] = useState<Role | null>(null)
   const [roleToView, setRoleToView] = useState<Role | null>(null)
+  const [roleToArchive, setRoleToArchive] = useState<Role | null>(null)
+  const [roleToRestore, setRoleToRestore] = useState<Role | null>(null)
   const [updateOpen, setUpdateOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
   const [viewOpen, setViewOpen] = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
+  const [restoreOpen, setRestoreOpen] = useState(false)
+  const [archiveLoading, setArchiveLoading] = useState(false)
+  const [restoreLoading, setRestoreLoading] = useState(false)
 
-  async function handleArchive(role: Role) {
-    if (!token || !role.id) return
+  async function handleArchiveConfirm() {
+    if (!token || !roleToArchive?.id) return
+    setArchiveLoading(true)
     try {
-      await archiveRole(role.id, token)
+      await archiveRole(roleToArchive.id, token)
+      setArchiveOpen(false)
+      setRoleToArchive(null)
       onActionSuccess()
     } catch {
       // Error handled by API
+    } finally {
+      setArchiveLoading(false)
     }
   }
 
-  async function handleRestore(role: Role) {
-    if (!token || !role.id) return
+  async function handleRestoreConfirm() {
+    if (!token || !roleToRestore?.id) return
+    setRestoreLoading(true)
     try {
-      await restoreRole(role.id, token)
+      await restoreRole(roleToRestore.id, token)
+      setRestoreOpen(false)
+      setRoleToRestore(null)
       onActionSuccess()
     } catch {
       // Error handled by API
+    } finally {
+      setRestoreLoading(false)
     }
   }
 
@@ -109,7 +133,10 @@ export function RolesTable({
                     <DropdownMenuContent align="end">
                       {isArchived(role) ? (
                         <DropdownMenuItem
-                          onClick={() => handleRestore(role)}
+                          onClick={() => {
+                            setRoleToRestore(role)
+                            setRestoreOpen(true)
+                          }}
                         >
                           <RotateCcwIcon className="size-4" />
                           Restore
@@ -145,7 +172,10 @@ export function RolesTable({
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             variant="destructive"
-                            onClick={() => handleArchive(role)}
+                            onClick={() => {
+                              setRoleToArchive(role)
+                              setArchiveOpen(true)
+                            }}
                           >
                             <ArchiveIcon className="size-4" />
                             Archive
@@ -181,6 +211,76 @@ export function RolesTable({
         role={roleToView}
         token={token}
       />
+      <Dialog
+        open={archiveOpen}
+        onOpenChange={(open) => {
+          setArchiveOpen(open)
+          if (!open) setRoleToArchive(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive role</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to archive &quot;{roleToArchive?.name}&quot;?
+              This will soft-delete the role. You can restore it later from the
+              Archived tab.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setArchiveOpen(false)
+                setRoleToArchive(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleArchiveConfirm}
+              disabled={archiveLoading}
+            >
+              {archiveLoading ? "Archiving..." : "Archive"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={restoreOpen}
+        onOpenChange={(open) => {
+          setRestoreOpen(open)
+          if (!open) setRoleToRestore(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Restore role</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to restore &quot;{roleToRestore?.name}&quot;?
+              The role will be active again and visible in the Active tab.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRestoreOpen(false)
+                setRoleToRestore(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRestoreConfirm}
+              disabled={restoreLoading}
+            >
+              {restoreLoading ? "Restoring..." : "Restore"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
