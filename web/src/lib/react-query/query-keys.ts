@@ -9,10 +9,6 @@ export const queryKeys = {
     lists: () => [...queryKeys.roles.all, "list"] as const,
     list: (filters: {
       token?: string | null
-      page?: number
-      limit?: number
-      term?: string
-      is_archived?: "true" | "false"
     }) => [...queryKeys.roles.lists(), filters] as const,
     details: () => [...queryKeys.roles.all, "detail"] as const,
     detail: (id: number, token?: string | null) =>
@@ -47,10 +43,6 @@ export const queryKeys = {
     lists: () => [...queryKeys.permissions.all, "list"] as const,
     list: (filters: {
       token?: string | null
-      page?: number
-      limit?: number
-      term?: string
-      is_archived?: "true" | "false"
     }) => [...queryKeys.permissions.lists(), filters] as const,
     combobox: (token?: string | null) =>
       [...queryKeys.permissions.all, "combobox", token] as const,

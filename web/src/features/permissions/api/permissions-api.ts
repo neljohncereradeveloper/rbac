@@ -6,8 +6,6 @@ import { apiClient } from "@/lib/api/client"
 import type { Permission } from "../types/permission.types"
 
 export interface FetchPermissionsParams {
-  term?: string
-  is_archived?: "true" | "false"
   token?: string | null
 }
 
@@ -19,12 +17,8 @@ export interface ComboboxItem {
 export async function fetchPermissions(
   params: FetchPermissionsParams = {}
 ): Promise<Permission[]> {
-  const { term = "", is_archived = "false", token } = params
-  const searchParams = new URLSearchParams({
-    term: term,
-    is_archived,
-  })
-  return apiClient<Permission[]>(`/permissions?${searchParams}`, { token })
+  const { token } = params
+  return apiClient<Permission[]>(`/permissions`, { token })
 }
 
 export async function fetchPermissionsCombobox(

@@ -14,18 +14,11 @@ export class GetAllRolesUseCase {
     private readonly transactionHelper: TransactionPort,
   ) { }
 
-  async execute(
-    term: string,
-    is_archived: boolean,
-  ): Promise<Role[]> {
+  async execute(): Promise<Role[]> {
     return this.transactionHelper.executeTransaction(
       ROLE_ACTIONS.PAGINATED_LIST,
       async (manager) => {
-        const roles = await this.roleRepository.findAll(
-          term,
-          is_archived,
-          manager,
-        );
+        const roles = await this.roleRepository.findAll(manager);
         return roles;
       },
     );

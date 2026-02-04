@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Query,
   Version,
 } from '@nestjs/common';
 import {
@@ -49,24 +48,17 @@ export class RoleController {
   @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.ROLES.PAGINATED_LIST)
-  @ApiOperation({ summary: 'Get all roles (no pagination)' })
+  @ApiOperation({ summary: 'Get all roles (no pagination, no filtering)' })
   @ApiResponse({
     status: 200,
     description: 'Roles retrieved successfully',
   })
-  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth('JWT-auth')
-  async getAll(
-    @Query('term') term?: string,
-    @Query('is_archived') is_archived?: string,
-  ): Promise<Role[]> {
-    // Note: is_archived parameter is kept for API compatibility but roles cannot be archived
-    // Always returns active roles only since roles are statically defined
-    return this.getAllRolesUseCase.execute(
-      term ?? '',
-      is_archived === 'true',
-    );
+  async getAll(): Promise<Role[]> {
+    // Note: Returns all roles without any filtering conditions
+    // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
+    return this.getAllRolesUseCase.execute();
   }
 
   @Version('1')

@@ -52,21 +52,14 @@ export class SeedRolePermissions {
      */
     const rolePermissionMappings: Record<string, string[]> = {
       [ROLES.ADMIN]: [
-        // All role permissions
-        PERMISSIONS.ROLES.CREATE,
+        // Role permissions (read-only operations only)
+        // Note: CREATE, UPDATE, ARCHIVE, RESTORE, ASSIGN_PERMISSIONS removed - roles are statically defined
         PERMISSIONS.ROLES.READ,
-        PERMISSIONS.ROLES.UPDATE,
-        PERMISSIONS.ROLES.ARCHIVE,
-        PERMISSIONS.ROLES.RESTORE,
-        PERMISSIONS.ROLES.ASSIGN_PERMISSIONS,
         PERMISSIONS.ROLES.COMBOBOX,
         PERMISSIONS.ROLES.PAGINATED_LIST,
-        // All permission permissions
-        PERMISSIONS.PERMISSIONS.CREATE,
+        // Permission permissions (read-only operations only)
+        // Note: CREATE, UPDATE, ARCHIVE, RESTORE removed - permissions are statically defined
         PERMISSIONS.PERMISSIONS.READ,
-        PERMISSIONS.PERMISSIONS.UPDATE,
-        PERMISSIONS.PERMISSIONS.ARCHIVE,
-        PERMISSIONS.PERMISSIONS.RESTORE,
         PERMISSIONS.PERMISSIONS.COMBOBOX,
         PERMISSIONS.PERMISSIONS.PAGINATED_LIST,
         // All user permissions
@@ -98,16 +91,14 @@ export class SeedRolePermissions {
         PERMISSIONS.HOLIDAYS.PAGINATED_LIST,
       ],
       [ROLES.EDITOR]: [
-        // Role permissions (no archive/restore)
-        PERMISSIONS.ROLES.CREATE,
+        // Role permissions (read-only operations only)
+        // Note: CREATE, UPDATE removed - roles are statically defined
         PERMISSIONS.ROLES.READ,
-        PERMISSIONS.ROLES.UPDATE,
         PERMISSIONS.ROLES.COMBOBOX,
         PERMISSIONS.ROLES.PAGINATED_LIST,
-        // Permission permissions (no archive/restore)
-        PERMISSIONS.PERMISSIONS.CREATE,
+        // Permission permissions (read-only operations only)
+        // Note: CREATE, UPDATE removed - permissions are statically defined
         PERMISSIONS.PERMISSIONS.READ,
-        PERMISSIONS.PERMISSIONS.UPDATE,
         PERMISSIONS.PERMISSIONS.COMBOBOX,
         PERMISSIONS.PERMISSIONS.PAGINATED_LIST,
         // User permissions (no archive/restore)

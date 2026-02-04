@@ -7,17 +7,12 @@ import { TablePageSkeleton } from "@/components/table/table-page-skeleton"
 import { useAuth } from "@/features/auth/hooks/use-auth"
 import { useRoles } from "@/features/roles/hooks/use-roles"
 import { RolesTable } from "@/features/roles/components/roles-table"
-import { useSearchParams } from "next/navigation"
 
 function RolesPageContent() {
-  const searchParams = useSearchParams()
-  const term = searchParams.get("term") ?? ""
   const { token, isAuthenticated } = useAuth()
-  // Note: is_archived always "false" - roles cannot be archived as they are statically defined
+  // Note: Fetch all roles without any filtering conditions
   const { roles, isLoading, error } = useRoles({
     token: isAuthenticated ? token : null,
-    term,
-    is_archived: "false",
   })
 
   return (
@@ -35,14 +30,9 @@ function RolesPageContent() {
         />
         <DataTableCard
           title="Roles list"
-          searchConfig={{
-            basePath: "/roles",
-            placeholder: "Search roles by name...",
-            defaultValue: term,
-            // Note: Create role button removed - roles are statically defined in backend
-            // (ADMIN, EDITOR, VIEWER) and managed via seeders only
-            trailingActions: undefined,
-          }}
+          // Note: Search removed - fetch all roles without filtering
+          // Roles are statically defined (ADMIN, EDITOR, VIEWER) and managed via seeders only
+          searchConfig={undefined}
           isAuthenticated={isAuthenticated}
           isLoading={isLoading}
           error={error}

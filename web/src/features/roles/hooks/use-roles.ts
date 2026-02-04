@@ -6,21 +6,14 @@ import { fetchRoles } from "../api/roles-api"
 
 export interface UseRolesOptions {
   token?: string | null
-  term?: string
-  is_archived?: "true" | "false"
 }
 
 export function useRoles(options: UseRolesOptions = {}) {
-  const {
-    token = null,
-    term = "",
-    is_archived = "false",
-  } = options
+  const { token = null } = options
 
   const query = useQuery({
-    queryKey: queryKeys.roles.list({ token, term, is_archived }),
-    queryFn: () =>
-      fetchRoles({ term, is_archived, token: token! }),
+    queryKey: queryKeys.roles.list({ token }),
+    queryFn: () => fetchRoles({ token: token! }),
     enabled: !!token,
   })
 

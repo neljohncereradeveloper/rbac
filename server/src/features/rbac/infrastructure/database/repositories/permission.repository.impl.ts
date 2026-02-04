@@ -3,10 +3,6 @@ import { DataSource, EntityManager } from 'typeorm';
 import { PermissionRepository } from '@/features/rbac/domain/repositories';
 import { Permission } from '@/features/rbac/domain/models';
 import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
-import {
-  PaginatedResult,
-  calculatePagination,
-} from '@/core/utils/pagination.util';
 
 @Injectable()
 export class PermissionRepositoryImpl implements PermissionRepository<EntityManager> {
@@ -32,109 +28,19 @@ export class PermissionRepositoryImpl implements PermissionRepository<EntityMana
     return this.entityToModel(result[0]);
   }
 
-  async findPaginatedList(
-    term: string,
-    page: number,
-    limit: number,
-    is_archived: boolean,
-    manager: EntityManager,
-  ): Promise<PaginatedResult<Permission>> {
-    const offset = (page - 1) * limit;
-    const searchTerm = term ? `%${term}%` : '%';
+  // Note: findPaginatedList() method removed - permissions are fetched without pagination
+  // Permissions are statically defined and managed via seeders only
 
-    // Build WHERE clause
-    let whereClause = '';
-    const queryParams: any[] = [];
-    let paramIndex = 1;
-
-    if (is_archived) {
-      whereClause = 'WHERE deleted_at IS NOT NULL';
-    } else {
-      whereClause = 'WHERE deleted_at IS NULL';
-    }
-
-    // Add search term if provided
-    if (term) {
-      whereClause += ` AND (
-        name ILIKE $${paramIndex} OR
-        resource ILIKE $${paramIndex} OR
-        action ILIKE $${paramIndex} OR
-        description ILIKE $${paramIndex}
-      )`;
-      queryParams.push(searchTerm);
-      paramIndex++;
-    }
-
-    // Count total records
-    const countQuery = `
-      SELECT COUNT(*) as total
-      FROM ${RBAC_DATABASE_MODELS.PERMISSIONS}
-      ${whereClause}
-    `;
-
-    const countResult = await manager.query(countQuery, queryParams);
-    const totalRecords = parseInt(countResult[0].total, 10);
-
-    // Fetch paginated data
-    const dataQuery = `
+  async findAll(manager: EntityManager): Promise<Permission[]> {
+    // Fetch all permissions without any filtering conditions
+    const query = `
       SELECT *
       FROM ${RBAC_DATABASE_MODELS.PERMISSIONS}
-      ${whereClause}
-      ORDER BY created_at DESC
-      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
-    `;
-
-    queryParams.push(limit, offset);
-    const dataResult = await manager.query(dataQuery, queryParams);
-
-    const permissions = dataResult.map((row: any) => this.entityToModel(row));
-
-    return {
-      data: permissions,
-      meta: calculatePagination(totalRecords, page, limit),
-    };
-  }
-
-  async findAll(
-    term: string,
-    is_archived: boolean,
-    manager: EntityManager,
-  ): Promise<Permission[]> {
-    const searchTerm = term ? `%${term}%` : '%';
-
-    // Build WHERE clause
-    let whereClause = '';
-    const queryParams: any[] = [];
-    let paramIndex = 1;
-
-    if (is_archived) {
-      whereClause = 'WHERE deleted_at IS NOT NULL';
-    } else {
-      whereClause = 'WHERE deleted_at IS NULL';
-    }
-
-    // Add search term if provided
-    if (term) {
-      whereClause += ` AND (
-        name ILIKE $${paramIndex} OR
-        resource ILIKE $${paramIndex} OR
-        action ILIKE $${paramIndex} OR
-        description ILIKE $${paramIndex}
-      )`;
-      queryParams.push(searchTerm);
-      paramIndex++;
-    }
-
-    // Fetch all data
-    const dataQuery = `
-      SELECT *
-      FROM ${RBAC_DATABASE_MODELS.PERMISSIONS}
-      ${whereClause}
       ORDER BY resource ASC, name ASC
     `;
 
-    const dataResult = await manager.query(dataQuery, queryParams);
-    return dataResult.map((row: any) => this.entityToModel(row));
+    const result = await manager.query(query);
+    return result.map((row: any) => this.entityToModel(row));
   }
 
   async findByName(

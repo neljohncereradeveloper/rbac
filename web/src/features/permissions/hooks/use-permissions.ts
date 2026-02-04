@@ -6,25 +6,17 @@ import { fetchPermissions } from "../api/permissions-api"
 
 export interface UsePermissionsOptions {
   token?: string | null
-  term?: string
-  is_archived?: "true" | "false"
 }
 
 export function usePermissions(options: UsePermissionsOptions = {}) {
   const {
     token = null,
-    term = "",
-    is_archived = "false",
   } = options
 
   const query = useQuery({
-    queryKey: queryKeys.permissions.list({
-      token,
-      term,
-      is_archived,
-    }),
+    queryKey: queryKeys.permissions.list({ token }),
     queryFn: () =>
-      fetchPermissions({ term, is_archived, token: token! }),
+      fetchPermissions({ token: token! }),
     enabled: !!token,
   })
 

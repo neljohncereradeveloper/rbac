@@ -6,8 +6,6 @@ import { apiClient } from "@/lib/api/client"
 import type { Role } from "../types/role.types"
 
 export interface FetchRolesParams {
-  term?: string
-  is_archived?: "true" | "false"
   token?: string | null
 }
 
@@ -25,12 +23,8 @@ export interface RolePermission {
 export async function fetchRoles(
   params: FetchRolesParams = {}
 ): Promise<Role[]> {
-  const { term = "", is_archived = "false", token } = params
-  const searchParams = new URLSearchParams({
-    term: term,
-    is_archived,
-  })
-  return apiClient<Role[]>(`/roles?${searchParams}`, { token })
+  const { token } = params
+  return apiClient<Role[]>(`/roles`, { token })
 }
 
 // Note: fetchRoleById, createRole, updateRole, archiveRole, restoreRole, fetchRolesCombobox removed

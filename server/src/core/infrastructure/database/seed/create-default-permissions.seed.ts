@@ -51,41 +51,13 @@ export class SeedPermissions {
      */
     const permissions = [
       // Role permissions
-      {
-        name: PERMISSIONS.ROLES.CREATE,
-        resource: PERMISSION_RESOURCES.ROLES,
-        action: PERMISSION_ACTIONS.CREATE,
-        description: 'Create new roles',
-      },
+      // Note: CREATE, UPDATE, ARCHIVE, RESTORE, ASSIGN_PERMISSIONS removed - roles are statically defined
+      // (Admin, Editor, Viewer) and managed via seeders only
       {
         name: PERMISSIONS.ROLES.READ,
         resource: PERMISSION_RESOURCES.ROLES,
         action: PERMISSION_ACTIONS.READ,
         description: 'View role details',
-      },
-      {
-        name: PERMISSIONS.ROLES.UPDATE,
-        resource: PERMISSION_RESOURCES.ROLES,
-        action: PERMISSION_ACTIONS.UPDATE,
-        description: 'Update role information',
-      },
-      {
-        name: PERMISSIONS.ROLES.ARCHIVE,
-        resource: PERMISSION_RESOURCES.ROLES,
-        action: PERMISSION_ACTIONS.ARCHIVE,
-        description: 'Archive (soft delete) roles',
-      },
-      {
-        name: PERMISSIONS.ROLES.RESTORE,
-        resource: PERMISSION_RESOURCES.ROLES,
-        action: PERMISSION_ACTIONS.RESTORE,
-        description: 'Restore archived roles',
-      },
-      {
-        name: PERMISSIONS.ROLES.ASSIGN_PERMISSIONS,
-        resource: PERMISSION_RESOURCES.ROLES,
-        action: PERMISSION_ACTIONS.ASSIGN_PERMISSIONS,
-        description: 'Assign permissions to roles',
       },
       {
         name: PERMISSIONS.ROLES.COMBOBOX,
@@ -100,35 +72,13 @@ export class SeedPermissions {
         description: 'Get paginated list of roles',
       },
       // Permission permissions
-      {
-        name: PERMISSIONS.PERMISSIONS.CREATE,
-        resource: PERMISSION_RESOURCES.PERMISSIONS,
-        action: PERMISSION_ACTIONS.CREATE,
-        description: 'Create new permissions',
-      },
+      // Note: CREATE, UPDATE, ARCHIVE, RESTORE removed - permissions are statically defined
+      // and managed via seeders only
       {
         name: PERMISSIONS.PERMISSIONS.READ,
         resource: PERMISSION_RESOURCES.PERMISSIONS,
         action: PERMISSION_ACTIONS.READ,
         description: 'View permission details',
-      },
-      {
-        name: PERMISSIONS.PERMISSIONS.UPDATE,
-        resource: PERMISSION_RESOURCES.PERMISSIONS,
-        action: PERMISSION_ACTIONS.UPDATE,
-        description: 'Update permission information',
-      },
-      {
-        name: PERMISSIONS.PERMISSIONS.ARCHIVE,
-        resource: PERMISSION_RESOURCES.PERMISSIONS,
-        action: PERMISSION_ACTIONS.ARCHIVE,
-        description: 'Archive (soft delete) permissions',
-      },
-      {
-        name: PERMISSIONS.PERMISSIONS.RESTORE,
-        resource: PERMISSION_RESOURCES.PERMISSIONS,
-        action: PERMISSION_ACTIONS.RESTORE,
-        description: 'Restore archived permissions',
       },
       {
         name: PERMISSIONS.PERMISSIONS.COMBOBOX,

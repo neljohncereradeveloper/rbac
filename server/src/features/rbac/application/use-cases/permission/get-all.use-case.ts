@@ -17,18 +17,11 @@ export class GetAllPermissionsUseCase {
     private readonly transactionHelper: TransactionPort,
   ) { }
 
-  async execute(
-    term: string,
-    is_archived: boolean,
-  ): Promise<Permission[]> {
+  async execute(): Promise<Permission[]> {
     return this.transactionHelper.executeTransaction(
       PERMISSION_ACTIONS.PAGINATED_LIST,
       async (manager) => {
-        const permissions = await this.permissionRepository.findAll(
-          term,
-          is_archived,
-          manager,
-        );
+        const permissions = await this.permissionRepository.findAll(manager);
         return permissions;
       },
     );

@@ -1,22 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontalIcon, EyeIcon } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { EyeIcon } from "lucide-react"
 import type { Role } from "../types/role.types"
 // Note: UpdateRoleDialog, AssignPermissionsDialog, Archive/Restore removed - roles are statically defined in backend
 // (ADMIN, EDITOR, VIEWER) and managed via seeders only. Role-permission assignments are also managed via seeders.
@@ -47,54 +34,55 @@ export function RolesTable({
   const [roleToView, setRoleToView] = useState<Role | null>(null)
   const [viewOpen, setViewOpen] = useState(false)
 
+  if (roles.length === 0) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <p>No roles found</p>
+      </div>
+    )
+  }
+
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="w-[70px]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {roles.map((role, index) => (
-            <TableRow key={role.id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell className="font-medium">{role.name}</TableCell>
-              <TableCell>{role.description ?? "—"}</TableCell>
-              <TableCell>{formatDate(role.created_at)}</TableCell>
-              <TableCell>
+      <div className="space-y-4">
+        {roles.map((role) => (
+          <div
+            key={role.id}
+            className="flex items-start justify-between gap-4 pb-4 border-b last:border-b-0 last:pb-0"
+          >
+            <div className="flex-1 space-y-2">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-semibold text-base">{role.name}</h3>
                 {token && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon-xs">
-                        <MoreHorizontalIcon className="size-4" />
-                        <span className="sr-only">Actions</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {/* Edit role, Assign permissions, Archive/Restore removed - roles are statically defined */}
-                      {/* Archiving roles would break authorization checks since role names are hardcoded */}
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setRoleToView(role)
-                          setViewOpen(true)
-                        }}
-                      >
-                        <EyeIcon className="size-4" />
-                        View permissions
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setRoleToView(role)
+                      setViewOpen(true)
+                    }}
+                    className="shrink-0"
+                  >
+                    <EyeIcon className="size-4 mr-2" />
+                    View Permissions
+                  </Button>
                 )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              </div>
+              {role.description && (
+                <p className="text-sm text-muted-foreground">
+                  {role.description}
+                </p>
+              )}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>Created:</span>
+                <time dateTime={role.created_at}>
+                  {formatDate(role.created_at)}
+                </time>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
       {/* UpdateRoleDialog, AssignPermissionsDialog, Archive/Restore dialogs removed - roles are statically defined */}
       {/* Archiving roles would break authorization checks since role names are hardcoded in controllers */}
       <ViewPermissionsDialog

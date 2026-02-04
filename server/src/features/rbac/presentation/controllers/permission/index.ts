@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  Query,
   Version,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -67,22 +66,15 @@ export class PermissionController {
   @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.PERMISSIONS.PAGINATED_LIST)
-  @ApiOperation({ summary: 'Get all permissions (no pagination)' })
+  @ApiOperation({ summary: 'Get all permissions (no pagination, no filtering)' })
   @ApiResponse({
     status: 200,
     description: 'Permissions retrieved successfully',
   })
-  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth('JWT-auth')
-  async getAll(
-    @Query('term') term?: string,
-    @Query('is_archived') is_archived?: string,
-  ): Promise<Permission[]> {
-    return this.getAllPermissionsUseCase.execute(
-      term ?? '',
-      is_archived === 'true',
-    );
+  async getAll(): Promise<Permission[]> {
+    return this.getAllPermissionsUseCase.execute();
   }
 
   @Version('1')

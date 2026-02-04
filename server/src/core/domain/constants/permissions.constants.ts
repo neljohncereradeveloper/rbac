@@ -55,30 +55,12 @@ export function buildPermissionName(resource: string, action: string): string {
  */
 export const PERMISSIONS = {
   // Role permissions
+  // Note: CREATE, UPDATE, ARCHIVE, RESTORE, ASSIGN_PERMISSIONS removed - roles are statically defined
+  // (Admin, Editor, Viewer) and managed via seeders only
   ROLES: {
-    CREATE: buildPermissionName(
-      PERMISSION_RESOURCES.ROLES,
-      PERMISSION_ACTIONS.CREATE,
-    ),
     READ: buildPermissionName(
       PERMISSION_RESOURCES.ROLES,
       PERMISSION_ACTIONS.READ,
-    ),
-    UPDATE: buildPermissionName(
-      PERMISSION_RESOURCES.ROLES,
-      PERMISSION_ACTIONS.UPDATE,
-    ),
-    ARCHIVE: buildPermissionName(
-      PERMISSION_RESOURCES.ROLES,
-      PERMISSION_ACTIONS.ARCHIVE,
-    ),
-    RESTORE: buildPermissionName(
-      PERMISSION_RESOURCES.ROLES,
-      PERMISSION_ACTIONS.RESTORE,
-    ),
-    ASSIGN_PERMISSIONS: buildPermissionName(
-      PERMISSION_RESOURCES.ROLES,
-      PERMISSION_ACTIONS.ASSIGN_PERMISSIONS,
     ),
     COMBOBOX: buildPermissionName(
       PERMISSION_RESOURCES.ROLES,
@@ -90,26 +72,12 @@ export const PERMISSIONS = {
     ),
   },
   // Permission permissions
+  // Note: CREATE, UPDATE, ARCHIVE, RESTORE removed - permissions are statically defined
+  // and managed via seeders only
   PERMISSIONS: {
-    CREATE: buildPermissionName(
-      PERMISSION_RESOURCES.PERMISSIONS,
-      PERMISSION_ACTIONS.CREATE,
-    ),
     READ: buildPermissionName(
       PERMISSION_RESOURCES.PERMISSIONS,
       PERMISSION_ACTIONS.READ,
-    ),
-    UPDATE: buildPermissionName(
-      PERMISSION_RESOURCES.PERMISSIONS,
-      PERMISSION_ACTIONS.UPDATE,
-    ),
-    ARCHIVE: buildPermissionName(
-      PERMISSION_RESOURCES.PERMISSIONS,
-      PERMISSION_ACTIONS.ARCHIVE,
-    ),
-    RESTORE: buildPermissionName(
-      PERMISSION_RESOURCES.PERMISSIONS,
-      PERMISSION_ACTIONS.RESTORE,
     ),
     COMBOBOX: buildPermissionName(
       PERMISSION_RESOURCES.PERMISSIONS,
