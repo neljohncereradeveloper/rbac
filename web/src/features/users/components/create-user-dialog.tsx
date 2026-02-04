@@ -105,13 +105,13 @@ export function CreateUserDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <DialogHeader className="shrink-0">
-            <DialogTitle className="break-words">Create user</DialogTitle>
+            <DialogTitle className="wrap-break-word">Create user</DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-4">
             {createUserMutation.error && (
               <ErrorAlert error={createUserMutation.error} className="mb-4" />
             )}
-            <FieldGroup className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            <FieldGroup className="flex flex-col sm:grid sm:grid-cols-2 gap-4 sm:gap-x-6 sm:gap-y-4">
               <Field data-invalid={!!errors.username}>
                 <FieldLabel htmlFor="create-user-username">Username</FieldLabel>
                 <Input
@@ -133,7 +133,7 @@ export function CreateUserDialog({
                 />
                 <FieldError errors={errors.email ? [errors.email] : undefined} />
               </Field>
-              <Field className="col-span-2" data-invalid={!!errors.password}>
+              <Field className="sm:col-span-2" data-invalid={!!errors.password}>
                 <FieldLabel htmlFor="create-user-password">Password</FieldLabel>
                 <Input
                   id="create-user-password"
