@@ -1,6 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Dialog,
   DialogContent,
@@ -13,9 +15,14 @@ import {
   Field,
   FieldGroup,
   FieldLabel,
+  FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { updateRole } from "../api/roles-api"
+import {
+  updateRoleSchema,
+  type UpdateRoleFormData,
+} from "../schemas/role.schema"
 import type { Role } from "../types/role.types"
 
 export interface UpdateRoleDialogProps {
@@ -33,72 +40,78 @@ export function UpdateRoleDialog({
   token,
   onSuccess,
 }: UpdateRoleDialogProps) {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<UpdateRoleFormData>({
+    resolver: zodResolver(updateRoleSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+  })
 
   useEffect(() => {
-    if (role) {
-      setName(role.name)
-      setDescription(role.description ?? "")
+    if (role && open) {
+      setApiError(null)
+      reset({
+        name: role.name,
+        description: role.description ?? "",
+      })
     }
-  }, [role])
+  }, [role, open, reset])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function onSubmit(data: UpdateRoleFormData) {
     if (!token || !role?.id) return
-    setError(null)
-    setIsLoading(true)
     try {
       await updateRole(role.id, {
-        name: name.trim(),
-        description: description.trim() || null,
+        name: data.name,
+        description: data.description?.trim() || null,
         token,
       })
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update role")
-    } finally {
-      setIsLoading(false)
+      setApiError(err instanceof Error ? err.message : "Failed to update role")
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Edit role</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            {error && (
-              <p className="text-destructive text-sm">{error}</p>
+            {apiError && (
+              <p className="text-destructive text-sm">{apiError}</p>
             )}
             <FieldGroup>
-              <Field>
+              <Field data-invalid={!!errors.name}>
                 <FieldLabel htmlFor="update-role-name">Name</FieldLabel>
                 <Input
                   id="update-role-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  {...register("name")}
                   placeholder="e.g. Manager"
-                  required
-                  minLength={2}
-                  maxLength={255}
+                  aria-invalid={!!errors.name}
                 />
+                <FieldError errors={errors.name ? [errors.name] : undefined} />
               </Field>
-              <Field>
+              <Field data-invalid={!!errors.description}>
                 <FieldLabel htmlFor="update-role-description">
                   Description
                 </FieldLabel>
                 <Input
                   id="update-role-description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  {...register("description")}
                   placeholder="Optional description"
+                  aria-invalid={!!errors.description}
                 />
+                <FieldError errors={errors.description ? [errors.description] : undefined} />
               </Field>
             </FieldGroup>
           </div>
@@ -110,8 +123,8 @@ export function UpdateRoleDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </form>

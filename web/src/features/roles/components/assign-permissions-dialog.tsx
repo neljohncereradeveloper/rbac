@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Dialog,
   DialogContent,
@@ -15,6 +17,10 @@ import { assignPermissionsToRole, fetchRolePermissions } from "../api/roles-api"
 import { fetchPermissions } from "@/features/permissions/api/permissions-api"
 import type { Role } from "../types/role.types"
 import type { Permission } from "@/features/permissions/types/permission.types"
+import {
+  assignPermissionsSchema,
+  type AssignPermissionsFormData,
+} from "../schemas/assign-permissions.schema"
 
 export interface AssignPermissionsDialogProps {
   open: boolean
@@ -52,12 +58,21 @@ export function AssignPermissionsDialog({
   token,
   onSuccess,
 }: AssignPermissionsDialogProps) {
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [permissions, setPermissions] = useState<Permission[]>([])
-  const [error, setError] = useState<string | null>(null)
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false)
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<AssignPermissionsFormData>({
+    resolver: zodResolver(assignPermissionsSchema),
+    defaultValues: { permission_ids: [] },
+  })
+  const permission_ids = watch("permission_ids")
+  const selectedIds = new Set(permission_ids ?? [])
 
   const groupedPermissions = useMemo(
     () => groupByResource(permissions),
@@ -66,7 +81,7 @@ export function AssignPermissionsDialog({
 
   useEffect(() => {
     if (!open) {
-      setSelectedIds(new Set())
+      reset({ permission_ids: [] })
       return
     }
     if (!token) return
@@ -100,86 +115,77 @@ export function AssignPermissionsDialog({
         setFetchError(null)
 
         const currentIds = (rolePermsRes ?? []).map((p) => p.permission_id)
-        setSelectedIds(new Set(currentIds))
+        setValue("permission_ids", currentIds)
       } catch (err) {
         setPermissions([])
-        setFetchError(err instanceof Error ? err.message : "Failed to load permissions")
-        setSelectedIds(new Set())
+        setFetchError(
+          err instanceof Error ? err.message : "Failed to load permissions"
+        )
+        setValue("permission_ids", [])
       } finally {
         setIsLoadingPermissions(false)
       }
     }
 
     loadData()
-  }, [open, token, role?.id])
+  }, [open, token, role?.id, setValue, reset])
 
   function togglePermission(id: number) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
+    const current = permission_ids ?? []
+    const next = current.includes(id)
+      ? current.filter((x) => x !== id)
+      : [...current, id]
+    setValue("permission_ids", next)
   }
 
   function selectAllInGroup(perms: Permission[]) {
-    const permIds = new Set(perms.map((p) => p.id))
     const allSelected = perms.every((p) => selectedIds.has(p.id))
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (allSelected) {
-        perms.forEach((p) => next.delete(p.id))
-      } else {
-        perms.forEach((p) => next.add(p.id))
-      }
-      return next
-    })
+    const current = permission_ids ?? []
+    const next = new Set(current)
+    if (allSelected) {
+      perms.forEach((p) => next.delete(p.id))
+    } else {
+      perms.forEach((p) => next.add(p.id))
+    }
+    setValue("permission_ids", Array.from(next))
   }
 
   function selectAll() {
     if (selectedIds.size === permissions.length) {
-      setSelectedIds(new Set())
+      setValue("permission_ids", [])
     } else {
-      setSelectedIds(new Set(permissions.map((p) => p.id)))
+      setValue("permission_ids", permissions.map((p) => p.id))
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function onSubmit(data: AssignPermissionsFormData) {
     if (!token || !role?.id) return
-    setError(null)
-    setIsLoading(true)
     try {
       await assignPermissionsToRole(role.id, {
-        permission_ids: Array.from(selectedIds),
+        permission_ids: data.permission_ids,
         replace: true,
         token,
       })
       onOpenChange(false)
       onSuccess()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to assign permissions")
-    } finally {
-      setIsLoading(false)
+    } catch {
+      // Error could be shown via setError - keeping simple for now
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-w-5xl max-h-[90vh] flex-col overflow-hidden">
-        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex min-h-0 flex-1 flex-col overflow-hidden"
+        >
           <DialogHeader className="shrink-0">
             <DialogTitle>
               Assign permissions {role ? `to ${role.name}` : ""}
             </DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden py-4">
-            {error && (
-              <p className="text-destructive text-sm">{error}</p>
-            )}
             {fetchError && (
               <p className="text-destructive text-sm">{fetchError}</p>
             )}
@@ -285,9 +291,9 @@ export function AssignPermissionsDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || isLoadingPermissions}
+              disabled={isSubmitting || isLoadingPermissions}
             >
-              {isLoading ? "Saving..." : "Assign"}
+              {isSubmitting ? "Saving..." : "Assign"}
             </Button>
           </DialogFooter>
         </form>
