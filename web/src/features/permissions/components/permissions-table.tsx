@@ -1,9 +1,15 @@
 "use client"
 
-import { useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect, useMemo } from "react"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
 import type { Permission } from "../types/permission.types"
 
 export interface PermissionsTableProps {
@@ -43,11 +49,42 @@ function formatResource(resource: string): string {
 export function PermissionsTable({
   permissions,
 }: PermissionsTableProps) {
+  const [openResources, setOpenResources] = useState<Set<string>>(new Set())
+  const [hasInitialized, setHasInitialized] = useState(false)
+
   // Group permissions by resource
   const groupedPermissions = useMemo(
     () => groupByResource(permissions),
     [permissions]
   )
+
+  // Open first resource by default when permissions load
+  useEffect(() => {
+    if (groupedPermissions.length > 0 && !hasInitialized && openResources.size === 0) {
+      setOpenResources(new Set([groupedPermissions[0][0]]))
+      setHasInitialized(true)
+    }
+  }, [groupedPermissions, hasInitialized, openResources.size])
+
+  const toggleResource = (resource: string) => {
+    setOpenResources((prev) => {
+      const next = new Set(prev)
+      if (next.has(resource)) {
+        next.delete(resource)
+      } else {
+        next.add(resource)
+      }
+      return next
+    })
+  }
+
+  const collapseAll = () => {
+    setOpenResources(new Set())
+  }
+
+  const expandAll = () => {
+    setOpenResources(new Set(groupedPermissions.map(([resource]) => resource)))
+  }
 
   // If no permissions, show empty state
   if (permissions.length === 0) {
@@ -58,106 +95,92 @@ export function PermissionsTable({
     )
   }
 
-  // If only one group, show cards without tabs
-  if (groupedPermissions.length === 1) {
-    const [resource, perms] = groupedPermissions[0]
-    return (
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-sm font-medium text-muted-foreground mb-4">
-            Resource: {formatResource(resource)}
-          </h3>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {perms.map((perm) => (
-            <Card key={perm.id} className="flex flex-col">
-              <CardHeader className="flex-1">
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-base font-semibold leading-tight">
-                    {perm.name}
-                  </CardTitle>
-                  {perm.action && (
-                    <Badge variant="secondary" className="shrink-0 text-xs">
-                      {perm.action}
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {perm.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {perm.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Created:</span>
-                  <time dateTime={perm.created_at}>
-                    {formatDate(perm.created_at)}
-                  </time>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  // Multiple groups - show tabs with cards
   return (
-    <Tabs
-      defaultValue={groupedPermissions[0]?.[0] ?? "other"}
-      className="w-full"
-    >
-      <TabsList
-        variant="underline"
-        className="w-full min-w-0 flex-nowrap justify-start overflow-x-auto pb-0 mb-4"
-      >
-        {groupedPermissions.map(([resource]) => (
-          <TabsTrigger
-            key={resource}
-            value={resource}
-            className="whitespace-nowrap"
+    <>
+      {groupedPermissions.length > 1 && (
+        <div className="flex flex-col gap-2 sm:flex-row items-start sm:items-center justify-end mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={expandAll}
+            disabled={openResources.size === groupedPermissions.length}
+            className="w-full sm:w-auto"
           >
-            {formatResource(resource)}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      {groupedPermissions.map(([resource, perms]) => (
-        <TabsContent key={resource} value={resource} className="mt-0">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {perms.map((perm) => (
-              <Card key={perm.id} className="flex flex-col">
-                <CardHeader className="flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base font-semibold leading-tight">
-                      {perm.name}
-                    </CardTitle>
-                    {perm.action && (
-                      <Badge variant="secondary" className="shrink-0 text-xs">
-                        {perm.action}
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {perm.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {perm.description}
-                    </p>
+            Expand All
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={collapseAll}
+            disabled={openResources.size === 0}
+            className="w-full sm:w-auto"
+          >
+            Collapse All
+          </Button>
+        </div>
+      )}
+      <div className="space-y-2">
+        {groupedPermissions.map(([resource, perms]) => {
+          const isOpen = openResources.has(resource)
+          return (
+            <Collapsible
+              key={resource}
+              open={isOpen}
+              onOpenChange={() => toggleResource(resource)}
+              className="border rounded-lg"
+            >
+              <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">
+                    {formatResource(resource)}
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    {perms.length} {perms.length === 1 ? "permission" : "permissions"}
+                  </Badge>
+                </div>
+                <ChevronDown
+                  className={cn(
+                    "size-4 text-muted-foreground transition-transform duration-200",
+                    isOpen && "rotate-180"
                   )}
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>Created:</span>
-                    <time dateTime={perm.created_at}>
-                      {formatDate(perm.created_at)}
-                    </time>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      ))}
-    </Tabs>
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-4 pb-4">
+                <div className="space-y-3 pt-3">
+                  {perms.map((perm) => (
+                    <div
+                      key={perm.id}
+                      className="flex items-start justify-between gap-4 pb-3 border-b last:border-b-0 last:pb-0"
+                    >
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-medium text-sm">{perm.name}</h4>
+                          {perm.action && (
+                            <Badge variant="secondary" className="shrink-0 text-xs">
+                              {perm.action}
+                            </Badge>
+                          )}
+                        </div>
+                        {perm.description && (
+                          <p className="text-xs text-muted-foreground">
+                            {perm.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>Created:</span>
+                          <time dateTime={perm.created_at}>
+                            {formatDate(perm.created_at)}
+                          </time>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          )
+        })}
+      </div>
+    </>
   )
 }

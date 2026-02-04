@@ -25,7 +25,7 @@ function PermissionsPageContent() {
       <PageShell>
         <PageTitle
           title="Permissions"
-          description="View permissions. Permissions are statically defined and managed via seeders only."
+          description="View permissions. Permissions are system-defined and cannot be modified."
         />
         <DataTableCard
           title="Permissions list"
