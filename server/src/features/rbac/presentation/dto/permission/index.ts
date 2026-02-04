@@ -1,2 +1,2 @@
-export * from './create-permission.dto';
-export * from './update-permission.dto';
+// Note: create-permission.dto, update-permission.dto removed
+// Permissions are statically defined and managed via seeders only

@@ -13,6 +13,11 @@ export interface RoleRepository<Context = unknown> {
     is_archived: boolean,
     context: Context,
   ): Promise<PaginatedResult<Role>>;
+  findAll(
+    term: string,
+    is_archived: boolean,
+    context: Context,
+  ): Promise<Role[]>;
   findByName(name: string, context: Context): Promise<Role | null>;
   combobox(context: Context): Promise<Role[]>;
 }

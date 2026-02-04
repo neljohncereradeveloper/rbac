@@ -1,21 +1,20 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { PageHeader, PageShell, PageTitle } from "@/components/layout"
 import { DataTableCard } from "@/components/table/data-table-card"
 import { TablePageSkeleton } from "@/components/table/table-page-skeleton"
-import { useTableSearchParams } from "@/hooks/use-table-search-params"
 import { useAuth } from "@/features/auth/hooks/use-auth"
 import { usePermissions } from "@/features/permissions/hooks/use-permissions"
 import { PermissionsTable } from "@/features/permissions/components/permissions-table"
+import { useSearchParams } from "next/navigation"
 
 function PermissionsPageContent() {
-  const { page, limit, term } = useTableSearchParams()
+  const searchParams = useSearchParams()
+  const term = searchParams.get("term") ?? ""
   const { token, isAuthenticated } = useAuth()
-  const { permissions, meta, isLoading, error } = usePermissions({
+  const { permissions, isLoading, error } = usePermissions({
     token: isAuthenticated ? token : null,
-    page,
-    limit,
     term,
   })
 
@@ -44,11 +43,7 @@ function PermissionsPageContent() {
           error={error}
           unauthenticatedMessage="Please log in to view permissions."
         >
-          <PermissionsTable
-            permissions={permissions}
-            meta={meta}
-            basePath="/permissions"
-          />
+          <PermissionsTable permissions={permissions} />
         </DataTableCard>
       </PageShell>
     </>

@@ -13,16 +13,16 @@ import {
   // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
   // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
   GetPaginatedRoleUseCase,
+  GetAllRolesUseCase,
   ComboboxRoleUseCase,
 } from './application/use-cases/role';
 import {
   // Permission use cases
-  CreatePermissionUseCase,
-  UpdatePermissionUseCase,
-  ArchivePermissionUseCase,
-  RestorePermissionUseCase,
+  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase removed
+  // Permissions are statically defined and managed via seeders only
   GetPermissionByIdUseCase,
   GetPaginatedPermissionUseCase,
+  GetAllPermissionsUseCase,
   ComboboxPermissionUseCase,
 } from './application/use-cases/permission';
 import {
@@ -101,14 +101,14 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
     // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
     GetPaginatedRoleUseCase,
+    GetAllRolesUseCase,
     ComboboxRoleUseCase,
     // Permission use cases
-    CreatePermissionUseCase,
-    UpdatePermissionUseCase,
-    ArchivePermissionUseCase,
-    RestorePermissionUseCase,
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase removed
+    // Permissions are statically defined and managed via seeders only
     GetPermissionByIdUseCase,
     GetPaginatedPermissionUseCase,
+    GetAllPermissionsUseCase,
     ComboboxPermissionUseCase,
     // Role-Permission use cases
     // Note: AssignPermissionsToRoleUseCase removed - role-permission assignments are managed via seeders only
@@ -134,14 +134,14 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
     // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
     GetPaginatedRoleUseCase,
+    GetAllRolesUseCase,
     ComboboxRoleUseCase,
     // Permission use cases
-    CreatePermissionUseCase,
-    UpdatePermissionUseCase,
-    ArchivePermissionUseCase,
-    RestorePermissionUseCase,
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase removed
+    // Permissions are statically defined and managed via seeders only
     GetPermissionByIdUseCase,
     GetPaginatedPermissionUseCase,
+    GetAllPermissionsUseCase,
     ComboboxPermissionUseCase,
     // Role-Permission use cases
     // Note: AssignPermissionsToRoleUseCase removed - role-permission assignments are managed via seeders only

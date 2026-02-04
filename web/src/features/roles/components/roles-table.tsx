@@ -17,8 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontalIcon, EyeIcon } from "lucide-react"
-import { DataTablePagination } from "@/components/table/data-table-pagination"
-import type { PaginationMeta } from "@/lib/api/types"
 import type { Role } from "../types/role.types"
 // Note: UpdateRoleDialog, AssignPermissionsDialog, Archive/Restore removed - roles are statically defined in backend
 // (ADMIN, EDITOR, VIEWER) and managed via seeders only. Role-permission assignments are also managed via seeders.
@@ -27,8 +25,6 @@ import { ViewPermissionsDialog } from "./view-permissions-dialog"
 
 export interface RolesTableProps {
   roles: Role[]
-  meta: PaginationMeta | null
-  basePath: string
   token: string | null
 }
 
@@ -43,8 +39,6 @@ function formatDate(dateStr: string | null | undefined): string {
 
 export function RolesTable({
   roles,
-  meta,
-  basePath,
   token,
 }: RolesTableProps) {
   // Note: Edit role, Assign permissions, Archive/Restore removed - roles are statically defined in backend
@@ -52,9 +46,6 @@ export function RolesTable({
   // Archiving roles would break authorization checks since role names are hardcoded in controllers.
   const [roleToView, setRoleToView] = useState<Role | null>(null)
   const [viewOpen, setViewOpen] = useState(false)
-
-  // Calculate starting index based on current page
-  const startIndex = meta ? (meta.page - 1) * meta.limit : 0
 
   return (
     <>
@@ -71,7 +62,7 @@ export function RolesTable({
         <TableBody>
           {roles.map((role, index) => (
             <TableRow key={role.id}>
-              <TableCell>{startIndex + index + 1}</TableCell>
+              <TableCell>{index + 1}</TableCell>
               <TableCell className="font-medium">{role.name}</TableCell>
               <TableCell>{role.description ?? "—"}</TableCell>
               <TableCell>{formatDate(role.created_at)}</TableCell>
@@ -104,7 +95,6 @@ export function RolesTable({
           ))}
         </TableBody>
       </Table>
-      {meta && <DataTablePagination meta={meta} basePath={basePath} />}
       {/* UpdateRoleDialog, AssignPermissionsDialog, Archive/Restore dialogs removed - roles are statically defined */}
       {/* Archiving roles would break authorization checks since role names are hardcoded in controllers */}
       <ViewPermissionsDialog

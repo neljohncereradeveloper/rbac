@@ -10,8 +10,6 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { PaginatedResult } from '@/core/utils/pagination.util';
-import { PaginationQueryDto } from '@/core/infrastructure/dto';
 import {
   RequirePermissions,
   RequireRoles,
@@ -25,7 +23,7 @@ import {
   // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
   // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
   ComboboxRoleUseCase,
-  GetPaginatedRoleUseCase,
+  GetAllRolesUseCase,
 } from '@/features/rbac/application/use-cases/role';
 import { Role } from '@/features/rbac/domain';
 
@@ -39,7 +37,7 @@ export class RoleController {
   constructor(
     // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
     // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
-    private readonly getPaginatedRoleUseCase: GetPaginatedRoleUseCase,
+    private readonly getAllRolesUseCase: GetAllRolesUseCase,
     private readonly comboboxRoleUseCase: ComboboxRoleUseCase,
   ) { }
 
@@ -51,7 +49,7 @@ export class RoleController {
   @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.ROLES.PAGINATED_LIST)
-  @ApiOperation({ summary: 'Get paginated list of roles' })
+  @ApiOperation({ summary: 'Get all roles (no pagination)' })
   @ApiResponse({
     status: 200,
     description: 'Roles retrieved successfully',
@@ -59,16 +57,15 @@ export class RoleController {
   @ApiResponse({ status: 400, description: 'Bad request - validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth('JWT-auth')
-  async getPaginated(
-    @Query() query: PaginationQueryDto,
-  ): Promise<PaginatedResult<Role>> {
+  async getAll(
+    @Query('term') term?: string,
+    @Query('is_archived') is_archived?: string,
+  ): Promise<Role[]> {
     // Note: is_archived parameter is kept for API compatibility but roles cannot be archived
     // Always returns active roles only since roles are statically defined
-    return this.getPaginatedRoleUseCase.execute(
-      query.term ?? '',
-      query.page,
-      query.limit,
-      false, // Always false - roles cannot be archived
+    return this.getAllRolesUseCase.execute(
+      term ?? '',
+      is_archived === 'true',
     );
   }
 

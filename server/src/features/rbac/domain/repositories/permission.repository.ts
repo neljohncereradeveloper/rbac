@@ -2,12 +2,7 @@ import { PaginatedResult } from '@/core/utils/pagination.util';
 import { Permission } from '../models/permission.model';
 
 export interface PermissionRepository<Context = unknown> {
-  create(model: Permission, context: Context): Promise<Permission>;
-  update(
-    id: number,
-    dto: Partial<Permission>,
-    context: Context,
-  ): Promise<boolean>;
+  // Note: create() and update() methods removed - permissions are statically defined and managed via seeders only
   findById(id: number, context: Context): Promise<Permission | null>;
   findPaginatedList(
     term: string,
@@ -16,6 +11,11 @@ export interface PermissionRepository<Context = unknown> {
     is_archived: boolean,
     context: Context,
   ): Promise<PaginatedResult<Permission>>;
+  findAll(
+    term: string,
+    is_archived: boolean,
+    context: Context,
+  ): Promise<Permission[]>;
   findByName(name: string, context: Context): Promise<Permission | null>;
   findByResourceAndAction(
     resource: string,

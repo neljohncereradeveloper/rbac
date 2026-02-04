@@ -1,17 +1,9 @@
 import {
   Controller,
   Get,
-  Post,
-  Put,
-  Delete,
-  Patch,
-  Body,
   Param,
   Query,
-  HttpCode,
-  HttpStatus,
   Version,
-  Req,
   ParseIntPipe,
 } from '@nestjs/common';
 import {
@@ -20,12 +12,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiBearerAuth,
-  ApiBody,
 } from '@nestjs/swagger';
-import { Request } from 'express';
-import { createRequestInfo } from '@/core/utils/request-info.util';
-import { PaginatedResult } from '@/core/utils/pagination.util';
-import { PaginationQueryDto } from '@/core/infrastructure/dto';
 import {
   RequirePermissions,
   RequireRoles,
@@ -36,17 +23,13 @@ import {
 } from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
-  ArchivePermissionUseCase,
+  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase removed
+  // Permissions are statically defined and managed via seeders only
   ComboboxPermissionUseCase,
-  CreatePermissionUseCase,
-  GetPaginatedPermissionUseCase,
+  GetAllPermissionsUseCase,
   GetPermissionByIdUseCase,
-  RestorePermissionUseCase,
-  UpdatePermissionUseCase,
 } from '@/features/rbac/application/use-cases/permission';
-import { CreatePermissionDto, UpdatePermissionDto } from '../../dto/permission';
 import { Permission } from '@/features/rbac/domain';
-import { CreatePermissionCommand, UpdatePermissionCommand } from '@/features/rbac/application/commands/permission';
 
 @ApiTags('Permission')
 @Controller('permissions')
@@ -56,111 +39,15 @@ import { CreatePermissionCommand, UpdatePermissionCommand } from '@/features/rba
 })
 export class PermissionController {
   constructor(
-    private readonly createPermissionUseCase: CreatePermissionUseCase,
-    private readonly updatePermissionUseCase: UpdatePermissionUseCase,
-    private readonly archivePermissionUseCase: ArchivePermissionUseCase,
-    private readonly restorePermissionUseCase: RestorePermissionUseCase,
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase removed
+    // Permissions are statically defined and managed via seeders only
     private readonly getPermissionByIdUseCase: GetPermissionByIdUseCase,
-    private readonly getPaginatedPermissionUseCase: GetPaginatedPermissionUseCase,
+    private readonly getAllPermissionsUseCase: GetAllPermissionsUseCase,
     private readonly comboboxPermissionUseCase: ComboboxPermissionUseCase,
   ) { }
 
-  @Version('1')
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.CREATE)
-  @ApiOperation({ summary: 'Create a new permission' })
-  @ApiBody({ type: CreatePermissionDto })
-  @ApiResponse({ status: 201, description: 'Permission created successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async create(
-    @Body() dto: CreatePermissionDto,
-    @Req() request: Request,
-  ): Promise<Permission> {
-    const requestInfo = createRequestInfo(request);
-    // Map presentation DTO to application command
-    const command: CreatePermissionCommand = {
-      name: dto.name,
-      resource: dto.resource,
-      action: dto.action,
-      description: dto.description ?? null,
-    };
-    return this.createPermissionUseCase.execute(command, requestInfo);
-  }
-
-  @Version('1')
-  @Put(':id')
-  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.UPDATE)
-  @ApiOperation({ summary: 'Update permission information' })
-  @ApiParam({ name: 'id', description: 'Permission ID', example: 1 })
-  @ApiBody({ type: UpdatePermissionDto })
-  @ApiResponse({ status: 200, description: 'Permission updated successfully' })
-  @ApiResponse({ status: 404, description: 'Permission not found' })
-  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdatePermissionDto,
-    @Req() request: Request,
-  ): Promise<Permission | null> {
-    const requestInfo = createRequestInfo(request);
-    // Map presentation DTO to application command
-    const command: UpdatePermissionCommand = {
-      name: dto.name,
-      resource: dto.resource,
-      action: dto.action,
-      description: dto.description ?? null,
-    };
-    return this.updatePermissionUseCase.execute(id, command, requestInfo);
-  }
-
-  @Version('1')
-  @Delete(':id/archive')
-  @HttpCode(HttpStatus.OK)
-  @RequireRoles(ROLES.ADMIN)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.ARCHIVE)
-  @ApiOperation({ summary: 'Archive a permission' })
-  @ApiParam({ name: 'id', description: 'Permission ID', example: 1 })
-  @ApiResponse({ status: 200, description: 'Permission archived successfully' })
-  @ApiResponse({ status: 404, description: 'Permission not found' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async archive(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() request: Request,
-  ): Promise<{ success: boolean }> {
-    const requestInfo = createRequestInfo(request);
-    await this.archivePermissionUseCase.execute(id, requestInfo);
-    return { success: true };
-  }
-
-  @Version('1')
-  @Patch(':id/restore')
-  @HttpCode(HttpStatus.OK)
-  @RequireRoles(ROLES.ADMIN)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.RESTORE)
-  @ApiOperation({ summary: 'Restore a permission' })
-  @ApiParam({ name: 'id', description: 'Permission ID', example: 1 })
-  @ApiResponse({
-    status: 200,
-    description: 'Permission restored successfully',
-  })
-  @ApiResponse({ status: 404, description: 'Permission not found' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async restore(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() request: Request,
-  ): Promise<{ success: boolean }> {
-    const requestInfo = createRequestInfo(request);
-    await this.restorePermissionUseCase.execute(id, requestInfo);
-    return { success: true };
-  }
+  // Note: Create, Update, Archive, and Restore endpoints removed - permissions are statically defined
+  // and managed via seeders only. Modifying or archiving them would break authorization checks.
 
   @Version('1')
   @Get(':id')
@@ -180,7 +67,7 @@ export class PermissionController {
   @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.PERMISSIONS.PAGINATED_LIST)
-  @ApiOperation({ summary: 'Get paginated list of permissions' })
+  @ApiOperation({ summary: 'Get all permissions (no pagination)' })
   @ApiResponse({
     status: 200,
     description: 'Permissions retrieved successfully',
@@ -188,14 +75,13 @@ export class PermissionController {
   @ApiResponse({ status: 400, description: 'Bad request - validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth('JWT-auth')
-  async getPaginated(
-    @Query() query: PaginationQueryDto,
-  ): Promise<PaginatedResult<Permission>> {
-    return this.getPaginatedPermissionUseCase.execute(
-      query.term ?? '',
-      query.page,
-      query.limit,
-      query.is_archived === 'true',
+  async getAll(
+    @Query('term') term?: string,
+    @Query('is_archived') is_archived?: string,
+  ): Promise<Permission[]> {
+    return this.getAllPermissionsUseCase.execute(
+      term ?? '',
+      is_archived === 'true',
     );
   }
 

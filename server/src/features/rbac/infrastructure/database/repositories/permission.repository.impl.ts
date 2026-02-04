@@ -12,90 +12,7 @@ import {
 export class PermissionRepositoryImpl implements PermissionRepository<EntityManager> {
   constructor(private readonly dataSource: DataSource) { }
 
-  async create(
-    permission: Permission,
-    manager: EntityManager,
-  ): Promise<Permission> {
-    const query = `
-      INSERT INTO ${RBAC_DATABASE_MODELS.PERMISSIONS} (
-        name, resource, action, description, deleted_by, deleted_at,
-        created_by, created_at, updated_by, updated_at
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      RETURNING *
-    `;
-
-    const result = await manager.query(query, [
-      permission.name,
-      permission.resource,
-      permission.action,
-      permission.description,
-      permission.deleted_by,
-      permission.deleted_at,
-      permission.created_by,
-      permission.created_at,
-      permission.updated_by,
-      permission.updated_at,
-    ]);
-
-    const savedEntity = result[0];
-    return this.entityToModel(savedEntity);
-  }
-
-  async update(
-    id: number,
-    dto: Partial<Permission>,
-    manager: EntityManager,
-  ): Promise<boolean> {
-    const updateFields: string[] = [];
-    const values: any[] = [];
-    let paramIndex = 1;
-
-    if (dto.name !== undefined) {
-      updateFields.push(`name = $${paramIndex++}`);
-      values.push(dto.name);
-    }
-    if (dto.resource !== undefined) {
-      updateFields.push(`resource = $${paramIndex++}`);
-      values.push(dto.resource);
-    }
-    if (dto.action !== undefined) {
-      updateFields.push(`action = $${paramIndex++}`);
-      values.push(dto.action);
-    }
-    if (dto.description !== undefined) {
-      updateFields.push(`description = $${paramIndex++}`);
-      values.push(dto.description);
-    }
-    if (dto.deleted_by !== undefined) {
-      updateFields.push(`deleted_by = $${paramIndex++}`);
-      values.push(dto.deleted_by);
-    }
-    if (dto.deleted_at !== undefined) {
-      updateFields.push(`deleted_at = $${paramIndex++}`);
-      values.push(dto.deleted_at);
-    }
-    if (dto.updated_by !== undefined) {
-      updateFields.push(`updated_by = $${paramIndex++}`);
-      values.push(dto.updated_by);
-    }
-
-    if (updateFields.length === 0) {
-      return false;
-    }
-
-    values.push(id);
-
-    const query = `
-      UPDATE ${RBAC_DATABASE_MODELS.PERMISSIONS}
-      SET ${updateFields.join(', ')}
-      WHERE id = $${paramIndex}
-      RETURNING id
-    `;
-
-    const result = await manager.query(query, values);
-    return result.length > 0;
-  }
+  // Note: create() and update() methods removed - permissions are statically defined and managed via seeders only
 
   async findById(
     id: number,
@@ -176,6 +93,48 @@ export class PermissionRepositoryImpl implements PermissionRepository<EntityMana
       data: permissions,
       meta: calculatePagination(totalRecords, page, limit),
     };
+  }
+
+  async findAll(
+    term: string,
+    is_archived: boolean,
+    manager: EntityManager,
+  ): Promise<Permission[]> {
+    const searchTerm = term ? `%${term}%` : '%';
+
+    // Build WHERE clause
+    let whereClause = '';
+    const queryParams: any[] = [];
+    let paramIndex = 1;
+
+    if (is_archived) {
+      whereClause = 'WHERE deleted_at IS NOT NULL';
+    } else {
+      whereClause = 'WHERE deleted_at IS NULL';
+    }
+
+    // Add search term if provided
+    if (term) {
+      whereClause += ` AND (
+        name ILIKE $${paramIndex} OR
+        resource ILIKE $${paramIndex} OR
+        action ILIKE $${paramIndex} OR
+        description ILIKE $${paramIndex}
+      )`;
+      queryParams.push(searchTerm);
+      paramIndex++;
+    }
+
+    // Fetch all data
+    const dataQuery = `
+      SELECT *
+      FROM ${RBAC_DATABASE_MODELS.PERMISSIONS}
+      ${whereClause}
+      ORDER BY resource ASC, name ASC
+    `;
+
+    const dataResult = await manager.query(dataQuery, queryParams);
+    return dataResult.map((row: any) => this.entityToModel(row));
   }
 
   async findByName(

@@ -92,6 +92,46 @@ export class RoleRepositoryImpl implements RoleRepository<EntityManager> {
     };
   }
 
+  async findAll(
+    term: string,
+    is_archived: boolean,
+    manager: EntityManager,
+  ): Promise<Role[]> {
+    const searchTerm = term ? `%${term}%` : '%';
+
+    // Build WHERE clause
+    let whereClause = '';
+    const queryParams: any[] = [];
+    let paramIndex = 1;
+
+    if (is_archived) {
+      whereClause = 'WHERE deleted_at IS NOT NULL';
+    } else {
+      whereClause = 'WHERE deleted_at IS NULL';
+    }
+
+    // Add search term if provided
+    if (term) {
+      whereClause += ` AND (
+        name ILIKE $${paramIndex} OR
+        description ILIKE $${paramIndex}
+      )`;
+      queryParams.push(searchTerm);
+      paramIndex++;
+    }
+
+    // Fetch all data
+    const dataQuery = `
+      SELECT *
+      FROM ${RBAC_DATABASE_MODELS.ROLES}
+      ${whereClause}
+      ORDER BY name ASC
+    `;
+
+    const dataResult = await manager.query(dataQuery, queryParams);
+    return dataResult.map((row: any) => this.entityToModel(row));
+  }
+
   async findByName(name: string, manager: EntityManager): Promise<Role | null> {
     const query = `
       SELECT *

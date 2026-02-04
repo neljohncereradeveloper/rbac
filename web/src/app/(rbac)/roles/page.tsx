@@ -4,19 +4,18 @@ import { Suspense } from "react"
 import { PageHeader, PageShell, PageTitle } from "@/components/layout"
 import { DataTableCard } from "@/components/table/data-table-card"
 import { TablePageSkeleton } from "@/components/table/table-page-skeleton"
-import { useTableSearchParams } from "@/hooks/use-table-search-params"
 import { useAuth } from "@/features/auth/hooks/use-auth"
 import { useRoles } from "@/features/roles/hooks/use-roles"
 import { RolesTable } from "@/features/roles/components/roles-table"
+import { useSearchParams } from "next/navigation"
 
 function RolesPageContent() {
-  const { page, limit, term } = useTableSearchParams()
+  const searchParams = useSearchParams()
+  const term = searchParams.get("term") ?? ""
   const { token, isAuthenticated } = useAuth()
   // Note: is_archived always "false" - roles cannot be archived as they are statically defined
-  const { roles, meta, isLoading, error } = useRoles({
+  const { roles, isLoading, error } = useRoles({
     token: isAuthenticated ? token : null,
-    page,
-    limit,
     term,
     is_archived: "false",
   })
@@ -54,8 +53,6 @@ function RolesPageContent() {
               {/* Archive filter tabs removed - roles cannot be archived as they are statically defined */}
               <RolesTable
                 roles={roles}
-                meta={meta}
-                basePath="/roles"
                 token={token}
               />
             </>
