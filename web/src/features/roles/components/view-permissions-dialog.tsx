@@ -6,8 +6,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { Button } from "@/components/ui/button"
+import { ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { fetchRolePermissions } from "../api/roles-api"
 import type { Role } from "../types/role.types"
 import type { RolePermission } from "../api/roles-api"
@@ -42,16 +50,48 @@ export function ViewPermissionsDialog({
   const [permissions, setPermissions] = useState<RolePermission[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [openResources, setOpenResources] = useState<Set<string>>(new Set())
+  const [hasInitialized, setHasInitialized] = useState(false)
 
   const groupedPermissions = useMemo(
     () => groupByResource(permissions),
     [permissions]
   )
 
+  // Open first resource by default when permissions first load (only once)
+  useEffect(() => {
+    if (groupedPermissions.length > 0 && !hasInitialized && openResources.size === 0) {
+      setOpenResources(new Set([groupedPermissions[0][0]]))
+      setHasInitialized(true)
+    }
+  }, [groupedPermissions, hasInitialized, openResources.size])
+
+  const toggleResource = (resource: string) => {
+    setOpenResources((prev) => {
+      const next = new Set(prev)
+      if (next.has(resource)) {
+        next.delete(resource)
+      } else {
+        next.add(resource)
+      }
+      return next
+    })
+  }
+
+  const collapseAll = () => {
+    setOpenResources(new Set())
+  }
+
+  const expandAll = () => {
+    setOpenResources(new Set(groupedPermissions.map(([resource]) => resource)))
+  }
+
   useEffect(() => {
     if (open && token && role?.id) {
       setIsLoading(true)
       setError(null)
+      setHasInitialized(false) // Reset initialization flag when dialog opens
+      setOpenResources(new Set()) // Reset open resources when dialog opens
       fetchRolePermissions(role.id, token)
         .then((res) => setPermissions(res ?? []))
         .catch((err) => {
@@ -59,6 +99,11 @@ export function ViewPermissionsDialog({
           setError(err instanceof Error ? err.message : "Failed to load permissions")
         })
         .finally(() => setIsLoading(false))
+    } else if (!open) {
+      // Reset state when dialog closes
+      setPermissions([])
+      setOpenResources(new Set())
+      setHasInitialized(false)
     }
   }, [open, token, role?.id])
 
@@ -73,9 +118,51 @@ export function ViewPermissionsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>
-            Permissions {role ? `for ${role.name}` : ""}
-          </DialogTitle>
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="flex-1 space-y-1 min-w-0">
+              <DialogTitle className="wrap-break-word text-left">
+                Permissions {role ? `for ${role.name}` : ""}
+              </DialogTitle>
+              {role?.description && (
+                <DialogDescription className="text-sm wrap-break-word text-left">
+                  {role.description}
+                </DialogDescription>
+              )}
+              {!isLoading && permissions.length > 0 && (
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-xs text-muted-foreground">
+                  <span>
+                    {permissions.length} {permissions.length === 1 ? "permission" : "permissions"}
+                  </span>
+                  <span className="hidden sm:inline">•</span>
+                  <span>
+                    {groupedPermissions.length} {groupedPermissions.length === 1 ? "resource group" : "resource groups"}
+                  </span>
+                </div>
+              )}
+            </div>
+            {!isLoading && permissions.length > 0 && (
+              <div className="flex flex-col gap-2 sm:flex-row shrink-0 w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={expandAll}
+                  disabled={openResources.size === groupedPermissions.length}
+                  className="w-full sm:w-auto"
+                >
+                  Expand All
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={collapseAll}
+                  disabled={openResources.size === 0}
+                  className="w-full sm:w-auto"
+                >
+                  Collapse All
+                </Button>
+              </div>
+            )}
+          </div>
         </DialogHeader>
         <div className="flex flex-1 flex-col min-h-0 space-y-4 py-4">
           {error && (
@@ -90,53 +177,52 @@ export function ViewPermissionsDialog({
               No permissions assigned to this role.
             </p>
           ) : (
-            <Tabs
-              defaultValue={groupedPermissions[0]?.[0] ?? "other"}
-              className="flex flex-1 flex-col min-h-0"
-            >
-              <TabsList
-                variant="underline"
-                className="w-full min-w-0 flex-nowrap justify-start overflow-x-auto pb-0"
-              >
-                {groupedPermissions.map(([resource]) => (
-                  <TabsTrigger
-                    key={resource}
-                    value={resource}
-                    variant="underline"
-                    className="shrink-0 whitespace-nowrap"
-                  >
-                    {formatResource(resource)}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              <div className="border-input mt-4 flex-1 min-h-[320px] overflow-y-auto rounded-lg border bg-muted/30">
-                {groupedPermissions.map(([resource, perms]) => (
-                  <TabsContent
-                    key={resource}
-                    value={resource}
-                    className="mt-0 p-4 focus-visible:outline-none focus-visible:ring-0"
-                  >
-                    <ul className="space-y-1.5">
-                      {perms.map((perm) => (
-                        <li
-                          key={perm.permission_id}
-                          className="flex flex-col gap-0.5 rounded-sm px-2 py-1.5 text-sm"
-                        >
-                          <span className="font-medium">
-                            {perm.permission_name ?? perm.permission_action ?? "—"}
-                          </span>
-                          {perm.permission_description && (
-                            <p className="text-muted-foreground text-xs">
-                              {perm.permission_description}
-                            </p>
+            <>
+              <div className="flex flex-1 flex-col min-h-0 space-y-2 overflow-y-auto">
+                {groupedPermissions.map(([resource, perms]) => {
+                  const isOpen = openResources.has(resource)
+                  return (
+                    <Collapsible
+                      key={resource}
+                      open={isOpen}
+                      onOpenChange={() => toggleResource(resource)}
+                      className="border rounded-lg"
+                    >
+                      <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted/50 transition-colors">
+                        <span className="font-medium">
+                          {formatResource(resource)}
+                        </span>
+                        <ChevronDown
+                          className={cn(
+                            "size-4 text-muted-foreground transition-transform duration-200",
+                            isOpen && "rotate-180"
                           )}
-                        </li>
-                      ))}
-                    </ul>
-                  </TabsContent>
-                ))}
+                        />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-4">
+                        <ul className="space-y-1.5 pt-2">
+                          {perms.map((perm) => (
+                            <li
+                              key={perm.permission_id}
+                              className="flex flex-col gap-0.5 rounded-sm px-2 py-1.5 text-sm"
+                            >
+                              <span className="font-medium">
+                                {perm.permission_name ?? perm.permission_action ?? "—"}
+                              </span>
+                              {perm.permission_description && (
+                                <p className="text-muted-foreground text-xs">
+                                  {perm.permission_description}
+                                </p>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )
+                })}
               </div>
-            </Tabs>
+            </>
           )}
         </div>
       </DialogContent>

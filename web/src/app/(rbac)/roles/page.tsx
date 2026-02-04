@@ -26,7 +26,7 @@ function RolesPageContent() {
       <PageShell>
         <PageTitle
           title="Roles"
-          description="View roles and their permissions. Roles (Admin, Editor, Viewer) and their permission assignments are statically defined and managed via seeders only. Use user permission management to grant or deny specific permissions to individual users."
+          description="View roles and their permissions. Roles are system-defined and cannot be modified."
         />
         <DataTableCard
           title="Roles list"
