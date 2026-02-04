@@ -293,10 +293,10 @@ export function UsersTable({
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Archive user</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="break-words">Archive user</DialogTitle>
+            <DialogDescription className="break-words">
               Are you sure you want to archive &quot;{userToArchive?.username}
               &quot;? This will soft-delete the user. You can restore them later
               from the Archived tab.
@@ -305,13 +305,14 @@ export function UsersTable({
           {archiveUserMutation.error && (
             <ErrorAlert error={archiveUserMutation.error} />
           )}
-          <DialogFooter>
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button
               variant="outline"
               onClick={() => {
                 setArchiveOpen(false)
                 setUserToArchive(null)
               }}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -319,6 +320,7 @@ export function UsersTable({
               variant="destructive"
               onClick={handleArchiveConfirm}
               disabled={archiveUserMutation.isPending}
+              className="w-full sm:w-auto"
             >
               {archiveUserMutation.isPending ? "Archiving..." : "Archive"}
             </Button>
@@ -335,10 +337,10 @@ export function UsersTable({
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Restore user</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="break-words">Restore user</DialogTitle>
+            <DialogDescription className="break-words">
               Are you sure you want to restore &quot;{userToRestore?.username}
               &quot;? The user will be active again and visible in the Active
               tab.
@@ -347,19 +349,21 @@ export function UsersTable({
           {restoreUserMutation.error && (
             <ErrorAlert error={restoreUserMutation.error} />
           )}
-          <DialogFooter>
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button
               variant="outline"
               onClick={() => {
                 setRestoreOpen(false)
                 setUserToRestore(null)
               }}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               onClick={handleRestoreConfirm}
               disabled={restoreUserMutation.isPending}
+              className="w-full sm:w-auto"
             >
               {restoreUserMutation.isPending ? "Restoring..." : "Restore"}
             </Button>

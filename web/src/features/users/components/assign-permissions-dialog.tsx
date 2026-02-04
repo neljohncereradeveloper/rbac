@@ -160,36 +160,24 @@ export function AssignPermissionsDialog({
     const loadData = async () => {
       try {
         const [permissionsRes, userPermissionsRes, userRolesRes, rolesRes] = await Promise.all([
-          fetchPermissions({
-            token,
-            page: 1,
-            limit: 150,
-            term: "",
-            is_archived: "false",
-          }),
+          fetchPermissions({ token }),
           user?.id
             ? fetchUserPermissions(user.id, token)
             : Promise.resolve([]),
           user?.id
             ? fetchUserRoles(user.id, token)
             : Promise.resolve([]),
-          fetchRoles({
-            token,
-            page: 1,
-            limit: 100,
-            term: "",
-            is_archived: "false",
-          }),
+          fetchRoles({ token }),
         ])
 
-        const list = permissionsRes.data ?? []
+        const list = permissionsRes ?? []
         setPermissions(list)
         setUserPermissions(userPermissionsRes ?? [])
 
         // Create a map of role IDs to role names from the roles list
         const rolesMap = new Map<number, string>()
-        if (rolesRes?.data) {
-          rolesRes.data.forEach((role) => {
+        if (rolesRes) {
+          rolesRes.forEach((role) => {
             if (role.id) {
               rolesMap.set(role.id, role.name)
             }
@@ -461,20 +449,20 @@ export function AssignPermissionsDialog({
               open={isExpanded}
               onOpenChange={() => toggleResource(group.resource)}
             >
-              <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg border bg-muted/50 px-4 py-3 text-left hover:bg-muted transition-colors">
-                <div className="flex items-center gap-2">
+              <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg border bg-muted/50 px-3 sm:px-4 py-2.5 sm:py-3 text-left hover:bg-muted transition-colors touch-manipulation">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
                   {isExpanded ? (
-                    <ChevronDownIcon className="size-4 text-muted-foreground" />
+                    <ChevronDownIcon className="size-4 text-muted-foreground shrink-0" />
                   ) : (
-                    <ChevronRightIcon className="size-4 text-muted-foreground" />
+                    <ChevronRightIcon className="size-4 text-muted-foreground shrink-0" />
                   )}
-                  <span className="font-semibold text-sm">{group.resource}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({selectedInGroup}/{groupPermissions.length} selected)
+                  <span className="font-semibold text-sm break-words">{group.resource}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    ({selectedInGroup}/{groupPermissions.length})
                   </span>
                 </div>
               </CollapsibleTrigger>
-              <CollapsibleContent className="px-4 py-2">
+              <CollapsibleContent className="px-3 sm:px-4 py-2">
                 <div className="space-y-1">
                   {groupPermissions.map((permission) => {
                     const selected = isSelected(permission.id)
@@ -483,7 +471,7 @@ export function AssignPermissionsDialog({
                       <label
                         key={permission.id}
                         className={cn(
-                          "flex items-start gap-2 rounded-sm px-3 py-2 text-sm transition-colors",
+                          "flex items-start gap-2 rounded-sm px-2 sm:px-3 py-2 text-sm transition-colors touch-manipulation",
                           disabled
                             ? "cursor-not-allowed opacity-60"
                             : "cursor-pointer",
@@ -500,12 +488,12 @@ export function AssignPermissionsDialog({
                           className="mt-0.5 size-4 shrink-0 rounded border disabled:cursor-not-allowed disabled:opacity-50"
                         />
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-medium">{permission.name}</span>
+                          <div className="flex items-start gap-2 flex-wrap">
+                            <span className="font-medium break-words">{permission.name}</span>
                             {getStatusBadge(permission)}
                           </div>
                           {permission.description && (
-                            <p className="text-muted-foreground text-xs mt-1">
+                            <p className="text-muted-foreground text-xs mt-1 break-words">
                               {permission.description}
                             </p>
                           )}
@@ -536,7 +524,7 @@ export function AssignPermissionsDialog({
     >
       <DialogContent className="flex max-w-3xl max-h-[90vh] flex-col overflow-hidden">
         <DialogHeader className="shrink-0">
-          <DialogTitle>
+          <DialogTitle className="break-words">
             Manage permissions {user ? `for ${user.username}` : ""}
           </DialogTitle>
         </DialogHeader>
@@ -580,14 +568,14 @@ export function AssignPermissionsDialog({
               >
                 <FieldGroup className="min-h-0 flex-1 flex flex-col">
                   <Field className="flex min-h-0 flex-1 flex-col">
-                    <div className="flex shrink-0 items-center justify-between mb-3">
-                      <div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
+                      <div className="flex-1 min-w-0">
                         <FieldLabel>Grant Permissions</FieldLabel>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1 break-words">
                           Override to explicitly allow permissions. Permissions already granted via roles are disabled — use Deny tab to block them.
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row shrink-0 w-full sm:w-auto">
                         <Button
                           type="button"
                           variant="outline"
@@ -597,6 +585,7 @@ export function AssignPermissionsDialog({
                               ? collapseAllResources
                               : expandAllResources
                           }
+                          className="w-full sm:w-auto"
                         >
                           {expandedResources.size === permissionGroups.length
                             ? "Collapse All"
@@ -609,6 +598,7 @@ export function AssignPermissionsDialog({
                           onClick={
                             selectedCount > 0 ? deselectAllInTab : selectAllInTab
                           }
+                          className="w-full sm:w-auto"
                         >
                           {selectedCount > 0 ? "Deselect All" : "Select All"}
                         </Button>
@@ -658,27 +648,29 @@ export function AssignPermissionsDialog({
                     )}
                   </Field>
                 </FieldGroup>
-                <DialogFooter className="shrink-0 mt-4">
-                  <div className="flex items-center justify-between w-full">
+                <DialogFooter className="shrink-0 mt-4 flex-col gap-2 sm:flex-row">
+                  <div className="flex items-center justify-between w-full sm:w-auto sm:order-2">
                     <span className="text-sm text-muted-foreground">
                       {selectedCount} permission{selectedCount !== 1 ? "s" : ""}{" "}
                       selected
                     </span>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => onOpenChange(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={grantMutation.isPending || isLoading}
-                      >
-                        {grantMutation.isPending ? "Granting..." : "Grant"}
-                      </Button>
-                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row w-full sm:w-auto sm:order-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => onOpenChange(false)}
+                      className="w-full sm:w-auto"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={grantMutation.isPending || isLoading}
+                      className="w-full sm:w-auto"
+                    >
+                      {grantMutation.isPending ? "Granting..." : "Grant"}
+                    </Button>
                   </div>
                 </DialogFooter>
               </form>
@@ -828,10 +820,10 @@ export function AssignPermissionsDialog({
               >
                 <FieldGroup className="min-h-0 flex-1 flex flex-col">
                   <Field className="flex min-h-0 flex-1 flex-col">
-                    <div className="flex shrink-0 items-center justify-between mb-3">
-                      <div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
+                      <div className="flex-1 min-w-0">
                         <FieldLabel>Remove Permission Overrides</FieldLabel>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1 break-words">
                           Remove overrides to restore role-based permissions
                         </p>
                       </div>
@@ -842,6 +834,7 @@ export function AssignPermissionsDialog({
                         onClick={
                           selectedCount > 0 ? deselectAllInTab : selectAllInTab
                         }
+                        className="w-full sm:w-auto"
                       >
                         {selectedCount > 0 ? "Deselect All" : "Select All"}
                       </Button>
@@ -865,7 +858,7 @@ export function AssignPermissionsDialog({
 
                             return (
                               <div key={group.resource} className="space-y-1">
-                                <div className="font-semibold text-sm px-2 py-1 text-muted-foreground">
+                                <div className="font-semibold text-sm px-2 py-1 text-muted-foreground break-words">
                                   {group.resource}
                                 </div>
                                 {groupOverrides.map((userPermission) => {
@@ -879,7 +872,7 @@ export function AssignPermissionsDialog({
                                     <label
                                       key={userPermission.permission_id}
                                       className={cn(
-                                        "flex cursor-pointer items-start gap-2 rounded-sm px-3 py-2 text-sm transition-colors",
+                                        "flex cursor-pointer items-start gap-2 rounded-sm px-2 sm:px-3 py-2 text-sm transition-colors touch-manipulation",
                                         isSelected
                                           ? "bg-primary/10 hover:bg-primary/15"
                                           : "hover:bg-muted/50"
@@ -896,14 +889,14 @@ export function AssignPermissionsDialog({
                                         className="mt-0.5 size-4 shrink-0 rounded border"
                                       />
                                       <div className="min-w-0 flex-1">
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                          <span className="font-medium">
+                                        <div className="flex items-start gap-2 flex-wrap">
+                                          <span className="font-medium break-words">
                                             {permission?.name ??
                                               `Permission ${userPermission.permission_id}`}
                                           </span>
                                           <span
                                             className={cn(
-                                              "text-xs font-medium",
+                                              "text-xs font-medium shrink-0",
                                               userPermission.is_allowed
                                                 ? "text-green-600 dark:text-green-400"
                                                 : "text-red-600 dark:text-red-400"
@@ -913,7 +906,7 @@ export function AssignPermissionsDialog({
                                           </span>
                                         </div>
                                         {permission?.description && (
-                                          <p className="text-muted-foreground text-xs mt-1">
+                                          <p className="text-muted-foreground text-xs mt-1 break-words">
                                             {permission.description}
                                           </p>
                                         )}
@@ -929,28 +922,30 @@ export function AssignPermissionsDialog({
                     )}
                   </Field>
                 </FieldGroup>
-                <DialogFooter className="shrink-0 mt-4">
-                  <div className="flex items-center justify-between w-full">
+                <DialogFooter className="shrink-0 mt-4 flex-col gap-2 sm:flex-row">
+                  <div className="flex items-center justify-between w-full sm:w-auto sm:order-2">
                     <span className="text-sm text-muted-foreground">
                       {selectedCount} override{selectedCount !== 1 ? "s" : ""}{" "}
                       selected
                     </span>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => onOpenChange(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={removeMutation.isPending || isLoading}
-                        variant="destructive"
-                      >
-                        {removeMutation.isPending ? "Removing..." : "Remove"}
-                      </Button>
-                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row w-full sm:w-auto sm:order-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => onOpenChange(false)}
+                      className="w-full sm:w-auto"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={removeMutation.isPending || isLoading}
+                      variant="destructive"
+                      className="w-full sm:w-auto"
+                    >
+                      {removeMutation.isPending ? "Removing..." : "Remove"}
+                    </Button>
                   </div>
                 </DialogFooter>
               </form>

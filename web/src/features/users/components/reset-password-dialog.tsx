@@ -93,11 +93,11 @@ export function ResetPasswordDialog({
         }
       }}
     >
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Reset password</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="break-words">Reset password</DialogTitle>
+            <DialogDescription className="break-words">
               Reset password for user &quot;{user?.username}&quot;. The user
               will need to use this new password to log in.
             </DialogDescription>
@@ -124,11 +124,12 @@ export function ResetPasswordDialog({
               </Field>
             </FieldGroup>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -136,6 +137,7 @@ export function ResetPasswordDialog({
               type="submit"
               variant="destructive"
               disabled={resetPasswordMutation.isPending}
+              className="w-full sm:w-auto"
             >
               {resetPasswordMutation.isPending ? "Resetting..." : "Reset password"}
             </Button>

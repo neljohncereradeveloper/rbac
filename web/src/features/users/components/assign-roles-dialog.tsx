@@ -68,17 +68,11 @@ export function AssignRolesDialog({
     const loadData = async () => {
       try {
         const [rolesRes, userRolesRes] = await Promise.all([
-          fetchRoles({
-            token,
-            page: 1,
-            limit: 100,
-            term: "",
-            is_archived: "false",
-          }),
+          fetchRoles({ token }),
           user?.id ? fetchUserRoles(user.id, token) : Promise.resolve([]),
         ])
 
-        const list = rolesRes.data ?? []
+        const list = rolesRes ?? []
         list.sort((a, b) =>
           (a.name ?? "").localeCompare(b.name ?? "", "en", {
             sensitivity: "base",
@@ -156,7 +150,7 @@ export function AssignRolesDialog({
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
         >
           <DialogHeader className="shrink-0">
-            <DialogTitle>
+            <DialogTitle className="break-words">
               Assign roles {user ? `to ${user.username}` : ""}
             </DialogTitle>
           </DialogHeader>
@@ -172,13 +166,14 @@ export function AssignRolesDialog({
             )}
             <FieldGroup className="min-h-0 flex-1 flex flex-col">
               <Field className="flex min-h-0 flex-1 flex-col">
-                <div className="flex shrink-0 items-center justify-between">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2">
                   <FieldLabel>Roles</FieldLabel>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={selectAll}
+                    className="w-full sm:w-auto"
                   >
                     {selectedIds.size === roles.length
                       ? "Deselect all"
@@ -194,23 +189,23 @@ export function AssignRolesDialog({
                     No roles available.
                   </p>
                 ) : (
-                  <div className="border-input mt-2 max-h-[320px] overflow-y-auto rounded-lg border bg-muted/30 p-4">
+                  <div className="border-input mt-2 max-h-[320px] overflow-y-auto rounded-lg border bg-muted/30 p-3 sm:p-4">
                     <div className="space-y-1">
                       {roles.map((role) => (
                         <label
                           key={role.id}
-                          className="hover:bg-accent flex cursor-pointer items-start gap-2 rounded-sm px-2 py-1.5 text-sm"
+                          className="hover:bg-accent flex cursor-pointer items-start gap-2 rounded-sm px-2 py-2 sm:py-1.5 text-sm touch-manipulation"
                         >
                           <input
                             type="checkbox"
                             checked={selectedIds.has(role.id)}
                             onChange={() => toggleRole(role.id)}
-                            className="mt-0.5 size-4 shrink-0 rounded border"
+                            className="mt-0.5 size-4 sm:size-4 shrink-0 rounded border"
                           />
                           <div className="min-w-0 flex-1">
-                            <span className="font-medium">{role.name}</span>
+                            <span className="font-medium break-words">{role.name}</span>
                             {role.description && (
-                              <p className="text-muted-foreground text-xs">
+                              <p className="text-muted-foreground text-xs break-words mt-0.5">
                                 {role.description}
                               </p>
                             )}
@@ -223,17 +218,19 @@ export function AssignRolesDialog({
               </Field>
             </FieldGroup>
           </div>
-          <DialogFooter className="shrink-0">
+          <DialogFooter className="shrink-0 flex-col gap-2 sm:flex-row">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={assignRolesMutation.isPending || isLoadingRoles}
+              className="w-full sm:w-auto"
             >
               {assignRolesMutation.isPending ? "Saving..." : "Assign"}
             </Button>

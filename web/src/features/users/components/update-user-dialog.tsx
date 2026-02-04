@@ -109,22 +109,22 @@ export function UpdateUserDialog({
         }
       }}
     >
-      <DialogContent className="max-w-2xl">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Edit user</DialogTitle>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <DialogHeader className="shrink-0">
+            <DialogTitle className="break-words">Edit user</DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 py-4">
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-4">
             {updateUserMutation.error && (
-              <ErrorAlert error={updateUserMutation.error} />
+              <ErrorAlert error={updateUserMutation.error} className="mb-4" />
             )}
             {user && (
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-sm break-words mb-4">
                 Username: <span className="font-medium">{user.username}</span>{" "}
                 (cannot be changed)
               </p>
             )}
-            <FieldGroup className="grid grid-cols-2 gap-x-6 gap-y-4">
+            <FieldGroup className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
               <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="update-user-email">Email</FieldLabel>
                 <Input
@@ -196,15 +196,20 @@ export function UpdateUserDialog({
               </Field>
             </FieldGroup>
           </div>
-          <DialogFooter>
+          <DialogFooter className="shrink-0 flex-col gap-2 sm:flex-row">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={updateUserMutation.isPending}>
+            <Button
+              type="submit"
+              disabled={updateUserMutation.isPending}
+              className="w-full sm:w-auto"
+            >
               {updateUserMutation.isPending ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
