@@ -456,7 +456,7 @@ export function AssignPermissionsDialog({
                   ) : (
                     <ChevronRightIcon className="size-4 text-muted-foreground shrink-0" />
                   )}
-                  <span className="font-semibold text-sm break-words">{group.resource}</span>
+                  <span className="font-semibold text-sm wrap-break-word">{group.resource}</span>
                   <span className="text-xs text-muted-foreground shrink-0">
                     ({selectedInGroup}/{groupPermissions.length})
                   </span>
@@ -489,11 +489,11 @@ export function AssignPermissionsDialog({
                         />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-2 flex-wrap">
-                            <span className="font-medium break-words">{permission.name}</span>
+                            <span className="font-medium wrap-break-word">{permission.name}</span>
                             {getStatusBadge(permission)}
                           </div>
                           {permission.description && (
-                            <p className="text-muted-foreground text-xs mt-1 break-words">
+                            <p className="text-muted-foreground text-xs mt-1 wrap-break-word">
                               {permission.description}
                             </p>
                           )}
@@ -524,7 +524,7 @@ export function AssignPermissionsDialog({
     >
       <DialogContent className="flex max-w-3xl max-h-[90vh] flex-col overflow-hidden">
         <DialogHeader className="shrink-0">
-          <DialogTitle className="break-words">
+          <DialogTitle className="wrap-break-word">
             Manage permissions {user ? `for ${user.username}` : ""}
           </DialogTitle>
         </DialogHeader>
@@ -571,7 +571,7 @@ export function AssignPermissionsDialog({
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
                       <div className="flex-1 min-w-0">
                         <FieldLabel>Grant Permissions</FieldLabel>
-                        <p className="text-xs text-muted-foreground mt-1 break-words">
+                        <p className="text-xs text-muted-foreground mt-1 wrap-break-word">
                           Override to explicitly allow permissions. Permissions already granted via roles are disabled — use Deny tab to block them.
                         </p>
                       </div>
@@ -823,7 +823,7 @@ export function AssignPermissionsDialog({
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
                       <div className="flex-1 min-w-0">
                         <FieldLabel>Remove Permission Overrides</FieldLabel>
-                        <p className="text-xs text-muted-foreground mt-1 break-words">
+                        <p className="text-xs text-muted-foreground mt-1 wrap-break-word">
                           Remove overrides to restore role-based permissions
                         </p>
                       </div>
@@ -858,7 +858,7 @@ export function AssignPermissionsDialog({
 
                             return (
                               <div key={group.resource} className="space-y-1">
-                                <div className="font-semibold text-sm px-2 py-1 text-muted-foreground break-words">
+                                <div className="font-semibold text-sm px-2 py-1 text-muted-foreground wrap-break-word">
                                   {group.resource}
                                 </div>
                                 {groupOverrides.map((userPermission) => {
@@ -890,7 +890,7 @@ export function AssignPermissionsDialog({
                                       />
                                       <div className="min-w-0 flex-1">
                                         <div className="flex items-start gap-2 flex-wrap">
-                                          <span className="font-medium break-words">
+                                          <span className="font-medium wrap-break-word">
                                             {permission?.name ??
                                               `Permission ${userPermission.permission_id}`}
                                           </span>
@@ -906,7 +906,7 @@ export function AssignPermissionsDialog({
                                           </span>
                                         </div>
                                         {permission?.description && (
-                                          <p className="text-muted-foreground text-xs mt-1 break-words">
+                                          <p className="text-muted-foreground text-xs mt-1 wrap-break-word">
                                             {permission.description}
                                           </p>
                                         )}

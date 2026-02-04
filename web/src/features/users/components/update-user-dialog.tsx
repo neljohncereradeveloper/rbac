@@ -112,14 +112,14 @@ export function UpdateUserDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <DialogHeader className="shrink-0">
-            <DialogTitle className="break-words">Edit user</DialogTitle>
+            <DialogTitle className="wrap-break-word">Edit user</DialogTitle>
           </DialogHeader>
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-4">
             {updateUserMutation.error && (
               <ErrorAlert error={updateUserMutation.error} className="mb-4" />
             )}
             {user && (
-              <p className="text-muted-foreground text-sm break-words mb-4">
+              <p className="text-muted-foreground text-sm wrap-break-word mb-4">
                 Username: <span className="font-medium">{user.username}</span>{" "}
                 (cannot be changed)
               </p>

@@ -150,7 +150,7 @@ export function AssignRolesDialog({
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
         >
           <DialogHeader className="shrink-0">
-            <DialogTitle className="break-words">
+            <DialogTitle className="wrap-break-word">
               Assign roles {user ? `to ${user.username}` : ""}
             </DialogTitle>
           </DialogHeader>
@@ -203,9 +203,9 @@ export function AssignRolesDialog({
                             className="mt-0.5 size-4 sm:size-4 shrink-0 rounded border"
                           />
                           <div className="min-w-0 flex-1">
-                            <span className="font-medium break-words">{role.name}</span>
+                            <span className="font-medium wrap-break-word">{role.name}</span>
                             {role.description && (
-                              <p className="text-muted-foreground text-xs break-words mt-0.5">
+                              <p className="text-muted-foreground text-xs wrap-break-word mt-0.5">
                                 {role.description}
                               </p>
                             )}

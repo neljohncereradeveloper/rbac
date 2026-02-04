@@ -295,8 +295,8 @@ export function UsersTable({
       >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="break-words">Archive user</DialogTitle>
-            <DialogDescription className="break-words">
+            <DialogTitle className="wrap-break-word">Archive user</DialogTitle>
+            <DialogDescription className="wrap-break-word">
               Are you sure you want to archive &quot;{userToArchive?.username}
               &quot;? This will soft-delete the user. You can restore them later
               from the Archived tab.
@@ -339,8 +339,8 @@ export function UsersTable({
       >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="break-words">Restore user</DialogTitle>
-            <DialogDescription className="break-words">
+            <DialogTitle className="wrap-break-word">Restore user</DialogTitle>
+            <DialogDescription className="wrap-break-word">
               Are you sure you want to restore &quot;{userToRestore?.username}
               &quot;? The user will be active again and visible in the Active
               tab.
