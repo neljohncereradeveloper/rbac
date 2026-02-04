@@ -1,6 +1,7 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { queryKeys } from "@/lib/react-query"
 import {
   createRole,
@@ -21,9 +22,12 @@ export function useCreateRole() {
 
   return useMutation({
     mutationFn: (params: CreateRoleParams) => createRole(params),
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate all role queries to refetch the list
       queryClient.invalidateQueries({ queryKey: queryKeys.roles.all })
+      toast.success("Role created successfully", {
+        description: `Role "${data.name}" has been created.`,
+      })
     },
   })
 }
@@ -37,12 +41,19 @@ export function useUpdateRole() {
   return useMutation({
     mutationFn: ({ id, ...params }: { id: number } & UpdateRoleParams) =>
       updateRole(id, params),
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       // Invalidate all role queries and the specific role detail
       queryClient.invalidateQueries({ queryKey: queryKeys.roles.all })
       queryClient.invalidateQueries({
         queryKey: queryKeys.roles.detail(variables.id),
       })
+      if (data) {
+        toast.success("Role updated successfully", {
+          description: `Role "${data.name}" has been updated.`,
+        })
+      } else {
+        toast.success("Role updated successfully")
+      }
     },
   })
 }
@@ -62,6 +73,9 @@ export function useArchiveRole() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.roles.detail(variables.id),
       })
+      toast.success("Role archived successfully", {
+        description: "The role has been archived and moved to the Archived tab.",
+      })
     },
   })
 }
@@ -80,6 +94,9 @@ export function useRestoreRole() {
       queryClient.invalidateQueries({ queryKey: queryKeys.roles.all })
       queryClient.invalidateQueries({
         queryKey: queryKeys.roles.detail(variables.id),
+      })
+      toast.success("Role restored successfully", {
+        description: "The role has been restored and is now active.",
       })
     },
   })
@@ -105,6 +122,9 @@ export function useAssignPermissionsToRole() {
       })
       queryClient.invalidateQueries({
         queryKey: queryKeys.roles.permissions(variables.roleId),
+      })
+      toast.success("Permissions assigned successfully", {
+        description: `Permissions have been assigned to the role.`,
       })
     },
   })

@@ -1,6 +1,7 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { queryKeys } from "@/lib/react-query"
 import {
   createUser,
@@ -24,9 +25,12 @@ export function useCreateUser() {
 
   return useMutation({
     mutationFn: (params: CreateUserParams) => createUser(params),
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate all user queries to refetch the list
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      toast.success("User created successfully", {
+        description: `User "${data.username}" has been created.`,
+      })
     },
   })
 }
@@ -40,11 +44,14 @@ export function useUpdateUser() {
   return useMutation({
     mutationFn: ({ id, ...params }: { id: number } & UpdateUserParams) =>
       updateUser(id, params),
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       // Invalidate all user queries and the specific user detail
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.detail(variables.id),
+      })
+      toast.success("User updated successfully", {
+        description: "User information has been updated.",
       })
     },
   })
@@ -65,6 +72,9 @@ export function useArchiveUser() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.detail(variables.id),
       })
+      toast.success("User archived successfully", {
+        description: "The user has been archived and moved to the Archived tab.",
+      })
     },
   })
 }
@@ -83,6 +93,9 @@ export function useRestoreUser() {
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.detail(variables.id),
+      })
+      toast.success("User restored successfully", {
+        description: "The user has been restored and is now active.",
       })
     },
   })
@@ -108,6 +121,9 @@ export function useAssignRolesToUser() {
       })
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.roles(variables.userId),
+      })
+      toast.success("Roles assigned successfully", {
+        description: `Roles have been assigned to the user.`,
       })
     },
   })
