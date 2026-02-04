@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class UserRepositoryImpl implements UserRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async create(user: User, manager: EntityManager): Promise<User> {
     const query = `
@@ -134,7 +134,7 @@ export class UserRepositoryImpl implements UserRepository<EntityManager> {
     const query = `
       UPDATE ${USER_MANAGEMENT_DATABASE_MODELS.USERS}
       SET ${updateFields.join(', ')}
-      WHERE id = $${paramIndex} AND deleted_at IS NULL
+      WHERE id = $${paramIndex}
       RETURNING id
     `;
 
@@ -150,7 +150,7 @@ export class UserRepositoryImpl implements UserRepository<EntityManager> {
     const query = `
       UPDATE ${USER_MANAGEMENT_DATABASE_MODELS.USERS}
       SET password = $1, change_password_by = $2, change_password_at = $3, updated_by = $4
-      WHERE id = $5 AND deleted_at IS NULL
+      WHERE id = $5
       RETURNING id
     `;
 
@@ -250,7 +250,7 @@ export class UserRepositoryImpl implements UserRepository<EntityManager> {
     const query = `
       SELECT *
       FROM ${USER_MANAGEMENT_DATABASE_MODELS.USERS}
-      WHERE username = $1 AND deleted_at IS NULL
+      WHERE username = $1
     `;
 
     const result = await manager.query(query, [username]);
@@ -268,7 +268,7 @@ export class UserRepositoryImpl implements UserRepository<EntityManager> {
     const query = `
       SELECT *
       FROM ${USER_MANAGEMENT_DATABASE_MODELS.USERS}
-      WHERE email = $1 AND deleted_at IS NULL
+      WHERE email = $1
     `;
 
     const result = await manager.query(query, [email]);

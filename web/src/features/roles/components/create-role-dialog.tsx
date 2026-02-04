@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -18,11 +18,12 @@ import {
   FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { createRole } from "../api/roles-api"
+import { getErrorMessage } from "@/lib/react-query"
 import {
   createRoleSchema,
   type CreateRoleFormData,
 } from "../schemas/role.schema"
+import { useCreateRole } from "../hooks/use-role-mutations"
 
 export interface CreateRoleDialogProps {
   open: boolean
@@ -42,12 +43,12 @@ export function CreateRoleDialog({
   token,
   onSuccess,
 }: CreateRoleDialogProps) {
-  const [apiError, setApiError] = useState<string | null>(null)
+  const createRoleMutation = useCreateRole()
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<CreateRoleFormData>({
     resolver: zodResolver(createRoleSchema),
     defaultValues,
@@ -56,23 +57,24 @@ export function CreateRoleDialog({
   useEffect(() => {
     if (open) {
       reset(defaultValues)
-      setApiError(null)
     }
   }, [open, reset])
 
   async function onSubmit(data: CreateRoleFormData) {
     if (!token) return
-    try {
-      await createRole({
+    createRoleMutation.mutate(
+      {
         name: data.name,
         description: data.description?.trim() || null,
         token,
-      })
-      onOpenChange(false)
-      onSuccess()
-    } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Failed to create role")
-    }
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          onSuccess()
+        },
+      }
+    )
   }
 
   return (
@@ -83,8 +85,10 @@ export function CreateRoleDialog({
             <DialogTitle>Create role</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            {apiError && (
-              <p className="text-destructive text-sm">{apiError}</p>
+            {createRoleMutation.error && (
+              <p className="text-destructive text-sm">
+                {getErrorMessage(createRoleMutation.error)}
+              </p>
             )}
             <FieldGroup>
               <Field data-invalid={!!errors.name}>
@@ -119,8 +123,8 @@ export function CreateRoleDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create"}
+            <Button type="submit" disabled={createRoleMutation.isPending}>
+              {createRoleMutation.isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
         </form>

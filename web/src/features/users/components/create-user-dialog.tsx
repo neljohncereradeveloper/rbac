@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -18,11 +18,12 @@ import {
   FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { createUser } from "../api/users-api"
+import { getErrorMessage } from "@/lib/react-query"
 import {
   createUserSchema,
   type CreateUserFormData,
 } from "../schemas/user.schema"
+import { useCreateUser } from "../hooks/use-user-mutations"
 
 export interface CreateUserDialogProps {
   open: boolean
@@ -48,12 +49,12 @@ export function CreateUserDialog({
   token,
   onSuccess,
 }: CreateUserDialogProps) {
-  const [apiError, setApiError] = useState<string | null>(null)
+  const createUserMutation = useCreateUser()
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<CreateUserFormData>({
     resolver: zodResolver(createUserSchema),
     defaultValues,
@@ -62,14 +63,13 @@ export function CreateUserDialog({
   useEffect(() => {
     if (open) {
       reset(defaultValues)
-      setApiError(null)
     }
   }, [open, reset])
 
-  async function onSubmit(data: CreateUserFormData) {
+  function onSubmit(data: CreateUserFormData) {
     if (!token) return
-    try {
-      await createUser({
+    createUserMutation.mutate(
+      {
         username: data.username,
         email: data.email,
         password: data.password,
@@ -79,12 +79,14 @@ export function CreateUserDialog({
         phone: data.phone?.trim() || null,
         date_of_birth: data.date_of_birth || null,
         token,
-      })
-      onOpenChange(false)
-      onSuccess()
-    } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Failed to create user")
-    }
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          onSuccess()
+        },
+      }
+    )
   }
 
   return (
@@ -95,8 +97,10 @@ export function CreateUserDialog({
             <DialogTitle>Create user</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            {apiError && (
-              <p className="text-destructive text-sm">{apiError}</p>
+            {createUserMutation.error && (
+              <p className="text-destructive text-sm">
+                {getErrorMessage(createUserMutation.error)}
+              </p>
             )}
             <FieldGroup className="grid grid-cols-2 gap-x-6 gap-y-4">
               <Field data-invalid={!!errors.username}>
@@ -199,8 +203,8 @@ export function CreateUserDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create"}
+            <Button type="submit" disabled={createUserMutation.isPending}>
+              {createUserMutation.isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
         </form>

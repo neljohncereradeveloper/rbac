@@ -12,10 +12,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import {
-  fetchUserRoles,
-  assignRolesToUser,
-} from "../api/users-api"
+import { fetchUserRoles } from "../api/users-api"
 import { fetchRoles } from "@/features/roles/api/roles-api"
 import type { User } from "../types/user.types"
 import type { Role } from "@/features/roles/types/role.types"
@@ -23,6 +20,7 @@ import {
   assignRolesSchema,
   type AssignRolesFormData,
 } from "../schemas/assign-roles.schema"
+import { useAssignRolesToUser } from "../hooks/use-user-mutations"
 
 export interface AssignRolesDialogProps {
   open: boolean
@@ -42,12 +40,13 @@ export function AssignRolesDialog({
   const [roles, setRoles] = useState<Role[]>([])
   const [fetchError, setFetchError] = useState<string | null>(null)
   const [isLoadingRoles, setIsLoadingRoles] = useState(false)
+  const assignRolesMutation = useAssignRolesToUser()
   const {
     watch,
     setValue,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { },
   } = useForm<AssignRolesFormData>({
     resolver: zodResolver(assignRolesSchema),
     defaultValues: { role_ids: [] },
@@ -119,19 +118,22 @@ export function AssignRolesDialog({
     }
   }
 
-  async function onSubmit(data: AssignRolesFormData) {
+  function onSubmit(data: AssignRolesFormData) {
     if (!token || !user?.id) return
-    try {
-      await assignRolesToUser(user.id, {
+    assignRolesMutation.mutate(
+      {
+        userId: user.id,
         role_ids: data.role_ids,
         replace: true,
         token,
-      })
-      onOpenChange(false)
-      onSuccess()
-    } catch {
-      // Error could be shown via setError - keeping simple for now
-    }
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          onSuccess()
+        },
+      }
+    )
   }
 
   return (
@@ -213,9 +215,9 @@ export function AssignRolesDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || isLoadingRoles}
+              disabled={assignRolesMutation.isPending || isLoadingRoles}
             >
-              {isSubmitting ? "Saving..." : "Assign"}
+              {assignRolesMutation.isPending ? "Saving..." : "Assign"}
             </Button>
           </DialogFooter>
         </form>

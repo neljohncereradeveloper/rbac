@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
 import type { PaginationMeta } from "@/lib/api/types"
+import { queryKeys, getErrorMessage } from "@/lib/react-query"
 import { fetchUsers } from "../api/users-api"
 import type { User } from "../types/user.types"
 
@@ -22,41 +23,18 @@ export function useUsers(options: UseUsersOptions = {}) {
     is_archived = "false",
   } = options
 
-  const [users, setUsers] = useState<User[]>([])
-  const [meta, setMeta] = useState<PaginationMeta | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const query = useQuery({
+    queryKey: queryKeys.users.list({ token, page, limit, term, is_archived }),
+    queryFn: () =>
+      fetchUsers({ page, limit, term, is_archived, token: token! }),
+    enabled: !!token,
+  })
 
-  const refetch = useCallback(async () => {
-    if (!token) {
-      setUsers([])
-      setMeta(null)
-      setIsLoading(false)
-      return
-    }
-    setIsLoading(true)
-    setError(null)
-    try {
-      const result = await fetchUsers({
-        page,
-        limit,
-        term,
-        is_archived,
-        token,
-      })
-      setUsers(result.data)
-      setMeta(result.meta)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch users")
-      setUsers([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [token, page, limit, term, is_archived])
-
-  useEffect(() => {
-    refetch()
-  }, [refetch])
-
-  return { users, meta, isLoading, error, refetch }
+  return {
+    users: query.data?.data ?? [],
+    meta: (query.data?.meta ?? null) as PaginationMeta | null,
+    isLoading: query.isLoading,
+    error: getErrorMessage(query.error),
+    refetch: query.refetch,
+  }
 }

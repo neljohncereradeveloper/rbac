@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -18,12 +18,13 @@ import {
   FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { updateRole } from "../api/roles-api"
+import { getErrorMessage } from "@/lib/react-query"
 import {
   updateRoleSchema,
   type UpdateRoleFormData,
 } from "../schemas/role.schema"
 import type { Role } from "../types/role.types"
+import { useUpdateRole } from "../hooks/use-role-mutations"
 
 export interface UpdateRoleDialogProps {
   open: boolean
@@ -40,12 +41,12 @@ export function UpdateRoleDialog({
   token,
   onSuccess,
 }: UpdateRoleDialogProps) {
-  const [apiError, setApiError] = useState<string | null>(null)
+  const updateRoleMutation = useUpdateRole()
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<UpdateRoleFormData>({
     resolver: zodResolver(updateRoleSchema),
     defaultValues: {
@@ -56,7 +57,6 @@ export function UpdateRoleDialog({
 
   useEffect(() => {
     if (role && open) {
-      setApiError(null)
       reset({
         name: role.name,
         description: role.description ?? "",
@@ -66,17 +66,20 @@ export function UpdateRoleDialog({
 
   async function onSubmit(data: UpdateRoleFormData) {
     if (!token || !role?.id) return
-    try {
-      await updateRole(role.id, {
+    updateRoleMutation.mutate(
+      {
+        id: role.id,
         name: data.name,
         description: data.description?.trim() || null,
         token,
-      })
-      onOpenChange(false)
-      onSuccess()
-    } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Failed to update role")
-    }
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          onSuccess()
+        },
+      }
+    )
   }
 
   return (
@@ -87,8 +90,10 @@ export function UpdateRoleDialog({
             <DialogTitle>Edit role</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            {apiError && (
-              <p className="text-destructive text-sm">{apiError}</p>
+            {updateRoleMutation.error && (
+              <p className="text-destructive text-sm">
+                {getErrorMessage(updateRoleMutation.error)}
+              </p>
             )}
             <FieldGroup>
               <Field data-invalid={!!errors.name}>
@@ -123,8 +128,8 @@ export function UpdateRoleDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
+            <Button type="submit" disabled={updateRoleMutation.isPending}>
+              {updateRoleMutation.isPending ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </form>

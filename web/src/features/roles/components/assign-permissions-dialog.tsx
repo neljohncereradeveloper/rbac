@@ -13,7 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { assignPermissionsToRole, fetchRolePermissions } from "../api/roles-api"
+import { fetchRolePermissions } from "../api/roles-api"
 import { fetchPermissions } from "@/features/permissions/api/permissions-api"
 import type { Role } from "../types/role.types"
 import type { Permission } from "@/features/permissions/types/permission.types"
@@ -21,6 +21,7 @@ import {
   assignPermissionsSchema,
   type AssignPermissionsFormData,
 } from "../schemas/assign-permissions.schema"
+import { useAssignPermissionsToRole } from "../hooks/use-role-mutations"
 
 export interface AssignPermissionsDialogProps {
   open: boolean
@@ -61,12 +62,13 @@ export function AssignPermissionsDialog({
   const [permissions, setPermissions] = useState<Permission[]>([])
   const [fetchError, setFetchError] = useState<string | null>(null)
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false)
+  const assignPermissionsMutation = useAssignPermissionsToRole()
   const {
     watch,
     setValue,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { },
   } = useForm<AssignPermissionsFormData>({
     resolver: zodResolver(assignPermissionsSchema),
     defaultValues: { permission_ids: [] },
@@ -158,19 +160,22 @@ export function AssignPermissionsDialog({
     }
   }
 
-  async function onSubmit(data: AssignPermissionsFormData) {
+  function onSubmit(data: AssignPermissionsFormData) {
     if (!token || !role?.id) return
-    try {
-      await assignPermissionsToRole(role.id, {
+    assignPermissionsMutation.mutate(
+      {
+        roleId: role.id,
         permission_ids: data.permission_ids,
         replace: true,
         token,
-      })
-      onOpenChange(false)
-      onSuccess()
-    } catch {
-      // Error could be shown via setError - keeping simple for now
-    }
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          onSuccess()
+        },
+      }
+    )
   }
 
   return (
@@ -291,9 +296,9 @@ export function AssignPermissionsDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || isLoadingPermissions}
+              disabled={assignPermissionsMutation.isPending || isLoadingPermissions}
             >
-              {isSubmitting ? "Saving..." : "Assign"}
+              {assignPermissionsMutation.isPending ? "Saving..." : "Assign"}
             </Button>
           </DialogFooter>
         </form>

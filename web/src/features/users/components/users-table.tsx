@@ -34,9 +34,9 @@ import {
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import type { PaginationMeta } from "@/lib/api/types"
 import type { User } from "../types/user.types"
-import { archiveUser, restoreUser } from "../api/users-api"
 import { UpdateUserDialog } from "./update-user-dialog"
 import { AssignRolesDialog } from "./assign-roles-dialog"
+import { useArchiveUser, useRestoreUser } from "../hooks/use-user-mutations"
 
 export interface UsersTableProps {
   users: User[]
@@ -77,37 +77,35 @@ export function UsersTable({
   const [assignOpen, setAssignOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [restoreOpen, setRestoreOpen] = useState(false)
-  const [archiveLoading, setArchiveLoading] = useState(false)
-  const [restoreLoading, setRestoreLoading] = useState(false)
+  const archiveUserMutation = useArchiveUser()
+  const restoreUserMutation = useRestoreUser()
 
-  async function handleArchiveConfirm() {
+  function handleArchiveConfirm() {
     if (!token || !userToArchive?.id) return
-    setArchiveLoading(true)
-    try {
-      await archiveUser(userToArchive.id, token)
-      setArchiveOpen(false)
-      setUserToArchive(null)
-      onActionSuccess()
-    } catch {
-      // Error handled by API
-    } finally {
-      setArchiveLoading(false)
-    }
+    archiveUserMutation.mutate(
+      { id: userToArchive.id, token },
+      {
+        onSuccess: () => {
+          setArchiveOpen(false)
+          setUserToArchive(null)
+          onActionSuccess()
+        },
+      }
+    )
   }
 
-  async function handleRestoreConfirm() {
+  function handleRestoreConfirm() {
     if (!token || !userToRestore?.id) return
-    setRestoreLoading(true)
-    try {
-      await restoreUser(userToRestore.id, token)
-      setRestoreOpen(false)
-      setUserToRestore(null)
-      onActionSuccess()
-    } catch {
-      // Error handled by API
-    } finally {
-      setRestoreLoading(false)
-    }
+    restoreUserMutation.mutate(
+      { id: userToRestore.id, token },
+      {
+        onSuccess: () => {
+          setRestoreOpen(false)
+          setUserToRestore(null)
+          onActionSuccess()
+        },
+      }
+    )
   }
 
   const isArchived = (user: User) => !!user.deleted_at
@@ -237,9 +235,9 @@ export function UsersTable({
             <Button
               variant="destructive"
               onClick={handleArchiveConfirm}
-              disabled={archiveLoading}
+              disabled={archiveUserMutation.isPending}
             >
-              {archiveLoading ? "Archiving..." : "Archive"}
+              {archiveUserMutation.isPending ? "Archiving..." : "Archive"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -272,9 +270,9 @@ export function UsersTable({
             </Button>
             <Button
               onClick={handleRestoreConfirm}
-              disabled={restoreLoading}
+              disabled={restoreUserMutation.isPending}
             >
-              {restoreLoading ? "Restoring..." : "Restore"}
+              {restoreUserMutation.isPending ? "Restoring..." : "Restore"}
             </Button>
           </DialogFooter>
         </DialogContent>

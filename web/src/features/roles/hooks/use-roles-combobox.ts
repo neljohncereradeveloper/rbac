@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys, getErrorMessage } from "@/lib/react-query"
 import { fetchRolesCombobox } from "../api/roles-api"
-import type { ComboboxItem } from "../api/roles-api"
 
 export interface UseRolesComboboxOptions {
   token?: string | null
@@ -11,32 +11,16 @@ export interface UseRolesComboboxOptions {
 export function useRolesCombobox(options: UseRolesComboboxOptions = {}) {
   const { token = null } = options
 
-  const [items, setItems] = useState<ComboboxItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const query = useQuery({
+    queryKey: queryKeys.roles.combobox(token),
+    queryFn: () => fetchRolesCombobox(token!),
+    enabled: !!token,
+  })
 
-  const refetch = useCallback(async () => {
-    if (!token) {
-      setItems([])
-      setIsLoading(false)
-      return
-    }
-    setIsLoading(true)
-    setError(null)
-    try {
-      const result = await fetchRolesCombobox(token)
-      setItems(result)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch roles")
-      setItems([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [token])
-
-  useEffect(() => {
-    refetch()
-  }, [refetch])
-
-  return { items, isLoading, error, refetch }
+  return {
+    items: query.data ?? [],
+    isLoading: query.isLoading,
+    error: getErrorMessage(query.error),
+    refetch: query.refetch,
+  }
 }

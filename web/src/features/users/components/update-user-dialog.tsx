@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -18,12 +18,13 @@ import {
   FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { updateUser } from "../api/users-api"
+import { getErrorMessage } from "@/lib/react-query"
 import {
   updateUserSchema,
   type UpdateUserFormData,
 } from "../schemas/user.schema"
 import type { User } from "../types/user.types"
+import { useUpdateUser } from "../hooks/use-user-mutations"
 
 export interface UpdateUserDialogProps {
   open: boolean
@@ -40,12 +41,12 @@ export function UpdateUserDialog({
   token,
   onSuccess,
 }: UpdateUserDialogProps) {
-  const [apiError, setApiError] = useState<string | null>(null)
+  const updateUserMutation = useUpdateUser()
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<UpdateUserFormData>({
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
@@ -60,7 +61,6 @@ export function UpdateUserDialog({
 
   useEffect(() => {
     if (user && open) {
-      setApiError(null)
       reset({
         email: user.email ?? "",
         first_name: user.first_name ?? "",
@@ -74,10 +74,11 @@ export function UpdateUserDialog({
     }
   }, [user, open, reset])
 
-  async function onSubmit(data: UpdateUserFormData) {
+  function onSubmit(data: UpdateUserFormData) {
     if (!token || !user?.id) return
-    try {
-      await updateUser(user.id, {
+    updateUserMutation.mutate(
+      {
+        id: user.id,
         email: data.email,
         first_name: data.first_name?.trim() || null,
         middle_name: data.middle_name?.trim() || null,
@@ -85,12 +86,14 @@ export function UpdateUserDialog({
         phone: data.phone?.trim() || null,
         date_of_birth: data.date_of_birth || null,
         token,
-      })
-      onOpenChange(false)
-      onSuccess()
-    } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Failed to update user")
-    }
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          onSuccess()
+        },
+      }
+    )
   }
 
   return (
@@ -101,8 +104,10 @@ export function UpdateUserDialog({
             <DialogTitle>Edit user</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            {apiError && (
-              <p className="text-destructive text-sm">{apiError}</p>
+            {updateUserMutation.error && (
+              <p className="text-destructive text-sm">
+                {getErrorMessage(updateUserMutation.error)}
+              </p>
             )}
             {user && (
               <p className="text-muted-foreground text-sm">
@@ -190,8 +195,8 @@ export function UpdateUserDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
+            <Button type="submit" disabled={updateUserMutation.isPending}>
+              {updateUserMutation.isPending ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </form>

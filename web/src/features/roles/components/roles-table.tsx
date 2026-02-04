@@ -28,10 +28,10 @@ import { MoreHorizontalIcon, PencilIcon, ArchiveIcon, RotateCcwIcon, KeyIcon, Ey
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import type { PaginationMeta } from "@/lib/api/types"
 import type { Role } from "../types/role.types"
-import { archiveRole, restoreRole } from "../api/roles-api"
 import { UpdateRoleDialog } from "./update-role-dialog"
 import { AssignPermissionsDialog } from "./assign-permissions-dialog"
 import { ViewPermissionsDialog } from "./view-permissions-dialog"
+import { useArchiveRole, useRestoreRole } from "../hooks/use-role-mutations"
 
 export interface RolesTableProps {
   roles: Role[]
@@ -67,37 +67,35 @@ export function RolesTable({
   const [viewOpen, setViewOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [restoreOpen, setRestoreOpen] = useState(false)
-  const [archiveLoading, setArchiveLoading] = useState(false)
-  const [restoreLoading, setRestoreLoading] = useState(false)
+  const archiveRoleMutation = useArchiveRole()
+  const restoreRoleMutation = useRestoreRole()
 
-  async function handleArchiveConfirm() {
+  function handleArchiveConfirm() {
     if (!token || !roleToArchive?.id) return
-    setArchiveLoading(true)
-    try {
-      await archiveRole(roleToArchive.id, token)
-      setArchiveOpen(false)
-      setRoleToArchive(null)
-      onActionSuccess()
-    } catch {
-      // Error handled by API
-    } finally {
-      setArchiveLoading(false)
-    }
+    archiveRoleMutation.mutate(
+      { id: roleToArchive.id, token },
+      {
+        onSuccess: () => {
+          setArchiveOpen(false)
+          setRoleToArchive(null)
+          onActionSuccess()
+        },
+      }
+    )
   }
 
-  async function handleRestoreConfirm() {
+  function handleRestoreConfirm() {
     if (!token || !roleToRestore?.id) return
-    setRestoreLoading(true)
-    try {
-      await restoreRole(roleToRestore.id, token)
-      setRestoreOpen(false)
-      setRoleToRestore(null)
-      onActionSuccess()
-    } catch {
-      // Error handled by API
-    } finally {
-      setRestoreLoading(false)
-    }
+    restoreRoleMutation.mutate(
+      { id: roleToRestore.id, token },
+      {
+        onSuccess: () => {
+          setRestoreOpen(false)
+          setRoleToRestore(null)
+          onActionSuccess()
+        },
+      }
+    )
   }
 
   const isArchived = (role: Role) => !!role.deleted_at
@@ -240,9 +238,9 @@ export function RolesTable({
             <Button
               variant="destructive"
               onClick={handleArchiveConfirm}
-              disabled={archiveLoading}
+              disabled={archiveRoleMutation.isPending}
             >
-              {archiveLoading ? "Archiving..." : "Archive"}
+              {archiveRoleMutation.isPending ? "Archiving..." : "Archive"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -274,9 +272,9 @@ export function RolesTable({
             </Button>
             <Button
               onClick={handleRestoreConfirm}
-              disabled={restoreLoading}
+              disabled={restoreRoleMutation.isPending}
             >
-              {restoreLoading ? "Restoring..." : "Restore"}
+              {restoreRoleMutation.isPending ? "Restoring..." : "Restore"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
 import type { PaginationMeta } from "@/lib/api/types"
+import { queryKeys, getErrorMessage } from "@/lib/react-query"
 import { fetchPermissions } from "../api/permissions-api"
 import type { Permission } from "../types/permission.types"
 
@@ -22,43 +23,24 @@ export function usePermissions(options: UsePermissionsOptions = {}) {
     is_archived = "false",
   } = options
 
-  const [permissions, setPermissions] = useState<Permission[]>([])
-  const [meta, setMeta] = useState<PaginationMeta | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const query = useQuery({
+    queryKey: queryKeys.permissions.list({
+      token,
+      page,
+      limit,
+      term,
+      is_archived,
+    }),
+    queryFn: () =>
+      fetchPermissions({ page, limit, term, is_archived, token: token! }),
+    enabled: !!token,
+  })
 
-  const refetch = useCallback(async () => {
-    if (!token) {
-      setPermissions([])
-      setMeta(null)
-      setIsLoading(false)
-      return
-    }
-    setIsLoading(true)
-    setError(null)
-    try {
-      const result = await fetchPermissions({
-        page,
-        limit,
-        term,
-        is_archived,
-        token,
-      })
-      setPermissions(result.data)
-      setMeta(result.meta)
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch permissions"
-      )
-      setPermissions([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [token, page, limit, term, is_archived])
-
-  useEffect(() => {
-    refetch()
-  }, [refetch])
-
-  return { permissions, meta, isLoading, error, refetch }
+  return {
+    permissions: query.data?.data ?? [],
+    meta: (query.data?.meta ?? null) as PaginationMeta | null,
+    isLoading: query.isLoading,
+    error: getErrorMessage(query.error),
+    refetch: query.refetch,
+  }
 }
