@@ -1,1 +1,1 @@
-export * from './assign-permissions-to-role.command';
+// Note: AssignPermissionsToRoleCommand removed - role-permission assignments are managed via seeders only

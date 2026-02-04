@@ -1,1 +1,1 @@
-export * from './assign-permissions-to-role.dto';
+// Note: AssignPermissionsToRoleDto removed - role-permission assignments are managed via seeders only

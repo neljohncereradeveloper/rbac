@@ -219,17 +219,7 @@ export async function assignRolesToUser(
   })
 }
 
-export async function removeRolesFromUser(
-  userId: number,
-  params: { role_ids: number[]; token?: string | null }
-): Promise<{ success: boolean }> {
-  const { role_ids, token } = params
-  return apiClient<{ success: boolean }>(`/users/${userId}/roles`, {
-    method: "DELETE",
-    body: JSON.stringify({ role_ids }),
-    token,
-  })
-}
+// Note: removeRolesFromUser removed - not used (assign with replace=true handles role removal)
 
 export async function resetPassword(
   userId: number,

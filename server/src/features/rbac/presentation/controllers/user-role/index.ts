@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Delete,
   Body,
   Param,
   HttpCode,
@@ -19,16 +18,17 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from '@nestjs/swagger';
+// Note: ApiBody still needed for POST endpoint
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
   AssignRolesToUserUseCase,
   GetUserRolesUseCase,
-  RemoveRolesFromUserUseCase,
+  // Note: RemoveRolesFromUserUseCase removed - not used in web app (assign with replace=true handles role removal)
 } from '@/features/rbac/application/use-cases/user-role';
 import {
   AssignRolesToUserDto,
-  RemoveRolesFromUserDto,
+  // Note: RemoveRolesFromUserDto removed - not used in web app (assign with replace=true handles role removal)
 } from '@/features/rbac/presentation/dto/user-role';
 import {
   RequirePermissions,
@@ -41,7 +41,7 @@ import {
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
   AssignRolesToUserCommand,
-  RemoveRolesFromUserCommand,
+  // Note: RemoveRolesFromUserCommand removed - not used in web app (assign with replace=true handles role removal)
 } from '@/features/rbac/application/commands/user-role';
 import { UserRole } from '@/features/rbac/domain/models';
 
@@ -55,7 +55,7 @@ export class UserRoleController {
   constructor(
     private readonly assignRolesToUserUseCase: AssignRolesToUserUseCase,
     private readonly getUserRolesUseCase: GetUserRolesUseCase,
-    private readonly removeRolesFromUserUseCase: RemoveRolesFromUserUseCase,
+    // Note: RemoveRolesFromUserUseCase removed - not used in web app (assign with replace=true handles role removal)
   ) { }
 
   @Version('1')
@@ -103,31 +103,5 @@ export class UserRoleController {
     return { success: true };
   }
 
-  @Version('1')
-  @Delete()
-  @HttpCode(HttpStatus.OK)
-  @RequireRoles(ROLES.ADMIN)
-  @RequirePermissions(PERMISSIONS.USER_ROLES.REMOVE_ROLES)
-  @ApiOperation({ summary: 'Remove roles from a user' })
-  @ApiParam({ name: 'userId', description: 'User ID', example: 1 })
-  @ApiBody({ type: RemoveRolesFromUserDto })
-  @ApiResponse({ status: 200, description: 'Roles removed successfully' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async removeRoles(
-    @Param('userId', ParseIntPipe) userId: number,
-    @Body() dto: RemoveRolesFromUserDto,
-    @Req() request: Request,
-  ): Promise<{ success: boolean }> {
-    const requestInfo = createRequestInfo(request);
-    // Map presentation DTO to application command
-    const command: RemoveRolesFromUserCommand = {
-      user_id: userId,
-      role_ids: dto.role_ids,
-    };
-    await this.removeRolesFromUserUseCase.execute(command, requestInfo);
-    return { success: true };
-  }
+  // Note: DELETE endpoint removed - not used in web app (assign with replace=true handles role removal)
 }

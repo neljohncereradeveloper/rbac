@@ -45,66 +45,8 @@ export class RolePermissionRepositoryImpl implements RolePermissionRepository<En
     return this.entityToModel(result[0]);
   }
 
-  async assignToRole(
-    role_id: number,
-    permission_ids: number[],
-    manager: EntityManager,
-    replace: boolean = false,
-  ): Promise<void> {
-    if (permission_ids.length === 0) {
-      return;
-    }
-
-    // If replace is true, remove all existing permissions first
-    if (replace) {
-      await this.removeFromRole(role_id, [], manager);
-    }
-
-    // Insert new permissions (ignore duplicates)
-    const insertParams: any[] = [];
-    const valuesPlaceholders: string[] = [];
-    let paramIndex = 1;
-    const now = new Date();
-
-    permission_ids.forEach((permission_id) => {
-      valuesPlaceholders.push(
-        `($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++})`,
-      );
-      insertParams.push(role_id, permission_id, null, now);
-    });
-
-    const insertQuery = `
-      INSERT INTO ${RBAC_DATABASE_MODELS.ROLE_PERMISSIONS} (
-        role_id, permission_id, created_by, created_at
-      )
-      VALUES ${valuesPlaceholders.join(', ')}
-      ON CONFLICT (role_id, permission_id) DO NOTHING
-    `;
-
-    await manager.query(insertQuery, insertParams);
-  }
-
-  async removeFromRole(
-    role_id: number,
-    permission_ids: number[],
-    manager: EntityManager,
-  ): Promise<void> {
-    if (permission_ids.length === 0) {
-      // Remove all permissions for the role
-      const query = `
-        DELETE FROM ${RBAC_DATABASE_MODELS.ROLE_PERMISSIONS}
-        WHERE role_id = $1
-      `;
-      await manager.query(query, [role_id]);
-    } else {
-      // Remove specific permissions
-      const query = `
-        DELETE FROM ${RBAC_DATABASE_MODELS.ROLE_PERMISSIONS}
-        WHERE role_id = $1 AND permission_id = ANY($2::int[])
-      `;
-      await manager.query(query, [role_id, permission_ids]);
-    }
-  }
+  // Note: assignToRole removed - role-permission assignments are managed via seeders only
+  // Note: removeFromRole removed - role-permission assignments are managed via seeders only
 
   async findPermissionIdsByRoleId(
     role_id: number,

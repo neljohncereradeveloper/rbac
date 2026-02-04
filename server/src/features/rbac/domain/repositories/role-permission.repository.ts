@@ -2,7 +2,7 @@ import { RolePermission } from '../models/role-permission.model';
 
 /**
  * Manages the many-to-many relationship between roles and permissions.
- * Use this to assign or remove permissions from a role.
+ * Note: assignToRole and removeFromRole removed - role-permission assignments are managed via seeders only.
  */
 export interface RolePermissionRepository<Context = unknown> {
   /** Create a single role-permission link. */
@@ -11,20 +11,8 @@ export interface RolePermissionRepository<Context = unknown> {
     context: Context,
   ): Promise<RolePermission>;
 
-  /** Assign permissions to a role. Replaces existing assignments if replace is true. */
-  assignToRole(
-    role_id: number,
-    permission_ids: number[],
-    context: Context,
-    replace?: boolean,
-  ): Promise<void>;
-
-  /** Remove specific permissions from a role. */
-  removeFromRole(
-    role_id: number,
-    permission_ids: number[],
-    context: Context,
-  ): Promise<void>;
+  // Note: assignToRole removed - role-permission assignments are managed via seeders only
+  // Note: removeFromRole removed - role-permission assignments are managed via seeders only
 
   /** Get all permission IDs assigned to a role. */
   findPermissionIdsByRoleId(

@@ -33,7 +33,7 @@ import {
   // User-Role use cases
   AssignRolesToUserUseCase,
   GetUserRolesUseCase,
-  RemoveRolesFromUserUseCase,
+  // Note: RemoveRolesFromUserUseCase removed - not used in web app (assign with replace=true handles role removal)
 } from './application/use-cases/user-role';
 import {
   // User-Permission use cases
@@ -114,7 +114,7 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     // User-Role use cases
     AssignRolesToUserUseCase,
     GetUserRolesUseCase,
-    RemoveRolesFromUserUseCase,
+    // Note: RemoveRolesFromUserUseCase removed - not used in web app (assign with replace=true handles role removal)
     // User-Permission use cases
     DenyPermissionsToUserUseCase,
     GetUserPermissionsUseCase,
@@ -146,7 +146,7 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     // User-Role use cases
     AssignRolesToUserUseCase,
     GetUserRolesUseCase,
-    RemoveRolesFromUserUseCase,
+    // Note: RemoveRolesFromUserUseCase removed - not used in web app (assign with replace=true handles role removal)
     // User-Permission use cases
     DenyPermissionsToUserUseCase,
     GetUserPermissionsUseCase,
