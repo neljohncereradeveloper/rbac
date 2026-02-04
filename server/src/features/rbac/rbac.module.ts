@@ -31,7 +31,7 @@ import {
 import {
   // Role-Permission use cases
   AssignPermissionsToRoleUseCase,
-  RemovePermissionsFromRoleUseCase,
+  GetRolePermissionsUseCase,
 } from './application/use-cases/role-permission';
 import {
   // User-Role use cases
@@ -118,7 +118,7 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     ComboboxPermissionUseCase,
     // Role-Permission use cases
     AssignPermissionsToRoleUseCase,
-    RemovePermissionsFromRoleUseCase,
+    GetRolePermissionsUseCase,
     // User-Role use cases
     AssignRolesToUserUseCase,
     GetUserRolesUseCase,
@@ -154,7 +154,7 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     ComboboxPermissionUseCase,
     // Role-Permission use cases
     AssignPermissionsToRoleUseCase,
-    RemovePermissionsFromRoleUseCase,
+    GetRolePermissionsUseCase,
     // User-Role use cases
     AssignRolesToUserUseCase,
     GetUserRolesUseCase,

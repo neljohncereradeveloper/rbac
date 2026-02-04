@@ -6,6 +6,7 @@ export interface TableSearchParams {
   page: number
   limit: number
   term: string
+  is_archived: "true" | "false"
 }
 
 export function useTableSearchParams(): TableSearchParams {
@@ -17,6 +18,8 @@ export function useTableSearchParams(): TableSearchParams {
     Math.max(1, parseInt(searchParams.get("limit") ?? "10", 10))
   )
   const term = searchParams.get("term") ?? ""
+  const is_archived =
+    searchParams.get("is_archived") === "true" ? "true" : "false"
 
-  return { page, limit, term }
+  return { page, limit, term, is_archived }
 }

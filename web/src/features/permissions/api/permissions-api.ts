@@ -14,6 +14,11 @@ export interface FetchPermissionsParams {
   token?: string | null
 }
 
+export interface ComboboxItem {
+  value: string
+  label: string
+}
+
 export async function fetchPermissions(
   params: FetchPermissionsParams = {}
 ): Promise<PaginatedResult<Permission>> {
@@ -29,4 +34,10 @@ export async function fetchPermissions(
     `/permissions?${searchParams}`,
     { token }
   )
+}
+
+export async function fetchPermissionsCombobox(
+  token?: string | null
+): Promise<ComboboxItem[]> {
+  return apiClient<ComboboxItem[]>("/permissions/combobox/list", { token })
 }

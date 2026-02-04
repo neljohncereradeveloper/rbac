@@ -28,7 +28,7 @@ export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private rbacService: RbacService,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Get required roles from decorator

@@ -134,12 +134,14 @@ export class RolePermissionRepositoryImpl implements RolePermissionRepository<En
         r.name AS role_name,
         r.description AS role_description,
         p.name AS permission_name,
+        p.resource AS permission_resource,
+        p.action AS permission_action,
         p.description AS permission_description
       FROM ${RBAC_DATABASE_MODELS.ROLE_PERMISSIONS} rp
       INNER JOIN ${RBAC_DATABASE_MODELS.ROLES} r ON r.id = rp.role_id
       INNER JOIN ${RBAC_DATABASE_MODELS.PERMISSIONS} p ON p.id = rp.permission_id
       WHERE rp.role_id = $1
-      ORDER BY rp.permission_id ASC
+      ORDER BY p.resource ASC, p.action ASC
     `;
 
     const result = await manager.query(query, [role_id]);
@@ -173,6 +175,8 @@ export class RolePermissionRepositoryImpl implements RolePermissionRepository<En
       role_name: entity.role_name,
       role_description: entity.role_description ?? null,
       permission_name: entity.permission_name,
+      permission_resource: entity.permission_resource,
+      permission_action: entity.permission_action,
       permission_description: entity.permission_description ?? null,
     });
   }

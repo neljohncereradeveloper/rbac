@@ -19,6 +19,10 @@ export class RolePermission {
   /** Populated when joined with permissions table */
   permission_name?: string;
   /** Populated when joined with permissions table */
+  permission_resource?: string;
+  /** Populated when joined with permissions table */
+  permission_action?: string;
+  /** Populated when joined with permissions table */
   permission_description?: string | null;
 
   constructor(dto: {
@@ -29,6 +33,8 @@ export class RolePermission {
     role_name?: string;
     role_description?: string | null;
     permission_name?: string;
+    permission_resource?: string;
+    permission_action?: string;
     permission_description?: string | null;
   }) {
     this.role_id = dto.role_id;
@@ -38,6 +44,8 @@ export class RolePermission {
     this.role_name = dto.role_name;
     this.role_description = dto.role_description ?? null;
     this.permission_name = dto.permission_name;
+    this.permission_resource = dto.permission_resource;
+    this.permission_action = dto.permission_action;
     this.permission_description = dto.permission_description ?? null;
   }
 

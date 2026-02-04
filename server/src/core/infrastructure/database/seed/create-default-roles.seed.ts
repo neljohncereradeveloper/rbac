@@ -26,7 +26,7 @@ import { ROLES } from '@/core/domain/constants';
 export class SeedRoles {
   private readonly logger = new Logger(SeedRoles.name);
 
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(private readonly entityManager: EntityManager) { }
 
   /**
    * Executes the seed operation to create default role entries.
@@ -76,6 +76,7 @@ export class SeedRoles {
     for (const role of roles) {
       const existing_role = await this.entityManager.findOne(RoleEntity, {
         where: { name: role.name },
+        withDeleted: true,
       });
 
       if (!existing_role) {

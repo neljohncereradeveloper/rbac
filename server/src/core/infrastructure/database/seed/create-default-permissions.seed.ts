@@ -88,12 +88,6 @@ export class SeedPermissions {
         description: 'Assign permissions to roles',
       },
       {
-        name: PERMISSIONS.ROLES.REMOVE_PERMISSIONS,
-        resource: PERMISSION_RESOURCES.ROLES,
-        action: PERMISSION_ACTIONS.REMOVE_PERMISSIONS,
-        description: 'Remove permissions from roles',
-      },
-      {
         name: PERMISSIONS.ROLES.COMBOBOX,
         resource: PERMISSION_RESOURCES.ROLES,
         action: PERMISSION_ACTIONS.COMBOBOX,
@@ -309,6 +303,7 @@ export class SeedPermissions {
         PermissionEntity,
         {
           where: { name: permission.name },
+          withDeleted: true,
         },
       );
 

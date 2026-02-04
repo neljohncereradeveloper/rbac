@@ -8,11 +8,14 @@ export interface DataTableCardSearchConfig {
   basePath: string
   placeholder: string
   defaultValue: string
+  /** Rendered inline with search, aligned to the end (flex justify-between) */
+  trailingActions?: React.ReactNode
 }
 
 export interface DataTableCardProps {
   title: string
   searchConfig?: DataTableCardSearchConfig
+  headerActions?: React.ReactNode
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
@@ -23,6 +26,7 @@ export interface DataTableCardProps {
 export function DataTableCard({
   title,
   searchConfig,
+  headerActions,
   isAuthenticated,
   isLoading,
   error,
@@ -32,15 +36,21 @@ export function DataTableCard({
   return (
     <Card>
       <CardHeader className="flex flex-col gap-4">
-        <CardTitle>{title}</CardTitle>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <CardTitle>{title}</CardTitle>
+          {isAuthenticated && headerActions}
+        </div>
         {isAuthenticated && searchConfig && (
-          <div className="min-w-0 max-w-full">
-            <TableSearchForm
-              key={searchConfig.defaultValue}
-              basePath={searchConfig.basePath}
-              placeholder={searchConfig.placeholder}
-              defaultValue={searchConfig.defaultValue}
-            />
+          <div className="flex min-w-0 max-w-full items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <TableSearchForm
+                key={searchConfig.defaultValue}
+                basePath={searchConfig.basePath}
+                placeholder={searchConfig.placeholder}
+                defaultValue={searchConfig.defaultValue}
+              />
+            </div>
+            {searchConfig.trailingActions}
           </div>
         )}
       </CardHeader>

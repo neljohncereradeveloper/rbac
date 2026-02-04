@@ -1,7 +1,7 @@
 import {
   Controller,
+  Get,
   Post,
-  Delete,
   Body,
   Param,
   HttpCode,
@@ -22,12 +22,9 @@ import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
   AssignPermissionsToRoleUseCase,
-  RemovePermissionsFromRoleUseCase,
+  GetRolePermissionsUseCase,
 } from '@/features/rbac/application/use-cases/role-permission';
-import {
-  AssignPermissionsToRoleDto,
-  RemovePermissionsFromRoleDto,
-} from '../../dto/role-permission';
+import { AssignPermissionsToRoleDto } from '../../dto/role-permission';
 import {
   RequirePermissions,
   RequireRoles,
@@ -37,7 +34,8 @@ import {
   RATE_LIMIT_MODERATE,
 } from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
-import { AssignPermissionsToRoleCommand, RemovePermissionsFromRoleCommand } from '@/features/rbac/application/commands/role-permission';
+import { AssignPermissionsToRoleCommand } from '@/features/rbac/application/commands/role-permission';
+import { RolePermission } from '@/features/rbac/domain/models';
 
 @ApiTags('Role-Permission')
 @Controller('roles/:roleId/permissions')
@@ -48,8 +46,23 @@ import { AssignPermissionsToRoleCommand, RemovePermissionsFromRoleCommand } from
 export class RolePermissionController {
   constructor(
     private readonly assignPermissionsToRoleUseCase: AssignPermissionsToRoleUseCase,
-    private readonly removePermissionsFromRoleUseCase: RemovePermissionsFromRoleUseCase,
+    private readonly getRolePermissionsUseCase: GetRolePermissionsUseCase,
   ) { }
+
+  @Version('1')
+  @Get()
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.ROLES.READ)
+  @ApiOperation({ summary: 'Get permissions assigned to a role' })
+  @ApiParam({ name: 'roleId', description: 'Role ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'Role permissions retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
+  async getRolePermissions(
+    @Param('roleId', ParseIntPipe) roleId: number,
+  ): Promise<RolePermission[]> {
+    return this.getRolePermissionsUseCase.execute(roleId);
+  }
 
   @Version('1')
   @Post()
@@ -77,34 +90,6 @@ export class RolePermissionController {
       replace: dto.replace,
     };
     await this.assignPermissionsToRoleUseCase.execute(command, requestInfo);
-    return { success: true };
-  }
-
-  @Version('1')
-  @Delete()
-  @HttpCode(HttpStatus.OK)
-  @RequireRoles(ROLES.ADMIN)
-  @RequirePermissions(PERMISSIONS.ROLES.REMOVE_PERMISSIONS)
-  @ApiOperation({ summary: 'Remove permissions from a role' })
-  @ApiParam({ name: 'roleId', description: 'Role ID', example: 1 })
-  @ApiBody({ type: RemovePermissionsFromRoleDto })
-  @ApiResponse({ status: 200, description: 'Permissions removed successfully' })
-  @ApiResponse({ status: 404, description: 'Role not found' })
-  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async removePermissions(
-    @Param('roleId', ParseIntPipe) roleId: number,
-    @Body() dto: RemovePermissionsFromRoleDto,
-    @Req() request: Request,
-  ): Promise<{ success: boolean }> {
-    const requestInfo = createRequestInfo(request);
-    // Map presentation DTO to application command
-    const command: RemovePermissionsFromRoleCommand = {
-      role_id: roleId,
-      permission_ids: dto.permission_ids,
-    };
-    await this.removePermissionsFromRoleUseCase.execute(command, requestInfo);
     return { success: true };
   }
 }

@@ -1,6 +1,8 @@
 export interface Permission {
   id: number
   name: string
+  resource?: string
+  action?: string
   description: string | null
   deleted_by: string | null
   deleted_at: string | null

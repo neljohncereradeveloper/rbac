@@ -42,7 +42,7 @@ import { ROLES } from '@/core/domain/constants';
 export class SeedAdminAccount {
   private readonly logger = new Logger(SeedAdminAccount.name);
 
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(private readonly entityManager: EntityManager) { }
 
   /**
    * Executes the seed operation to create default admin account.
@@ -80,9 +80,10 @@ export class SeedAdminAccount {
       return;
     }
 
-    // Check if admin user already exists
+    // Check if admin user already exists (include soft-deleted)
     const existingAdmin = await this.entityManager.findOne(UserEntity, {
       where: { username: adminUsername },
+      withDeleted: true,
     });
 
     let adminUserId: number;

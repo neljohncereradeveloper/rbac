@@ -27,7 +27,7 @@ export class RbacService {
     @Inject(RBAC_TOKENS.ROLE)
     private readonly roleRepository: RoleRepository,
     private readonly dataSource: DataSource,
-  ) {}
+  ) { }
 
   /**
    * Check if user has any of the specified roles

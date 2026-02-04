@@ -21,7 +21,6 @@ export const PERMISSION_ACTIONS = {
   COMBOBOX: 'combobox',
   PAGINATED_LIST: 'paginated_list',
   ASSIGN_PERMISSIONS: 'assign_permissions',
-  REMOVE_PERMISSIONS: 'remove_permissions',
   CHANGE_PASSWORD: 'change_password',
   VERIFY_EMAIL: 'verify_email',
 } as const;
@@ -80,10 +79,6 @@ export const PERMISSIONS = {
     ASSIGN_PERMISSIONS: buildPermissionName(
       PERMISSION_RESOURCES.ROLES,
       PERMISSION_ACTIONS.ASSIGN_PERMISSIONS,
-    ),
-    REMOVE_PERMISSIONS: buildPermissionName(
-      PERMISSION_RESOURCES.ROLES,
-      PERMISSION_ACTIONS.REMOVE_PERMISSIONS,
     ),
     COMBOBOX: buildPermissionName(
       PERMISSION_RESOURCES.ROLES,
