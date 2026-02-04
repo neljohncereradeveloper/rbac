@@ -85,15 +85,6 @@ The application follows Domain-Driven Design principles with a clean architectur
 **Endpoints**:
 
 - `GET /api/v1/roles` - Get all roles (no pagination, no filtering)
-- `GET /api/v1/roles/combobox/list` - Get roles combobox list
-
-**Removed Endpoints** (system-defined, managed via seeders only):
-
-- ~~`POST /api/v1/roles`~~ - Create role (removed)
-- ~~`GET /api/v1/roles/:id`~~ - Get role by ID (removed)
-- ~~`PUT /api/v1/roles/:id`~~ - Update role (removed)
-- ~~`DELETE /api/v1/roles/:id/archive`~~ - Archive role (removed)
-- ~~`PATCH /api/v1/roles/:id/restore`~~ - Restore role (removed)
 
 #### 3.2 Permissions (`Permission`)
 
@@ -102,15 +93,6 @@ The application follows Domain-Driven Design principles with a clean architectur
 **Endpoints**:
 
 - `GET /api/v1/permissions` - Get all permissions (no pagination, no filtering)
-- `GET /api/v1/permissions/combobox/list` - Get permissions combobox list
-
-**Removed Endpoints** (system-defined, managed via seeders only):
-
-- ~~`POST /api/v1/permissions`~~ - Create permission (removed)
-- ~~`GET /api/v1/permissions/:id`~~ - Get permission by ID (removed)
-- ~~`PUT /api/v1/permissions/:id`~~ - Update permission (removed)
-- ~~`DELETE /api/v1/permissions/:id/archive`~~ - Archive permission (removed)
-- ~~`PATCH /api/v1/permissions/:id/restore`~~ - Restore permission (removed)
 
 #### 3.3 Role-Permission Relationships (`Role-Permission`)
 
@@ -120,18 +102,14 @@ The application follows Domain-Driven Design principles with a clean architectur
 
 - `GET /api/v1/roles/:roleId/permissions` - Get permissions assigned to a role (read-only)
 
-**Removed Endpoints** (managed via seeders only):
-
-- ~~`POST /api/v1/roles/:roleId/permissions`~~ - Assign permissions to a role (removed)
-- ~~`DELETE /api/v1/roles/:roleId/permissions`~~ - Remove permissions from a role (removed)
-
 #### 3.4 User-Role Relationships (`User-Role`)
 
 **Endpoints**:
 
 - `GET /api/v1/users/:userId/roles` - Get roles assigned to a user
-- `POST /api/v1/users/:userId/roles` - Assign roles to a user
-- `DELETE /api/v1/users/:userId/roles` - Remove roles from a user
+- `POST /api/v1/users/:userId/roles` - Assign roles to a user (use `replace: true` to replace all existing roles)
+
+**Note**: To remove roles from a user, use the `POST` endpoint with `replace: true` and provide only the roles you want to keep.
 
 #### 3.5 User-Permission Overrides (`User-Permission`)
 
@@ -169,6 +147,7 @@ The application follows Domain-Driven Design principles with a clean architectur
 **Dynamic Components** (Managed via API):
 
 1. **User-Role Assignments**: Assign roles to users dynamically
+   - Use `POST /api/v1/users/:userId/roles` with `replace: true` to replace all roles
 2. **User-Permission Overrides**: Grant or deny specific permissions directly on users
 
 **Permission Resolution Logic**:
@@ -180,6 +159,45 @@ The application follows Domain-Driven Design principles with a clean architectur
 3. User permission overrides take precedence over role permissions
 
 **Best Practice**: To modify a user's access, **grant or deny permissions directly on the user** using the User-Permission endpoints, rather than modifying role-permission assignments (which are fixed).
+
+#### 3.6 Data Managed by Seeders
+
+**Important**: The following data is **system-defined** and must be managed exclusively through database seeders. These components cannot be modified through the API to ensure consistency and prevent breaking authorization checks.
+
+**Data Managed via Seeders**:
+
+1. **Roles**:
+   - Three predefined roles: Admin, Editor, Viewer
+   - Role names, descriptions, and properties
+   - Role creation, update, archive, and restore operations
+
+2. **Permissions**:
+   - All permission definitions (name, resource, action, description)
+   - Permission creation, update, archive, and restore operations
+
+3. **Role-Permission Assignments**:
+   - Relationships between roles and permissions
+   - Which permissions each role has access to
+
+**Why Seeders Only?**:
+
+- **Consistency**: Role and permission names are hardcoded in controllers and authorization guards. Modifying them through the API would break authorization checks.
+- **Security**: Prevents accidental modification of critical authorization data
+- **Audit Trail**: Seeders provide a clear, version-controlled history of system-defined data
+- **Deployment**: Ensures consistent data across all environments (development, staging, production)
+
+**How to Modify Seeder Data**:
+
+1. Locate the seeder files in `src/core/infrastructure/database/seed/`
+2. Modify the seeder data as needed
+3. Run the seeders: `yarn seed:run`
+4. Commit the seeder changes to version control
+
+**Seeder Files**:
+
+- `create-default-roles.seed.ts` - Creates Admin, Editor, Viewer roles
+- `create-default-permissions.seed.ts` - Creates all system permissions
+- `create-default-role-permissions.seed.ts` - Assigns permissions to roles
 
 ### 4. Holiday Management (`holiday-management`)
 

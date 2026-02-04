@@ -9,11 +9,6 @@ export interface FetchPermissionsParams {
   token?: string | null
 }
 
-export interface ComboboxItem {
-  value: string
-  label: string
-}
-
 export async function fetchPermissions(
   params: FetchPermissionsParams = {}
 ): Promise<Permission[]> {
@@ -21,8 +16,4 @@ export async function fetchPermissions(
   return apiClient<Permission[]>(`/permissions`, { token })
 }
 
-export async function fetchPermissionsCombobox(
-  token?: string | null
-): Promise<ComboboxItem[]> {
-  return apiClient<ComboboxItem[]>("/permissions/combobox/list", { token })
-}
+// Note: fetchPermissionsCombobox removed - not used in web app

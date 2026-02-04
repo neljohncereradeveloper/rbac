@@ -11,5 +11,5 @@ export const ROLE_ACTIONS = {
   // Active actions (read-only operations)
   PAGINATED_LIST: 'PAGINATED_LIST_ROLE',
   BY_NAME: 'BY_NAME_ROLE',
-  COMBOBOX: 'COMBOBOX_ROLE',
+  // Note: COMBOBOX removed - not used in web app
 } as const;

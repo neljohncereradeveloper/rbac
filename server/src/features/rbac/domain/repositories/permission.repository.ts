@@ -1,7 +1,7 @@
 import { Permission } from '../models/permission.model';
 
 export interface PermissionRepository<Context = unknown> {
-  // Note: create(), update(), and findPaginatedList() methods removed
+  // Note: create(), update(), findPaginatedList(), and combobox() methods removed
   // Permissions are statically defined and managed via seeders only
   // Permissions are fetched without pagination and without filtering conditions
   findById(id: number, context: Context): Promise<Permission | null>;
@@ -12,5 +12,4 @@ export interface PermissionRepository<Context = unknown> {
     action: string,
     context: Context,
   ): Promise<Permission | null>;
-  combobox(context: Context): Promise<Permission[]>;
 }

@@ -19,9 +19,8 @@ import {
 } from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
-  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPermissionByIdUseCase removed
+  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPermissionByIdUseCase, ComboboxPermissionUseCase removed
   // Permissions are statically defined and managed via seeders only
-  ComboboxPermissionUseCase,
   GetAllPermissionsUseCase,
 } from '@/features/rbac/application/use-cases/permission';
 import { Permission } from '@/features/rbac/domain';
@@ -34,10 +33,9 @@ import { Permission } from '@/features/rbac/domain';
 })
 export class PermissionController {
   constructor(
-    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPermissionByIdUseCase removed
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPermissionByIdUseCase, ComboboxPermissionUseCase removed
     // Permissions are statically defined and managed via seeders only
     private readonly getAllPermissionsUseCase: GetAllPermissionsUseCase,
-    private readonly comboboxPermissionUseCase: ComboboxPermissionUseCase,
   ) { }
 
   // Note: Create, Update, Archive, Restore, and GetById endpoints removed - permissions are statically defined
@@ -58,18 +56,5 @@ export class PermissionController {
     return this.getAllPermissionsUseCase.execute();
   }
 
-  @Version('1')
-  @Get('combobox/list')
-  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.COMBOBOX)
-  @ApiOperation({ summary: 'Get permissions combobox list' })
-  @ApiResponse({
-    status: 200,
-    description: 'Permissions combobox retrieved successfully',
-  })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async getCombobox(): Promise<{ value: string; label: string }[]> {
-    return this.comboboxPermissionUseCase.execute();
-  }
+  // Note: combobox endpoint removed - not used in web app
 }

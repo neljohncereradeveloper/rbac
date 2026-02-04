@@ -20,9 +20,8 @@ import {
 } from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
-  // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
+  // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, ComboboxRoleUseCase removed
   // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
-  ComboboxRoleUseCase,
   GetAllRolesUseCase,
 } from '@/features/rbac/application/use-cases/role';
 import { Role } from '@/features/rbac/domain';
@@ -35,10 +34,9 @@ import { Role } from '@/features/rbac/domain';
 })
 export class RoleController {
   constructor(
-    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
+    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, ComboboxRoleUseCase removed
     // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
     private readonly getAllRolesUseCase: GetAllRolesUseCase,
-    private readonly comboboxRoleUseCase: ComboboxRoleUseCase,
   ) { }
 
   // Note: Create, Update, Archive, Restore, and GetById endpoints removed - roles are statically defined
@@ -65,30 +63,5 @@ export class RoleController {
     return this.getAllRolesUseCase.execute();
   }
 
-  @Version('1')
-  @Get('combobox/list')
-  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
-  @RequirePermissions(PERMISSIONS.ROLES.COMBOBOX)
-  @ApiOperation({
-    summary: 'Get roles combobox list',
-    description: 'Retrieves a simplified list of roles formatted for dropdown/combobox components. Returns only role names as value-label pairs.',
-  })
-  @ApiOkResponse({
-    description: 'Roles combobox retrieved successfully',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          value: { type: 'string', example: 'admin' },
-          label: { type: 'string', example: 'Admin' },
-        },
-      },
-    },
-  })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async getCombobox(): Promise<{ value: string; label: string }[]> {
-    return this.comboboxRoleUseCase.execute();
-  }
+  // Note: combobox endpoint removed - not used in web app
 }

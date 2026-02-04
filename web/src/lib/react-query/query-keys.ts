@@ -13,8 +13,7 @@ export const queryKeys = {
     details: () => [...queryKeys.roles.all, "detail"] as const,
     detail: (id: number, token?: string | null) =>
       [...queryKeys.roles.details(), id, token] as const,
-    combobox: (token?: string | null) =>
-      [...queryKeys.roles.all, "combobox", token] as const,
+    // Note: combobox removed - not used in web app
     permissions: (roleId: number, token?: string | null) =>
       [...queryKeys.roles.all, "permissions", roleId, token] as const,
   },
@@ -44,7 +43,6 @@ export const queryKeys = {
     list: (filters: {
       token?: string | null
     }) => [...queryKeys.permissions.lists(), filters] as const,
-    combobox: (token?: string | null) =>
-      [...queryKeys.permissions.all, "combobox", token] as const,
+    // Note: combobox removed - not used in web app
   },
 } as const

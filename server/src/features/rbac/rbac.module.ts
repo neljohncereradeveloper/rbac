@@ -10,19 +10,17 @@ import {
 } from './infrastructure/database/repositories';
 import {
   // Role use cases
-  // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, GetPaginatedRoleUseCase removed
+  // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, GetPaginatedRoleUseCase, ComboboxRoleUseCase removed
   // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
   // Roles are fetched without pagination
   GetAllRolesUseCase,
-  ComboboxRoleUseCase,
 } from './application/use-cases/role';
 import {
   // Permission use cases
-  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase removed
+  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase, ComboboxPermissionUseCase removed
   // Permissions are statically defined and managed via seeders only
   // Permissions are fetched without pagination
   GetAllPermissionsUseCase,
-  ComboboxPermissionUseCase,
 } from './application/use-cases/permission';
 import {
   // Role-Permission use cases
@@ -97,17 +95,15 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
       useClass: UserRepositoryImpl,
     },
     // Role use cases
-    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, GetPaginatedRoleUseCase removed
+    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, GetPaginatedRoleUseCase, ComboboxRoleUseCase removed
     // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
     // Roles are fetched without pagination
     GetAllRolesUseCase,
-    ComboboxRoleUseCase,
     // Permission use cases
-    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase removed
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase, ComboboxPermissionUseCase removed
     // Permissions are statically defined and managed via seeders only
     // Permissions are fetched without pagination
     GetAllPermissionsUseCase,
-    ComboboxPermissionUseCase,
     // Role-Permission use cases
     // Note: AssignPermissionsToRoleUseCase removed - role-permission assignments are managed via seeders only
     GetRolePermissionsUseCase,
@@ -129,17 +125,15 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     RBAC_TOKENS.USER_ROLE,
     RBAC_TOKENS.USER_PERMISSION,
     // Role use cases
-    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, GetPaginatedRoleUseCase removed
+    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase, GetPaginatedRoleUseCase, ComboboxRoleUseCase removed
     // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
     // Roles are fetched without pagination
     GetAllRolesUseCase,
-    ComboboxRoleUseCase,
     // Permission use cases
-    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase removed
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase, ComboboxPermissionUseCase removed
     // Permissions are statically defined and managed via seeders only
     // Permissions are fetched without pagination
     GetAllPermissionsUseCase,
-    ComboboxPermissionUseCase,
     // Role-Permission use cases
     // Note: AssignPermissionsToRoleUseCase removed - role-permission assignments are managed via seeders only
     GetRolePermissionsUseCase,

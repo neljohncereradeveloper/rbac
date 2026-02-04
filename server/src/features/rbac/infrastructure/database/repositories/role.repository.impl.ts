@@ -57,17 +57,7 @@ export class RoleRepositoryImpl implements RoleRepository<EntityManager> {
     return this.entityToModel(result[0]);
   }
 
-  async combobox(manager: EntityManager): Promise<Role[]> {
-    const query = `
-      SELECT id, name, description
-      FROM ${RBAC_DATABASE_MODELS.ROLES}
-      WHERE deleted_at IS NULL
-      ORDER BY name ASC
-    `;
-
-    const result = await manager.query(query);
-    return result.map((row: any) => this.entityToModel(row));
-  }
+  // Note: combobox() method removed - not used in web app
 
   /**
    * Converts database entity to domain model
