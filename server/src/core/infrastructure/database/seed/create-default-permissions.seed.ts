@@ -31,7 +31,7 @@ import {
 export class SeedPermissions {
   private readonly logger = new Logger(SeedPermissions.name);
 
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(private readonly entityManager: EntityManager) { }
 
   /**
    * Executes the seed operation to create default permission entries.
@@ -205,6 +205,12 @@ export class SeedPermissions {
       },
       // User-Role permissions
       {
+        name: PERMISSIONS.USER_ROLES.READ,
+        resource: PERMISSION_RESOURCES.USER_ROLES,
+        action: PERMISSION_ACTIONS.READ,
+        description: 'View user role assignments',
+      },
+      {
         name: PERMISSIONS.USER_ROLES.ASSIGN_ROLES,
         resource: PERMISSION_RESOURCES.USER_ROLES,
         action: 'assign_roles',
@@ -217,6 +223,12 @@ export class SeedPermissions {
         description: 'Remove roles from users',
       },
       // User-Permission permissions
+      {
+        name: PERMISSIONS.USER_PERMISSIONS.READ,
+        resource: PERMISSION_RESOURCES.USER_PERMISSIONS,
+        action: PERMISSION_ACTIONS.READ,
+        description: 'View user permission overrides',
+      },
       {
         name: PERMISSIONS.USER_PERMISSIONS.GRANT_PERMISSIONS,
         resource: PERMISSION_RESOURCES.USER_PERMISSIONS,

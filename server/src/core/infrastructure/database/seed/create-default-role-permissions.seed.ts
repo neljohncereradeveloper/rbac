@@ -26,7 +26,7 @@ import { ROLES, PERMISSIONS } from '@/core/domain/constants';
 export class SeedRolePermissions {
   private readonly logger = new Logger(SeedRolePermissions.name);
 
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(private readonly entityManager: EntityManager) { }
 
   /**
    * Executes the seed operation to create default role-permission links.
@@ -81,9 +81,11 @@ export class SeedRolePermissions {
         PERMISSIONS.USERS.COMBOBOX,
         PERMISSIONS.USERS.PAGINATED_LIST,
         // All user-role permissions
+        PERMISSIONS.USER_ROLES.READ,
         PERMISSIONS.USER_ROLES.ASSIGN_ROLES,
         PERMISSIONS.USER_ROLES.REMOVE_ROLES,
         // All user-permission permissions
+        PERMISSIONS.USER_PERMISSIONS.READ,
         PERMISSIONS.USER_PERMISSIONS.GRANT_PERMISSIONS,
         PERMISSIONS.USER_PERMISSIONS.DENY_PERMISSIONS,
         PERMISSIONS.USER_PERMISSIONS.REMOVE_OVERRIDES,
@@ -115,6 +117,10 @@ export class SeedRolePermissions {
         PERMISSIONS.USERS.UPDATE,
         PERMISSIONS.USERS.COMBOBOX,
         PERMISSIONS.USERS.PAGINATED_LIST,
+        // User-role permissions (read only for Editor)
+        PERMISSIONS.USER_ROLES.READ,
+        // User-permission permissions (read only for Editor)
+        PERMISSIONS.USER_PERMISSIONS.READ,
         // Holiday permissions (no archive/restore)
         PERMISSIONS.HOLIDAYS.CREATE,
         PERMISSIONS.HOLIDAYS.READ,
@@ -135,6 +141,10 @@ export class SeedRolePermissions {
         PERMISSIONS.USERS.READ,
         PERMISSIONS.USERS.COMBOBOX,
         PERMISSIONS.USERS.PAGINATED_LIST,
+        // Read-only user-role permissions
+        PERMISSIONS.USER_ROLES.READ,
+        // Read-only user-permission permissions
+        PERMISSIONS.USER_PERMISSIONS.READ,
         // Read-only holiday permissions
         PERMISSIONS.HOLIDAYS.READ,
         PERMISSIONS.HOLIDAYS.COMBOBOX,

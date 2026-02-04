@@ -197,6 +197,10 @@ export const PERMISSIONS = {
   },
   // User-Role permissions
   USER_ROLES: {
+    READ: buildPermissionName(
+      PERMISSION_RESOURCES.USER_ROLES,
+      PERMISSION_ACTIONS.READ,
+    ),
     ASSIGN_ROLES: buildPermissionName(
       PERMISSION_RESOURCES.USER_ROLES,
       'assign_roles',
@@ -208,6 +212,10 @@ export const PERMISSIONS = {
   },
   // User-Permission permissions
   USER_PERMISSIONS: {
+    READ: buildPermissionName(
+      PERMISSION_RESOURCES.USER_PERMISSIONS,
+      PERMISSION_ACTIONS.READ,
+    ),
     GRANT_PERMISSIONS: buildPermissionName(
       PERMISSION_RESOURCES.USER_PERMISSIONS,
       'grant_permissions',

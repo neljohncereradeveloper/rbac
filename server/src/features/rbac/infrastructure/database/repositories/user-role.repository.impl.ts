@@ -3,10 +3,11 @@ import { DataSource, EntityManager } from 'typeorm';
 import { UserRoleRepository } from '@/features/rbac/domain/repositories';
 import { UserRole } from '@/features/rbac/domain/models';
 import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
+import { USER_MANAGEMENT_DATABASE_MODELS } from '@/features/user-management/domain/constants';
 
 @Injectable()
 export class UserRoleRepositoryImpl implements UserRoleRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async create(user_role: UserRole, manager: EntityManager): Promise<UserRole> {
     const query = `
@@ -123,10 +124,18 @@ export class UserRoleRepositoryImpl implements UserRoleRepository<EntityManager>
     manager: EntityManager,
   ): Promise<UserRole[]> {
     const query = `
-      SELECT *
-      FROM ${RBAC_DATABASE_MODELS.USER_ROLES}
-      WHERE user_id = $1
-      ORDER BY role_id ASC
+      SELECT
+        ur.user_id,
+        ur.role_id,
+        ur.created_by,
+        ur.created_at,
+        u.username,
+        r.description AS role_description
+      FROM ${RBAC_DATABASE_MODELS.USER_ROLES} ur
+      INNER JOIN ${USER_MANAGEMENT_DATABASE_MODELS.USERS} u ON u.id = ur.user_id
+      INNER JOIN ${RBAC_DATABASE_MODELS.ROLES} r ON r.id = ur.role_id
+      WHERE ur.user_id = $1
+      ORDER BY ur.role_id ASC
     `;
 
     const result = await manager.query(query, [user_id]);
@@ -157,6 +166,8 @@ export class UserRoleRepositoryImpl implements UserRoleRepository<EntityManager>
       role_id: entity.role_id,
       created_by: entity.created_by ?? null,
       created_at: entity.created_at,
+      username: entity.username,
+      role_description: entity.role_description ?? null,
     });
   }
 }

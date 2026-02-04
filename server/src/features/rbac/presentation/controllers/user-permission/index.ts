@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Delete,
   Body,
@@ -21,8 +22,9 @@ import {
 import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
-  GrantPermissionsToUserUseCase,
   DenyPermissionsToUserUseCase,
+  GetUserPermissionsUseCase,
+  GrantPermissionsToUserUseCase,
   RemovePermissionsFromUserUseCase,
 } from '@/features/rbac/application/use-cases/user-permission';
 import {
@@ -39,7 +41,12 @@ import {
   RATE_LIMIT_MODERATE,
 } from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
-import { DenyPermissionsToUserCommand, GrantPermissionsToUserCommand, RemovePermissionsFromUserCommand } from '@/features/rbac/application/commands/user-permission';
+import {
+  DenyPermissionsToUserCommand,
+  GrantPermissionsToUserCommand,
+  RemovePermissionsFromUserCommand,
+} from '@/features/rbac/application/commands/user-permission';
+import { UserPermission } from '@/features/rbac/domain/models';
 
 @ApiTags('User-Permission')
 @Controller('users/:userId/permissions')
@@ -49,10 +56,27 @@ import { DenyPermissionsToUserCommand, GrantPermissionsToUserCommand, RemovePerm
 })
 export class UserPermissionController {
   constructor(
-    private readonly grantPermissionsToUserUseCase: GrantPermissionsToUserUseCase,
     private readonly denyPermissionsToUserUseCase: DenyPermissionsToUserUseCase,
+    private readonly getUserPermissionsUseCase: GetUserPermissionsUseCase,
+    private readonly grantPermissionsToUserUseCase: GrantPermissionsToUserUseCase,
     private readonly removePermissionsFromUserUseCase: RemovePermissionsFromUserUseCase,
   ) { }
+
+  @Version('1')
+  @Get()
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.USER_PERMISSIONS.READ)
+  @ApiOperation({ summary: 'Get permission overrides for a user' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'User permissions retrieved successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
+  async getUserPermissions(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<UserPermission[]> {
+    return this.getUserPermissionsUseCase.execute(userId);
+  }
 
   @Version('1')
   @Post('grant')

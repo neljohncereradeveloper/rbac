@@ -36,12 +36,14 @@ import {
 import {
   // User-Role use cases
   AssignRolesToUserUseCase,
+  GetUserRolesUseCase,
   RemoveRolesFromUserUseCase,
 } from './application/use-cases/user-role';
 import {
   // User-Permission use cases
-  GrantPermissionsToUserUseCase,
   DenyPermissionsToUserUseCase,
+  GetUserPermissionsUseCase,
+  GrantPermissionsToUserUseCase,
   RemovePermissionsFromUserUseCase,
 } from './application/use-cases/user-permission';
 import { TransactionAdapter } from '@/core/infrastructure/database/adapters/transaction-helper.adapter';
@@ -119,10 +121,12 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     RemovePermissionsFromRoleUseCase,
     // User-Role use cases
     AssignRolesToUserUseCase,
+    GetUserRolesUseCase,
     RemoveRolesFromUserUseCase,
     // User-Permission use cases
-    GrantPermissionsToUserUseCase,
     DenyPermissionsToUserUseCase,
+    GetUserPermissionsUseCase,
+    GrantPermissionsToUserUseCase,
     RemovePermissionsFromUserUseCase,
   ],
   exports: [
@@ -153,10 +157,12 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     RemovePermissionsFromRoleUseCase,
     // User-Role use cases
     AssignRolesToUserUseCase,
+    GetUserRolesUseCase,
     RemoveRolesFromUserUseCase,
     // User-Permission use cases
-    GrantPermissionsToUserUseCase,
     DenyPermissionsToUserUseCase,
+    GetUserPermissionsUseCase,
+    GrantPermissionsToUserUseCase,
     RemovePermissionsFromUserUseCase,
   ],
 })

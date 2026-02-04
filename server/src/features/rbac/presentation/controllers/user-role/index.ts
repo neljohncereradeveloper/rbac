@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Delete,
   Body,
@@ -22,6 +23,7 @@ import { Request } from 'express';
 import { createRequestInfo } from '@/core/utils/request-info.util';
 import {
   AssignRolesToUserUseCase,
+  GetUserRolesUseCase,
   RemoveRolesFromUserUseCase,
 } from '@/features/rbac/application/use-cases/user-role';
 import {
@@ -37,7 +39,11 @@ import {
   RATE_LIMIT_MODERATE,
 } from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
-import { AssignRolesToUserCommand, RemoveRolesFromUserCommand } from '@/features/rbac/application/commands/user-role';
+import {
+  AssignRolesToUserCommand,
+  RemoveRolesFromUserCommand,
+} from '@/features/rbac/application/commands/user-role';
+import { UserRole } from '@/features/rbac/domain/models';
 
 @ApiTags('User-Role')
 @Controller('users/:userId/roles')
@@ -48,8 +54,25 @@ import { AssignRolesToUserCommand, RemoveRolesFromUserCommand } from '@/features
 export class UserRoleController {
   constructor(
     private readonly assignRolesToUserUseCase: AssignRolesToUserUseCase,
+    private readonly getUserRolesUseCase: GetUserRolesUseCase,
     private readonly removeRolesFromUserUseCase: RemoveRolesFromUserUseCase,
   ) { }
+
+  @Version('1')
+  @Get()
+  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
+  @RequirePermissions(PERMISSIONS.USER_ROLES.READ)
+  @ApiOperation({ summary: 'Get roles assigned to a user' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'User roles retrieved successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation error' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth('JWT-auth')
+  async getUserRoles(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<UserRole[]> {
+    return this.getUserRolesUseCase.execute(userId);
+  }
 
   @Version('1')
   @Post()

@@ -7,6 +7,7 @@ import { HTTP_STATUS } from '@/core/domain/constants';
  * This overrides role-based permissions:
  * - is_allowed: true = explicitly grant this permission (even if role doesn't have it)
  * - is_allowed: false = explicitly deny this permission (even if role grants it)
+ * When fetched with joins, username and permission details are populated.
  */
 export class UserPermission {
   user_id: number;
@@ -14,6 +15,12 @@ export class UserPermission {
   is_allowed: boolean;
   created_by: string | null;
   created_at: Date;
+  /** Populated when joined with users table */
+  username?: string;
+  /** Populated when joined with permissions table */
+  permission_name?: string;
+  /** Populated when joined with permissions table */
+  permission_description?: string | null;
 
   constructor(dto: {
     user_id: number;
@@ -21,12 +28,18 @@ export class UserPermission {
     is_allowed: boolean;
     created_by?: string | null;
     created_at?: Date;
+    username?: string;
+    permission_name?: string;
+    permission_description?: string | null;
   }) {
     this.user_id = dto.user_id;
     this.permission_id = dto.permission_id;
     this.is_allowed = dto.is_allowed;
     this.created_by = dto.created_by ?? null;
     this.created_at = dto.created_at ?? getPHDateTime();
+    this.username = dto.username;
+    this.permission_name = dto.permission_name;
+    this.permission_description = dto.permission_description ?? null;
   }
 
   /** Static factory: create and validate. */

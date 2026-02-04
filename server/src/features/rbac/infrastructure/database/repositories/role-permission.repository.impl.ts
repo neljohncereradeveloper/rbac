@@ -6,7 +6,7 @@ import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
 
 @Injectable()
 export class RolePermissionRepositoryImpl implements RolePermissionRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async create(
     role_permission: RolePermission,
@@ -126,10 +126,20 @@ export class RolePermissionRepositoryImpl implements RolePermissionRepository<En
     manager: EntityManager,
   ): Promise<RolePermission[]> {
     const query = `
-      SELECT *
-      FROM ${RBAC_DATABASE_MODELS.ROLE_PERMISSIONS}
-      WHERE role_id = $1
-      ORDER BY permission_id ASC
+      SELECT
+        rp.role_id,
+        rp.permission_id,
+        rp.created_by,
+        rp.created_at,
+        r.name AS role_name,
+        r.description AS role_description,
+        p.name AS permission_name,
+        p.description AS permission_description
+      FROM ${RBAC_DATABASE_MODELS.ROLE_PERMISSIONS} rp
+      INNER JOIN ${RBAC_DATABASE_MODELS.ROLES} r ON r.id = rp.role_id
+      INNER JOIN ${RBAC_DATABASE_MODELS.PERMISSIONS} p ON p.id = rp.permission_id
+      WHERE rp.role_id = $1
+      ORDER BY rp.permission_id ASC
     `;
 
     const result = await manager.query(query, [role_id]);
@@ -160,6 +170,10 @@ export class RolePermissionRepositoryImpl implements RolePermissionRepository<En
       permission_id: entity.permission_id,
       created_by: entity.created_by ?? null,
       created_at: entity.created_at,
+      role_name: entity.role_name,
+      role_description: entity.role_description ?? null,
+      permission_name: entity.permission_name,
+      permission_description: entity.permission_description ?? null,
     });
   }
 }

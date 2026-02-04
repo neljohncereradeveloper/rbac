@@ -3,10 +3,11 @@ import { DataSource, EntityManager } from 'typeorm';
 import { UserPermissionRepository } from '@/features/rbac/domain/repositories';
 import { UserPermission } from '@/features/rbac/domain/models';
 import { RBAC_DATABASE_MODELS } from '@/features/rbac/domain/constants';
+import { USER_MANAGEMENT_DATABASE_MODELS } from '@/features/user-management/domain/constants';
 
 @Injectable()
 export class UserPermissionRepositoryImpl implements UserPermissionRepository<EntityManager> {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async create(
     user_permission: UserPermission,
@@ -117,10 +118,20 @@ export class UserPermissionRepositoryImpl implements UserPermissionRepository<En
     manager: EntityManager,
   ): Promise<UserPermission[]> {
     const query = `
-      SELECT *
-      FROM ${RBAC_DATABASE_MODELS.USER_PERMISSIONS}
-      WHERE user_id = $1
-      ORDER BY permission_id ASC
+      SELECT
+        up.user_id,
+        up.permission_id,
+        up.is_allowed,
+        up.created_by,
+        up.created_at,
+        u.username,
+        p.name AS permission_name,
+        p.description AS permission_description
+      FROM ${RBAC_DATABASE_MODELS.USER_PERMISSIONS} up
+      INNER JOIN ${USER_MANAGEMENT_DATABASE_MODELS.USERS} u ON u.id = up.user_id
+      INNER JOIN ${RBAC_DATABASE_MODELS.PERMISSIONS} p ON p.id = up.permission_id
+      WHERE up.user_id = $1
+      ORDER BY up.permission_id ASC
     `;
 
     const result = await manager.query(query, [user_id]);
@@ -132,10 +143,20 @@ export class UserPermissionRepositoryImpl implements UserPermissionRepository<En
     manager: EntityManager,
   ): Promise<UserPermission[]> {
     const query = `
-      SELECT *
-      FROM ${RBAC_DATABASE_MODELS.USER_PERMISSIONS}
-      WHERE user_id = $1 AND is_allowed = true
-      ORDER BY permission_id ASC
+      SELECT
+        up.user_id,
+        up.permission_id,
+        up.is_allowed,
+        up.created_by,
+        up.created_at,
+        u.username,
+        p.name AS permission_name,
+        p.description AS permission_description
+      FROM ${RBAC_DATABASE_MODELS.USER_PERMISSIONS} up
+      INNER JOIN ${USER_MANAGEMENT_DATABASE_MODELS.USERS} u ON u.id = up.user_id
+      INNER JOIN ${RBAC_DATABASE_MODELS.PERMISSIONS} p ON p.id = up.permission_id
+      WHERE up.user_id = $1 AND up.is_allowed = true
+      ORDER BY up.permission_id ASC
     `;
 
     const result = await manager.query(query, [user_id]);
@@ -147,10 +168,20 @@ export class UserPermissionRepositoryImpl implements UserPermissionRepository<En
     manager: EntityManager,
   ): Promise<UserPermission[]> {
     const query = `
-      SELECT *
-      FROM ${RBAC_DATABASE_MODELS.USER_PERMISSIONS}
-      WHERE user_id = $1 AND is_allowed = false
-      ORDER BY permission_id ASC
+      SELECT
+        up.user_id,
+        up.permission_id,
+        up.is_allowed,
+        up.created_by,
+        up.created_at,
+        u.username,
+        p.name AS permission_name,
+        p.description AS permission_description
+      FROM ${RBAC_DATABASE_MODELS.USER_PERMISSIONS} up
+      INNER JOIN ${USER_MANAGEMENT_DATABASE_MODELS.USERS} u ON u.id = up.user_id
+      INNER JOIN ${RBAC_DATABASE_MODELS.PERMISSIONS} p ON p.id = up.permission_id
+      WHERE up.user_id = $1 AND up.is_allowed = false
+      ORDER BY up.permission_id ASC
     `;
 
     const result = await manager.query(query, [user_id]);
@@ -182,6 +213,9 @@ export class UserPermissionRepositoryImpl implements UserPermissionRepository<En
       is_allowed: entity.is_allowed,
       created_by: entity.created_by ?? null,
       created_at: entity.created_at,
+      username: entity.username,
+      permission_name: entity.permission_name,
+      permission_description: entity.permission_description ?? null,
     });
   }
 }

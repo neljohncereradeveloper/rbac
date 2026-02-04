@@ -107,6 +107,7 @@ The application follows Domain-Driven Design principles with a clean architectur
 
 **Endpoints**:
 
+- `GET /api/v1/users/:userId/roles` - Get roles assigned to a user
 - `POST /api/v1/users/:userId/roles` - Assign roles to a user
 - `DELETE /api/v1/users/:userId/roles` - Remove roles from a user
 
@@ -114,6 +115,7 @@ The application follows Domain-Driven Design principles with a clean architectur
 
 **Endpoints**:
 
+- `GET /api/v1/users/:userId/permissions` - Get permission overrides for a user
 - `POST /api/v1/users/:userId/permissions/grant` - Grant permissions to a user (override)
 - `POST /api/v1/users/:userId/permissions/deny` - Deny permissions to a user (override)
 - `DELETE /api/v1/users/:userId/permissions` - Remove permission overrides from a user

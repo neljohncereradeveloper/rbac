@@ -5,23 +5,40 @@ import { HTTP_STATUS } from '@/core/domain/constants';
 /**
  * Represents the association between a Role and a Permission.
  * A role gains a permission when this link exists.
+ * When fetched with joins, role and permission details are populated.
  */
 export class RolePermission {
   role_id: number;
   permission_id: number;
   created_by: string | null;
   created_at: Date;
+  /** Populated when joined with roles table */
+  role_name?: string;
+  /** Populated when joined with roles table */
+  role_description?: string | null;
+  /** Populated when joined with permissions table */
+  permission_name?: string;
+  /** Populated when joined with permissions table */
+  permission_description?: string | null;
 
   constructor(dto: {
     role_id: number;
     permission_id: number;
     created_by?: string | null;
     created_at?: Date;
+    role_name?: string;
+    role_description?: string | null;
+    permission_name?: string;
+    permission_description?: string | null;
   }) {
     this.role_id = dto.role_id;
     this.permission_id = dto.permission_id;
     this.created_by = dto.created_by ?? null;
     this.created_at = dto.created_at ?? getPHDateTime();
+    this.role_name = dto.role_name;
+    this.role_description = dto.role_description ?? null;
+    this.permission_name = dto.permission_name;
+    this.permission_description = dto.permission_description ?? null;
   }
 
   /** Static factory: create and validate. */
