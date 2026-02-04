@@ -10,11 +10,8 @@ import {
 } from './infrastructure/database/repositories';
 import {
   // Role use cases
-  CreateRoleUseCase,
-  UpdateRoleUseCase,
-  ArchiveRoleUseCase,
-  RestoreRoleUseCase,
-  GetRoleByIdUseCase,
+  // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
+  // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
   GetPaginatedRoleUseCase,
   ComboboxRoleUseCase,
 } from './application/use-cases/role';
@@ -30,7 +27,7 @@ import {
 } from './application/use-cases/permission';
 import {
   // Role-Permission use cases
-  AssignPermissionsToRoleUseCase,
+  // Note: AssignPermissionsToRoleUseCase removed - role-permission assignments are managed via seeders only
   GetRolePermissionsUseCase,
 } from './application/use-cases/role-permission';
 import {
@@ -101,11 +98,8 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
       useClass: UserRepositoryImpl,
     },
     // Role use cases
-    CreateRoleUseCase,
-    UpdateRoleUseCase,
-    ArchiveRoleUseCase,
-    RestoreRoleUseCase,
-    GetRoleByIdUseCase,
+    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
+    // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
     GetPaginatedRoleUseCase,
     ComboboxRoleUseCase,
     // Permission use cases
@@ -117,7 +111,7 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     GetPaginatedPermissionUseCase,
     ComboboxPermissionUseCase,
     // Role-Permission use cases
-    AssignPermissionsToRoleUseCase,
+    // Note: AssignPermissionsToRoleUseCase removed - role-permission assignments are managed via seeders only
     GetRolePermissionsUseCase,
     // User-Role use cases
     AssignRolesToUserUseCase,
@@ -137,11 +131,8 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     RBAC_TOKENS.USER_ROLE,
     RBAC_TOKENS.USER_PERMISSION,
     // Role use cases
-    CreateRoleUseCase,
-    UpdateRoleUseCase,
-    ArchiveRoleUseCase,
-    RestoreRoleUseCase,
-    GetRoleByIdUseCase,
+    // Note: CreateRoleUseCase, UpdateRoleUseCase, ArchiveRoleUseCase, RestoreRoleUseCase, GetRoleByIdUseCase removed
+    // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
     GetPaginatedRoleUseCase,
     ComboboxRoleUseCase,
     // Permission use cases
@@ -153,7 +144,7 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     GetPaginatedPermissionUseCase,
     ComboboxPermissionUseCase,
     // Role-Permission use cases
-    AssignPermissionsToRoleUseCase,
+    // Note: AssignPermissionsToRoleUseCase removed - role-permission assignments are managed via seeders only
     GetRolePermissionsUseCase,
     // User-Role use cases
     AssignRolesToUserUseCase,

@@ -1,6 +1,5 @@
-import { HTTP_STATUS } from '@/core/domain/constants';
 import { getPHDateTime } from '@/core/utils/date.util';
-import { RoleBusinessException } from '../exceptions';
+// Note: RoleBusinessException import removed - no longer needed since validate() method was removed
 
 export class Role {
   id?: number;
@@ -35,97 +34,8 @@ export class Role {
     this.updated_at = dto.updated_at ?? getPHDateTime();
   }
 
-  /** Static factory: create and validate. */
-  static create(params: {
-    name: string;
-    description?: string | null;
-    created_by?: string | null;
-  }): Role {
-    const role = new Role({
-      name: params.name,
-      description: params.description ?? null,
-      created_by: params.created_by ?? null,
-    });
-    role.validate();
-    return role;
-  }
-
-  /** Update details; validate new state before applying. */
-  update(dto: {
-    name: string;
-    description?: string | null;
-    updated_by?: string | null;
-  }): void {
-    if (this.deleted_at) {
-      throw new RoleBusinessException(
-        'Role is archived and cannot be updated',
-        HTTP_STATUS.CONFLICT,
-      );
-    }
-    const temp_role = new Role({
-      id: this.id,
-      name: dto.name,
-      description: dto.description ?? this.description,
-      created_at: this.created_at,
-      updated_at: this.updated_at,
-    });
-    temp_role.validate();
-    this.name = dto.name;
-    this.description = dto.description ?? this.description;
-    this.updated_by = dto.updated_by ?? null;
-  }
-
-  /** Soft-delete. */
-  archive(deleted_by: string): void {
-    if (this.deleted_at) {
-      throw new RoleBusinessException(
-        'Role is already archived.',
-        HTTP_STATUS.CONFLICT,
-      );
-    }
-    this.deleted_at = getPHDateTime();
-    this.deleted_by = deleted_by;
-  }
-
-  /** Restore from archive. */
-  restore(): void {
-    if (!this.deleted_at) {
-      throw new RoleBusinessException(
-        `Role with ID ${this.id} is not archived.`,
-        HTTP_STATUS.CONFLICT,
-      );
-    }
-    this.deleted_at = null;
-    this.deleted_by = null;
-  }
-
-  /** Enforce business rules. */
-  validate(): void {
-    if (!this.name || this.name.trim().length === 0) {
-      throw new RoleBusinessException(
-        'Role name is required and cannot be empty.',
-        HTTP_STATUS.BAD_REQUEST,
-      );
-    }
-    if (this.name.length > 255) {
-      throw new RoleBusinessException(
-        'Role name must not exceed 255 characters.',
-        HTTP_STATUS.BAD_REQUEST,
-      );
-    }
-    if (this.name.trim().length < 2) {
-      throw new RoleBusinessException(
-        'Role name must be at least 2 characters long.',
-        HTTP_STATUS.BAD_REQUEST,
-      );
-    }
-    if (this.description !== null && this.description !== undefined) {
-      if (this.description.length > 500) {
-        throw new RoleBusinessException(
-          'Role description must not exceed 500 characters.',
-          HTTP_STATUS.BAD_REQUEST,
-        );
-      }
-    }
-  }
+  // Note: create(), update(), archive(), restore(), validate() methods removed
+  // Roles are statically defined (Admin, Editor, Viewer) and managed via seeders only
+  // These methods are not used since roles cannot be modified, archived, or validated via the application
+  // Validation is handled at the database/entity level for seeded roles
 }

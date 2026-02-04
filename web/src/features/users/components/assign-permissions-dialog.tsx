@@ -27,7 +27,7 @@ import {
 } from "lucide-react"
 import { fetchUserPermissions, fetchUserRoles } from "../api/users-api"
 import { fetchPermissions } from "@/features/permissions/api/permissions-api"
-import { fetchRolePermissions, fetchRoleById } from "@/features/roles/api/roles-api"
+import { fetchRolePermissions, fetchRoles } from "@/features/roles/api/roles-api"
 import type { User } from "../types/user.types"
 import type { Permission } from "@/features/permissions/types/permission.types"
 import type { UserPermission } from "../types/user-permission.types"
@@ -159,7 +159,7 @@ export function AssignPermissionsDialog({
 
     const loadData = async () => {
       try {
-        const [permissionsRes, userPermissionsRes, userRolesRes] = await Promise.all([
+        const [permissionsRes, userPermissionsRes, userRolesRes, rolesRes] = await Promise.all([
           fetchPermissions({
             token,
             page: 1,
@@ -173,11 +173,28 @@ export function AssignPermissionsDialog({
           user?.id
             ? fetchUserRoles(user.id, token)
             : Promise.resolve([]),
+          fetchRoles({
+            token,
+            page: 1,
+            limit: 100,
+            term: "",
+            is_archived: "false",
+          }),
         ])
 
         const list = permissionsRes.data ?? []
         setPermissions(list)
         setUserPermissions(userPermissionsRes ?? [])
+
+        // Create a map of role IDs to role names from the roles list
+        const rolesMap = new Map<number, string>()
+        if (rolesRes?.data) {
+          rolesRes.data.forEach((role) => {
+            if (role.id) {
+              rolesMap.set(role.id, role.name)
+            }
+          })
+        }
 
         // Fetch permissions for each role and get role names
         if (user?.id && userRolesRes && userRolesRes.length > 0) {
@@ -186,24 +203,21 @@ export function AssignPermissionsDialog({
 
           const rolePromises = userRolesRes.map(async (userRole) => {
             try {
-              const [rolePerms, role] = await Promise.all([
-                fetchRolePermissions(userRole.role_id, token),
-                fetchRoleById(userRole.role_id, token),
-              ])
+              const rolePerms = await fetchRolePermissions(userRole.role_id, token)
               rolePermsMap.set(
                 userRole.role_id,
                 rolePerms.map((rp) => rp.permission_id)
               )
               rolesWithNames.push({
                 role_id: userRole.role_id,
-                role_name: role.name,
+                role_name: rolesMap.get(userRole.role_id) || `Role ${userRole.role_id}`,
               })
             } catch (err) {
-              console.error(`Failed to fetch data for role ${userRole.role_id}:`, err)
+              console.error(`Failed to fetch permissions for role ${userRole.role_id}:`, err)
               rolePermsMap.set(userRole.role_id, [])
               rolesWithNames.push({
                 role_id: userRole.role_id,
-                role_name: `Role ${userRole.role_id}`,
+                role_name: rolesMap.get(userRole.role_id) || `Role ${userRole.role_id}`,
               })
             }
           })

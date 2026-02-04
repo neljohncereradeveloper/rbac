@@ -11,36 +11,25 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontalIcon, ArchiveIcon, RotateCcwIcon, KeyIcon, EyeIcon } from "lucide-react"
+import { MoreHorizontalIcon, EyeIcon } from "lucide-react"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import type { PaginationMeta } from "@/lib/api/types"
 import type { Role } from "../types/role.types"
-// Note: UpdateRoleDialog removed - roles are statically defined in backend
-// (ADMIN, EDITOR, VIEWER) and managed via seeders only
-import { AssignPermissionsDialog } from "./assign-permissions-dialog"
+// Note: UpdateRoleDialog, AssignPermissionsDialog, Archive/Restore removed - roles are statically defined in backend
+// (ADMIN, EDITOR, VIEWER) and managed via seeders only. Role-permission assignments are also managed via seeders.
+// Archiving roles would break authorization checks since role names are hardcoded in controllers.
 import { ViewPermissionsDialog } from "./view-permissions-dialog"
-import { useArchiveRole, useRestoreRole } from "../hooks/use-role-mutations"
-import { ErrorAlert } from "@/components/ui/error-alert"
 
 export interface RolesTableProps {
   roles: Role[]
   meta: PaginationMeta | null
   basePath: string
   token: string | null
-  onActionSuccess: () => void
 }
 
 function formatDate(dateStr: string | null | undefined): string {
@@ -57,56 +46,12 @@ export function RolesTable({
   meta,
   basePath,
   token,
-  onActionSuccess,
 }: RolesTableProps) {
-  // Note: Edit role removed - roles are statically defined in backend
-  // (ADMIN, EDITOR, VIEWER) and managed via seeders only
-  const [roleToAssign, setRoleToAssign] = useState<Role | null>(null)
+  // Note: Edit role, Assign permissions, Archive/Restore removed - roles are statically defined in backend
+  // (ADMIN, EDITOR, VIEWER) and managed via seeders only. Role-permission assignments are also managed via seeders.
+  // Archiving roles would break authorization checks since role names are hardcoded in controllers.
   const [roleToView, setRoleToView] = useState<Role | null>(null)
-  const [roleToArchive, setRoleToArchive] = useState<Role | null>(null)
-  const [roleToRestore, setRoleToRestore] = useState<Role | null>(null)
-  const [assignOpen, setAssignOpen] = useState(false)
   const [viewOpen, setViewOpen] = useState(false)
-  const [archiveOpen, setArchiveOpen] = useState(false)
-  const [restoreOpen, setRestoreOpen] = useState(false)
-  const archiveRoleMutation = useArchiveRole()
-  const restoreRoleMutation = useRestoreRole()
-
-  function handleArchiveConfirm() {
-    if (!token || !roleToArchive?.id) return
-    archiveRoleMutation.mutate(
-      { id: roleToArchive.id, token },
-      {
-        onSuccess: () => {
-          setArchiveOpen(false)
-          setRoleToArchive(null)
-          onActionSuccess()
-        },
-        onError: () => {
-          // Error is displayed in the dialog via mutation.error
-        },
-      }
-    )
-  }
-
-  function handleRestoreConfirm() {
-    if (!token || !roleToRestore?.id) return
-    restoreRoleMutation.mutate(
-      { id: roleToRestore.id, token },
-      {
-        onSuccess: () => {
-          setRestoreOpen(false)
-          setRoleToRestore(null)
-          onActionSuccess()
-        },
-        onError: () => {
-          // Error is displayed in the dialog via mutation.error
-        },
-      }
-    )
-  }
-
-  const isArchived = (role: Role) => !!role.deleted_at
 
   // Calculate starting index based on current page
   const startIndex = meta ? (meta.page - 1) * meta.limit : 0
@@ -140,49 +85,17 @@ export function RolesTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {isArchived(role) ? (
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setRoleToRestore(role)
-                            setRestoreOpen(true)
-                          }}
-                        >
-                          <RotateCcwIcon className="size-4" />
-                          Restore
-                        </DropdownMenuItem>
-                      ) : (
-                        <>
-                          {/* Edit role removed - roles are statically defined in backend */}
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setRoleToView(role)
-                              setViewOpen(true)
-                            }}
-                          >
-                            <EyeIcon className="size-4" />
-                            View permissions
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setRoleToAssign(role)
-                              setAssignOpen(true)
-                            }}
-                          >
-                            <KeyIcon className="size-4" />
-                            Assign permissions
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            variant="destructive"
-                            onClick={() => {
-                              setRoleToArchive(role)
-                              setArchiveOpen(true)
-                            }}
-                          >
-                            <ArchiveIcon className="size-4" />
-                            Archive
-                          </DropdownMenuItem>
-                        </>
-                      )}
+                      {/* Edit role, Assign permissions, Archive/Restore removed - roles are statically defined */}
+                      {/* Archiving roles would break authorization checks since role names are hardcoded */}
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setRoleToView(role)
+                          setViewOpen(true)
+                        }}
+                      >
+                        <EyeIcon className="size-4" />
+                        View permissions
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
@@ -192,102 +105,14 @@ export function RolesTable({
         </TableBody>
       </Table>
       {meta && <DataTablePagination meta={meta} basePath={basePath} />}
-      {/* UpdateRoleDialog removed - roles are statically defined in backend */}
-      <AssignPermissionsDialog
-        open={assignOpen}
-        onOpenChange={setAssignOpen}
-        role={roleToAssign}
-        token={token}
-        onSuccess={onActionSuccess}
-      />
+      {/* UpdateRoleDialog, AssignPermissionsDialog, Archive/Restore dialogs removed - roles are statically defined */}
+      {/* Archiving roles would break authorization checks since role names are hardcoded in controllers */}
       <ViewPermissionsDialog
         open={viewOpen}
         onOpenChange={setViewOpen}
         role={roleToView}
         token={token}
       />
-      <Dialog
-        open={archiveOpen}
-        onOpenChange={(open) => {
-          setArchiveOpen(open)
-          if (!open) {
-            setRoleToArchive(null)
-            archiveRoleMutation.reset()
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive role</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to archive &quot;{roleToArchive?.name}&quot;?
-              This will soft-delete the role. You can restore it later from the
-              Archived tab.
-            </DialogDescription>
-          </DialogHeader>
-          {archiveRoleMutation.error && (
-            <ErrorAlert error={archiveRoleMutation.error} />
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setArchiveOpen(false)
-                setRoleToArchive(null)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleArchiveConfirm}
-              disabled={archiveRoleMutation.isPending}
-            >
-              {archiveRoleMutation.isPending ? "Archiving..." : "Archive"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        open={restoreOpen}
-        onOpenChange={(open) => {
-          setRestoreOpen(open)
-          if (!open) {
-            setRoleToRestore(null)
-            restoreRoleMutation.reset()
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Restore role</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to restore &quot;{roleToRestore?.name}&quot;?
-              The role will be active again and visible in the Active tab.
-            </DialogDescription>
-          </DialogHeader>
-          {restoreRoleMutation.error && (
-            <ErrorAlert error={restoreRoleMutation.error} />
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setRestoreOpen(false)
-                setRoleToRestore(null)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRestoreConfirm}
-              disabled={restoreRoleMutation.isPending}
-            >
-              {restoreRoleMutation.isPending ? "Restoring..." : "Restore"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }
