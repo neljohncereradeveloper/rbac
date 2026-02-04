@@ -8,6 +8,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 import {
   RequirePermissions,
@@ -48,10 +49,13 @@ export class RoleController {
   @Get()
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.ROLES.PAGINATED_LIST)
-  @ApiOperation({ summary: 'Get all roles (no pagination, no filtering)' })
-  @ApiResponse({
-    status: 200,
+  @ApiOperation({
+    summary: 'Get all roles',
+    description: 'Retrieves all roles. This endpoint does NOT support pagination, filtering, or search. Returns all roles in a single response. Roles are system-defined (Admin, Editor, Viewer) and cannot be modified. Note: The permission name contains "paginated_list" for backward compatibility, but pagination is not implemented.',
+  })
+  @ApiOkResponse({
     description: 'Roles retrieved successfully',
+    type: [Role],
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth('JWT-auth')
@@ -65,10 +69,22 @@ export class RoleController {
   @Get('combobox/list')
   @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
   @RequirePermissions(PERMISSIONS.ROLES.COMBOBOX)
-  @ApiOperation({ summary: 'Get roles combobox list' })
-  @ApiResponse({
-    status: 200,
+  @ApiOperation({
+    summary: 'Get roles combobox list',
+    description: 'Retrieves a simplified list of roles formatted for dropdown/combobox components. Returns only role names as value-label pairs.',
+  })
+  @ApiOkResponse({
     description: 'Roles combobox retrieved successfully',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          value: { type: 'string', example: 'admin' },
+          label: { type: 'string', example: 'Admin' },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth('JWT-auth')

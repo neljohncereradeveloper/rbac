@@ -1,15 +1,12 @@
 import {
   Controller,
   Get,
-  Param,
   Version,
-  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiParam,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import {
@@ -22,11 +19,10 @@ import {
 } from '@/core/infrastructure/decorators';
 import { PERMISSIONS, ROLES } from '@/core/domain/constants';
 import {
-  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase removed
+  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPermissionByIdUseCase removed
   // Permissions are statically defined and managed via seeders only
   ComboboxPermissionUseCase,
   GetAllPermissionsUseCase,
-  GetPermissionByIdUseCase,
 } from '@/features/rbac/application/use-cases/permission';
 import { Permission } from '@/features/rbac/domain';
 
@@ -38,29 +34,14 @@ import { Permission } from '@/features/rbac/domain';
 })
 export class PermissionController {
   constructor(
-    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase removed
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPermissionByIdUseCase removed
     // Permissions are statically defined and managed via seeders only
-    private readonly getPermissionByIdUseCase: GetPermissionByIdUseCase,
     private readonly getAllPermissionsUseCase: GetAllPermissionsUseCase,
     private readonly comboboxPermissionUseCase: ComboboxPermissionUseCase,
   ) { }
 
-  // Note: Create, Update, Archive, and Restore endpoints removed - permissions are statically defined
+  // Note: Create, Update, Archive, Restore, and GetById endpoints removed - permissions are statically defined
   // and managed via seeders only. Modifying or archiving them would break authorization checks.
-
-  @Version('1')
-  @Get(':id')
-  @RequireRoles(ROLES.ADMIN, ROLES.EDITOR, ROLES.VIEWER)
-  @RequirePermissions(PERMISSIONS.PERMISSIONS.READ)
-  @ApiOperation({ summary: 'Get permission by ID' })
-  @ApiParam({ name: 'id', description: 'Permission ID', example: 1 })
-  @ApiResponse({ status: 200, description: 'Permission retrieved successfully' })
-  @ApiResponse({ status: 404, description: 'Permission not found' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth('JWT-auth')
-  async getById(@Param('id', ParseIntPipe) id: number): Promise<Permission> {
-    return this.getPermissionByIdUseCase.execute(id);
-  }
 
   @Version('1')
   @Get()

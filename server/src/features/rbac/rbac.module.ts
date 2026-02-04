@@ -18,10 +18,9 @@ import {
 } from './application/use-cases/role';
 import {
   // Permission use cases
-  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase removed
+  // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase removed
   // Permissions are statically defined and managed via seeders only
   // Permissions are fetched without pagination
-  GetPermissionByIdUseCase,
   GetAllPermissionsUseCase,
   ComboboxPermissionUseCase,
 } from './application/use-cases/permission';
@@ -104,10 +103,9 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     GetAllRolesUseCase,
     ComboboxRoleUseCase,
     // Permission use cases
-    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase removed
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase removed
     // Permissions are statically defined and managed via seeders only
     // Permissions are fetched without pagination
-    GetPermissionByIdUseCase,
     GetAllPermissionsUseCase,
     ComboboxPermissionUseCase,
     // Role-Permission use cases
@@ -137,10 +135,9 @@ import { USER_MANAGEMENT_TOKENS } from '../user-management/domain';
     GetAllRolesUseCase,
     ComboboxRoleUseCase,
     // Permission use cases
-    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase removed
+    // Note: CreatePermissionUseCase, UpdatePermissionUseCase, ArchivePermissionUseCase, RestorePermissionUseCase, GetPaginatedPermissionUseCase, GetPermissionByIdUseCase removed
     // Permissions are statically defined and managed via seeders only
     // Permissions are fetched without pagination
-    GetPermissionByIdUseCase,
     GetAllPermissionsUseCase,
     ComboboxPermissionUseCase,
     // Role-Permission use cases
