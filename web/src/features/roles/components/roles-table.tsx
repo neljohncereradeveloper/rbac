@@ -100,12 +100,15 @@ export function RolesTable({
 
   const isArchived = (role: Role) => !!role.deleted_at
 
+  // Calculate starting index based on current page
+  const startIndex = meta ? (meta.page - 1) * meta.limit : 0
+
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
+            <TableHead>#</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Created</TableHead>
@@ -113,9 +116,9 @@ export function RolesTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {roles.map((role) => (
+          {roles.map((role, index) => (
             <TableRow key={role.id}>
-              <TableCell>{role.id}</TableCell>
+              <TableCell>{startIndex + index + 1}</TableCell>
               <TableCell className="font-medium">{role.name}</TableCell>
               <TableCell>{role.description ?? "—"}</TableCell>
               <TableCell>{formatDate(role.created_at)}</TableCell>

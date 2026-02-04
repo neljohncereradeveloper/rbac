@@ -30,6 +30,8 @@ import {
   ArchiveIcon,
   RotateCcwIcon,
   KeyIcon,
+  CheckIcon,
+  XIcon,
 } from "lucide-react"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import type { PaginationMeta } from "@/lib/api/types"
@@ -60,6 +62,23 @@ function formatName(user: User): string {
     (s) => s && s.trim()
   )
   return parts.length > 0 ? parts.join(" ") : "—"
+}
+
+function EmailVerifiedBadge({ verified }: { verified?: boolean }) {
+  if (verified) {
+    return (
+      <span className="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
+        <CheckIcon className="size-3" />
+        Verified
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-muted-foreground">
+      <XIcon className="size-3" />
+      Not verified
+    </span>
+  )
 }
 
 export function UsersTable({
@@ -110,27 +129,32 @@ export function UsersTable({
 
   const isArchived = (user: User) => !!user.deleted_at
 
+  // Calculate starting index based on current page
+  const startIndex = meta ? (meta.page - 1) * meta.limit : 0
+
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
+            <TableHead>#</TableHead>
             <TableHead>Username</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Name</TableHead>
-            <TableHead>Created</TableHead>
+            <TableHead>Is Email Verified</TableHead>
             <TableHead className="w-[70px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
+          {users.map((user, index) => (
             <TableRow key={user.id}>
-              <TableCell>{user.id}</TableCell>
+              <TableCell>{startIndex + index + 1}</TableCell>
               <TableCell className="font-medium">{user.username}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{formatName(user)}</TableCell>
-              <TableCell>{formatDate(user.created_at)}</TableCell>
+              <TableCell>
+                <EmailVerifiedBadge verified={user.is_email_verified} />
+              </TableCell>
               <TableCell>
                 {token && (
                   <DropdownMenu>

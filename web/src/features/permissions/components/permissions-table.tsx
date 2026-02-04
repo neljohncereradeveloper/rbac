@@ -32,21 +32,24 @@ export function PermissionsTable({
   meta,
   basePath,
 }: PermissionsTableProps) {
+  // Calculate starting index based on current page
+  const startIndex = meta ? (meta.page - 1) * meta.limit : 0
+
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
+            <TableHead>#</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Created</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {permissions.map((perm) => (
+          {permissions.map((perm, index) => (
             <TableRow key={perm.id}>
-              <TableCell>{perm.id}</TableCell>
+              <TableCell>{startIndex + index + 1}</TableCell>
               <TableCell className="font-medium">{perm.name}</TableCell>
               <TableCell>{perm.description ?? "—"}</TableCell>
               <TableCell>{formatDate(perm.created_at)}</TableCell>
