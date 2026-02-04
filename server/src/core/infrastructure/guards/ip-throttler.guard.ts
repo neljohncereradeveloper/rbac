@@ -1,14 +1,32 @@
 import { Injectable, ExecutionContext } from '@nestjs/common';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerLimitDetail } from '@nestjs/throttler';
 import { Request } from 'express';
+import { RATE_LIMIT_MESSAGE_KEY } from '../decorators/rate-limit.decorator';
 
 /**
  * IP-based Throttler Guard
  * Custom throttler guard that tracks rate limits per IP address
  * Extracts IP from request headers (X-Forwarded-For for proxies) or direct connection
+ * Supports custom error messages via @RateLimit({ message: '...' })
  */
 @Injectable()
 export class IpThrottlerGuard extends ThrottlerGuard {
+  /**
+   * Get error message - uses custom message from @RateLimit if set
+   */
+  protected async getErrorMessage(
+    context: ExecutionContext,
+    throttlerLimitDetail: ThrottlerLimitDetail,
+  ): Promise<string> {
+    const customMessage = this.reflector.getAllAndOverride<string>(
+      RATE_LIMIT_MESSAGE_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+    if (customMessage) {
+      return customMessage;
+    }
+    return super.getErrorMessage(context, throttlerLimitDetail);
+  }
   /**
    * Extract IP address from request
    * Handles various proxy scenarios and headers

@@ -14,7 +14,6 @@ import {
   HttpHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '@/features/auth/infrastructure/decorators/public.decorator';
 import { HealthCheckResponseDto } from '../dto/health-check-response.dto';
 import { ConfigService } from '@nestjs/config';
@@ -65,7 +64,6 @@ export class HealthCheckController {
   @Version('1')
   @Get('database')
   @Public()
-  @SkipThrottle()
   @HealthCheck()
   @ApiOperation({ summary: 'Check database health status' })
   @ApiResponse({
@@ -86,7 +84,6 @@ export class HealthCheckController {
   @Version('1')
   @Get('swagger')
   @Public()
-  @SkipThrottle()
   @HealthCheck()
   @ApiOperation({ summary: 'Check Swagger documentation endpoint health' })
   @ApiResponse({

@@ -12,7 +12,7 @@ import {
   ApiResponse,
   ApiBody,
 } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
+import { RateLimit, RATE_LIMIT_STRICT } from '@/core/infrastructure/decorators';
 import { Public } from '../../infrastructure/decorators/public.decorator';
 import { LoginDto } from '../dto/login/login.dto';
 import { LoginUseCase } from '../../application/use-cases/login/login.use-case';
@@ -31,7 +31,10 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @Public()
-  @Throttle({ login: { limit: 5, ttl: 60000 } })
+  @RateLimit({
+    ...RATE_LIMIT_STRICT,
+    message: 'Too many login attempts. Please try again later.',
+  })
   @ApiOperation({ summary: 'Authenticate user and get JWT token' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({ status: 200, description: 'Login successful' })

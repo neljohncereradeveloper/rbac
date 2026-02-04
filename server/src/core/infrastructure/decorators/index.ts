@@ -18,3 +18,6 @@ export * from './enum-validation.decorator';
 
 // Date validation decorators
 export * from './date-validation.decorator';
+
+// Rate limit decorator
+export * from './rate-limit.decorator';

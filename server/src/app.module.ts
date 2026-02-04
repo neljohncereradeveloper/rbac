@@ -31,13 +31,8 @@ import { HealthCheckModule } from './features/health-check/health-check.module';
       throttlers: [
         {
           name: 'default',
-          ttl: 60000, // Time window in milliseconds (60 seconds)
-          limit: 100, // Max requests per time window
-        },
-        {
-          name: 'login',
-          ttl: 60000, // Time window in milliseconds (60 seconds)
-          limit: 5, // Max requests per time window for login
+          ttl: 60000,
+          limit: 100,
         },
       ],
     }),
@@ -63,12 +58,8 @@ import { HealthCheckModule } from './features/health-check/health-check.module';
       provide: APP_GUARD,
       useClass: PermissionsGuard,
     },
-    // Set IP-based Throttler Guard as global (applies rate limiting per IP address)
-    // Use @SkipThrottle() decorator on routes that should skip rate limiting
-    {
-      provide: APP_GUARD,
-      useClass: IpThrottlerGuard,
-    },
+    // IpThrottlerGuard is used by @RateLimit() decorator - must be available for DI
+    IpThrottlerGuard,
   ],
 })
 export class AppModule implements NestModule {
