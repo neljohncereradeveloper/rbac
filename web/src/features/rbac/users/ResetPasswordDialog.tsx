@@ -91,13 +91,12 @@ export function ResetPasswordDialog({
         }
       }}
     >
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle className="wrap-break-word">Reset password</DialogTitle>
             <DialogDescription className="wrap-break-word">
-              Reset password for user &quot;{user?.username}&quot;. The user will
-              need to use this new password to log in.
+              Reset password for user &quot;{user?.username}&quot;.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">

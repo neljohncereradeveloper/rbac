@@ -530,8 +530,8 @@ export function AssignPermissionsDialog({
         }
       }}
     >
-      <DialogContent className="flex max-w-3xl max-h-[90vh] flex-col overflow-hidden">
-        <DialogHeader className="shrink-0">
+      <DialogContent className="flex max-w-xl max-h-[90vh] flex-col overflow-hidden">
+        <DialogHeader className="shrink-0 -mb-5">
           <DialogTitle className="wrap-break-word">
             Manage permissions {user ? `for ${user.username}` : ""}
           </DialogTitle>
@@ -549,9 +549,9 @@ export function AssignPermissionsDialog({
             onValueChange={(value) =>
               setActiveTab(value as "grant" | "deny" | "remove")
             }
-            className="flex min-h-0 flex-1 flex-col overflow-hidden"
+            className="flex min-h-0 flex-col overflow-hidden"
           >
-            <TabsList className="shrink-0 grid w-full grid-cols-3">
+            <TabsList className="w-full grid grid-cols-3 border-b bg-secondary">
               <TabsTrigger value="grant" className="flex items-center gap-2">
                 <CheckCircle2Icon className="size-4" />
                 Grant
@@ -576,13 +576,11 @@ export function AssignPermissionsDialog({
               >
                 <FieldGroup className="min-h-0 flex-1 flex flex-col">
                   <Field className="flex min-h-0 flex-1 flex-col">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
+                    <div className="flex flex-col gap-3 items-start justify-between mb-3">
                       <div className="flex-1 min-w-0">
                         <FieldLabel>Grant Permissions</FieldLabel>
                         <p className="text-xs text-muted-foreground mt-1 wrap-break-word">
-                          Override to explicitly allow permissions. Permissions
-                          already granted via roles are disabled — use Deny tab
-                          to block them.
+                          Override to explicitly allow permissions.
                         </p>
                       </div>
                       <div className="flex flex-col gap-2 sm:flex-row shrink-0 w-full sm:w-auto">
@@ -665,12 +663,12 @@ export function AssignPermissionsDialog({
                   </Field>
                 </FieldGroup>
                 <DialogFooter className="shrink-0 mt-4 flex-col gap-2 sm:flex-row">
-                  <div className="flex items-center justify-between w-full sm:w-auto sm:order-2">
+                  {/* <div className="flex items-center justify-between w-full sm:w-auto sm:order-2">
                     <span className="text-sm text-muted-foreground">
                       {selectedCount} permission
                       {selectedCount !== 1 ? "s" : ""} selected
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex flex-col gap-2 sm:flex-row w-full sm:w-auto sm:order-1">
                     <Button
                       type="button"
@@ -701,13 +699,12 @@ export function AssignPermissionsDialog({
                 className="flex min-h-0 flex-1 flex-col overflow-hidden"
               >
                 <FieldGroup className="min-h-0 flex-1 flex flex-col">
-                  <Field className="flex min-h-0 flex-1 flex-col">
-                    <div className="flex shrink-0 items-center justify-between mb-3">
+                  <Field className="flex min-h-0 flex-1 flex-col ">
+                    <div className="flex flex-col gap-3 items-start justify-between mb-3">
                       <div>
                         <FieldLabel>Deny Permissions</FieldLabel>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Override to explicitly block permissions. Only shows
-                          permissions the user currently has access to.
+                          Override to explicitly block permissions.
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -812,11 +809,11 @@ export function AssignPermissionsDialog({
                   </Field>
                 </FieldGroup>
                 <DialogFooter className="shrink-0 mt-4">
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-sm text-muted-foreground">
+                  <div className="flex flex-col gap-2 sm:flex-row w-full sm:w-auto sm:order-1">
+                    {/* <span className="text-sm text-muted-foreground">
                       {selectedCount} permission
                       {selectedCount !== 1 ? "s" : ""} selected
-                    </span>
+                    </span> */}
                     <div className="flex gap-2">
                       <Button
                         type="button"
@@ -848,7 +845,7 @@ export function AssignPermissionsDialog({
               >
                 <FieldGroup className="min-h-0 flex-1 flex flex-col">
                   <Field className="flex min-h-0 flex-1 flex-col">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
+                    <div className="flex flex-col gap-3 items-start justify-between mb-3">
                       <div className="flex-1 min-w-0">
                         <FieldLabel>Remove Permission Overrides</FieldLabel>
                         <p className="text-xs text-muted-foreground mt-1 wrap-break-word">
@@ -960,12 +957,12 @@ export function AssignPermissionsDialog({
                   </Field>
                 </FieldGroup>
                 <DialogFooter className="shrink-0 mt-4 flex-col gap-2 sm:flex-row">
-                  <div className="flex items-center justify-between w-full sm:w-auto sm:order-2">
+                  {/* <div className="flex items-center justify-between w-full sm:w-auto sm:order-2">
                     <span className="text-sm text-muted-foreground">
                       {selectedCount} override
                       {selectedCount !== 1 ? "s" : ""} selected
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex flex-col gap-2 sm:flex-row w-full sm:w-auto sm:order-1">
                     <Button
                       type="button"
