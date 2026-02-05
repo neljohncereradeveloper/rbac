@@ -72,7 +72,7 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
   return (
     <>
       {groupedPermissions.length > 1 && (
-        <div className="flex flex-col gap-2 sm:flex-row items-start sm:items-center justify-end mb-4">
+        <div className="flex flex-col gap-2 sm:flex-row items-start sm:items-center justify-start mb-4">
           <Button
             variant="outline"
             size="sm"
