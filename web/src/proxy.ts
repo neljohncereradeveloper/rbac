@@ -5,7 +5,7 @@ import { AUTH_COOKIES } from "@/shared/constants"
 const PROTECTED_PREFIX = "/rbac"
 const LOGIN_PATH = "/login"
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const token = request.cookies.get(AUTH_COOKIES.TOKEN)?.value
 

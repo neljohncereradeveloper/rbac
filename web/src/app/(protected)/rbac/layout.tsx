@@ -55,7 +55,7 @@ export default function RbacLayout({
             <PageBreadcrumb items={items} />
             <PageShell>
                 {mounted ? (
-                    <Menubar className="mb-4 w-fit">
+                    <Menubar className="w-full shadow-md">
                         {RBAC_MENU_ITEMS.map(({ href, label }) => {
                             const isActive = pathname === href
                             return (
@@ -77,7 +77,7 @@ export default function RbacLayout({
                     <nav
                         role="menubar"
                         aria-label="RBAC sections"
-                        className="bg-background mb-4 flex h-9 w-fit items-center gap-1 rounded-md border p-1 shadow-xs"
+                        className="bg-background flex h-9 w-full items-center gap-1 rounded-md border p-1 shadow-xs"
                     >
                         {RBAC_MENU_ITEMS.map(({ href, label }) => {
                             const isActive = pathname === href
