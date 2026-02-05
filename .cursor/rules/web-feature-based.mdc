@@ -1,0 +1,98 @@
+---
+description: Feature-based Next.js structure with React Query + React Hook Form
+globs: web/**/*
+alwaysApply: false
+---
+
+# Web Feature-Based Rules
+
+## 1. Folder Structure
+
+```
+features/
+└─ <feature>/
+   ├─ <item>/          ← one CRUD entity (Branch, JobTitle, Department)
+   │   ├─ <item>.api.ts
+   │   ├─ <item>.types.ts
+   │   ├─ <item>.logic.ts
+   │   ├─ use<Item>.ts (optional, only UI orchestration)
+   │   ├─ <Item>Table.tsx
+   │   ├─ <Item>Form.tsx
+   │   ├─ <Item>Context.tsx (optional)
+   │   ├─ <Item>Provider.tsx (optional, only UI state)
+   │   └─ index.ts
+```
+
+```
+shared/
+├─ api-client/
+│   ├─ client.ts
+│   ├─ types.ts
+│   └─ index.ts
+├─ ui/
+│   ├─ button.tsx
+│   ├─ card.tsx
+│   ├─ data-table-card.tsx
+│   ├─ data-table-pagination.tsx
+│   ├─ table-page-skeleton.tsx
+│   ├─ table-search-form.tsx
+│   └─ ... (all primitives)
+├─ hooks/
+│   ├─ use-mobile.ts
+│   └─ use-table-search-params.ts
+├─ utils/
+│   ├─ utils.ts (cn)
+│   └─ error-utils.ts
+├─ react-query/
+│   ├─ query-keys.ts
+│   └─ query-options.ts
+├─ constants/
+│   └─ index.ts
+└─ index.ts
+```
+
+- **1 feature = 1 domain** | **1 item = 1 CRUD entity**
+- **shared/** — reusable UI, hooks, utils, and API client used by 2+ features
+- Import from `@/shared/api-client`, `@/shared/ui/*`, `@/shared/hooks`, `@/shared/utils`, `@/shared/react-query`
+
+## 2. Dependency / Import Rules
+
+| From             | Can Import                 | Cannot Import                   |
+| ---------------- | -------------------------- | ------------------------------- |
+| Component        | hooks, api, types, context | logic, other feature components |
+| Hook             | api, logic, types          | UI components                   |
+| Logic            | types                      | api, UI, hooks                  |
+| API              | types                      | logic, components, hooks        |
+| Context/Provider | hooks, types               | api, logic, feature components  |
+| Page             | everything in the feature  | other feature internals         |
+
+**Data and business logic flow down, UI consumes up — never reverse.**
+
+- Use **index.ts** for public exports; import from feature folder only
+- Features may import from **shared/** (ui, hooks, utils, api-client)
+- Hooks: `use*` | Components: PascalCase | Logic/API/types: lowercase
+
+## 3. React Query & React Hook Form
+
+- **Data fetching** → React Query (`useQuery`, `useMutation`)
+- **Forms** → React Hook Form (`useForm`)
+- **Provider/Context** → only UI state (selected item, modal visibility)
+
+**Forbidden:** Fetching in provider, logic in form component, component calling API directly.
+
+```
+API → Hook (useQuery/useMutation) → Component
+```
+
+## 4. File Responsibility
+
+| File            | Responsibility                                |
+| --------------- | --------------------------------------------- |
+| `*.api.ts`      | API calls only, returns Promises              |
+| `*.types.ts`    | Types & interfaces only                       |
+| `*.logic.ts`    | Business rules, validation, mapping           |
+| `use*.ts`       | Orchestration (fetch + logic + state), not UI |
+| `*Table.tsx`    | Rendering only                                |
+| `*Form.tsx`     | Rendering + RHF only                          |
+| `*Context.tsx`  | Context shape only                            |
+| `*Provider.tsx` | UI state only, no API/logic                   |

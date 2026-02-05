@@ -1,6 +1,6 @@
 ---
-description: Feature-based folder and module structure
-alwaysApply: true
+globs: server/**/*
+alwaysApply: false
 ---
 
 # Feature-Based Structure

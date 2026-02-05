@@ -2,11 +2,10 @@
 
 import { Suspense } from "react"
 import { PageHeader, PageShell, PageTitle } from "@/components/layout"
-import { DataTableCard } from "@/components/table/data-table-card"
-import { TablePageSkeleton } from "@/components/table/table-page-skeleton"
-import { useAuth } from "@/features/auth/hooks/use-auth"
-import { useRoles } from "@/features/roles/hooks/use-roles"
-import { RolesTable } from "@/features/roles/components/roles-table"
+import { DataTableCard } from "@/shared/ui/data-table-card"
+import { TablePageSkeleton } from "@/shared/ui/table-page-skeleton"
+import { useAuth } from "@/features/auth"
+import { useRoles, RolesTable } from "@/features/rbac/roles"
 
 function RolesPageContent() {
   const { token, isAuthenticated } = useAuth()

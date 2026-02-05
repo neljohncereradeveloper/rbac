@@ -8,7 +8,7 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar"
+} from "@/shared/ui/sidebar"
 
 export default function DashboardLayout({
   children,

@@ -9,9 +9,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+} from "@/shared/ui/breadcrumb"
+import { Separator } from "@/shared/ui/separator"
+import { SidebarTrigger } from "@/shared/ui/sidebar"
 
 export interface PageHeaderItem {
   label: string

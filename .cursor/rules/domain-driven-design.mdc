@@ -1,6 +1,6 @@
 ---
-description: Domain Driven Design (DDD) conventions and layered architecture
-alwaysApply: true
+globs: server/**/*
+alwaysApply: false
 ---
 
 # Domain Driven Design

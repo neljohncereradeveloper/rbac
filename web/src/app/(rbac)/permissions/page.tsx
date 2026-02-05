@@ -2,11 +2,10 @@
 
 import { Suspense } from "react"
 import { PageHeader, PageShell, PageTitle } from "@/components/layout"
-import { DataTableCard } from "@/components/table/data-table-card"
-import { TablePageSkeleton } from "@/components/table/table-page-skeleton"
-import { useAuth } from "@/features/auth/hooks/use-auth"
-import { usePermissions } from "@/features/permissions/hooks/use-permissions"
-import { PermissionsTable } from "@/features/permissions/components/permissions-table"
+import { DataTableCard } from "@/shared/ui/data-table-card"
+import { TablePageSkeleton } from "@/shared/ui/table-page-skeleton"
+import { useAuth } from "@/features/auth"
+import { usePermissions, PermissionsTable } from "@/features/rbac/permissions"
 
 function PermissionsPageContent() {
   const { token, isAuthenticated } = useAuth()

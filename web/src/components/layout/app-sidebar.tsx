@@ -16,8 +16,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { useAuth } from "@/features/auth/hooks/use-auth"
+} from "@/shared/ui/sidebar"
+import { useAuth } from "@/features/auth"
 
 const navMain = [
   {

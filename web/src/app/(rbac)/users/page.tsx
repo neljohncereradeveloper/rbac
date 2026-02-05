@@ -4,15 +4,17 @@ import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { PlusIcon, ArchiveIcon, ArchiveRestoreIcon } from "lucide-react"
 import { PageHeader, PageShell, PageTitle } from "@/components/layout"
-import { Button } from "@/components/ui/button"
-import { DataTableCard } from "@/components/table/data-table-card"
-import { TablePageSkeleton } from "@/components/table/table-page-skeleton"
-import { useTableSearchParams } from "@/hooks/use-table-search-params"
-import { useAuth } from "@/features/auth/hooks/use-auth"
-import { useUsers } from "@/features/users/hooks/use-users"
-import { UsersTable } from "@/features/users/components/users-table"
-import { CreateUserDialog } from "@/features/users/components/create-user-dialog"
-import { cn } from "@/lib/utils"
+import { Button } from "@/shared/ui/button"
+import { DataTableCard } from "@/shared/ui/data-table-card"
+import { TablePageSkeleton } from "@/shared/ui/table-page-skeleton"
+import { useTableSearchParams } from "@/shared/hooks"
+import { useAuth } from "@/features/auth"
+import {
+  useUsers,
+  UsersTable,
+  CreateUserDialog,
+} from "@/features/rbac/users"
+import { cn } from "@/shared/utils"
 
 function UsersPageContent() {
   const [createOpen, setCreateOpen] = useState(false)
