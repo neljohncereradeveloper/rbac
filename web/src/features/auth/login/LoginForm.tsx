@@ -41,7 +41,7 @@ export function LoginForm({
     setApiError(null)
     try {
       await login(data.username_or_email, data.password)
-      router.push("/rbac")
+      router.push("/rbac/users")
     } catch (err) {
       setApiError(err instanceof Error ? err.message : "Login failed")
     }

@@ -5,8 +5,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Shield } from "lucide-react"
 
-import { NavMain } from "@/components/layout/nav-main"
-import { NavUser } from "@/components/layout/nav-user"
+import { NavMain } from "@/layout/nav-main"
+import { NavUser } from "@/layout/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -22,13 +22,13 @@ import { useAuth } from "@/features/auth"
 const navMain = [
   {
     title: "RBAC",
-    url: "/rbac",
+    url: "/rbac/users",
     icon: Shield,
     isActive: true,
     items: [
-      { title: "Roles", url: "/roles" },
-      { title: "Permissions", url: "/permissions" },
-      { title: "Users", url: "/users" },
+      { title: "Roles", url: "/rbac/roles" },
+      { title: "Permissions", url: "/rbac/permissions" },
+      { title: "Users", url: "/rbac/users" },
     ],
   },
 ]
@@ -54,7 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/rbac">
+              <Link href="/rbac/users">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Shield className="size-4" />
                 </div>

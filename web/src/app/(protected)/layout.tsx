@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AppSidebar } from "@/components/layout/app-sidebar"
+import { AppSidebar } from "@/layout/app-sidebar"
 import {
   Sidebar,
   SidebarContent,

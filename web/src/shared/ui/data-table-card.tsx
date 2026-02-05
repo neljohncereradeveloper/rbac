@@ -16,6 +16,8 @@ export interface DataTableCardSearchConfig {
 export interface DataTableCardProps {
   title: string
   searchConfig?: DataTableCardSearchConfig
+  /** Custom search slot (e.g. SearchForm). When provided, renders instead of searchConfig. */
+  searchSlot?: React.ReactNode
   headerActions?: React.ReactNode
   isAuthenticated: boolean
   isLoading: boolean
@@ -27,6 +29,7 @@ export interface DataTableCardProps {
 export function DataTableCard({
   title,
   searchConfig,
+  searchSlot,
   headerActions,
   isAuthenticated,
   isLoading,
@@ -41,17 +44,23 @@ export function DataTableCard({
           <CardTitle>{title}</CardTitle>
           {isAuthenticated && headerActions}
         </div>
-        {isAuthenticated && searchConfig && (
+        {isAuthenticated && (searchSlot ?? searchConfig) && (
           <div className="flex min-w-0 max-w-full items-center justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <TableSearchForm
-                key={searchConfig.defaultValue}
-                basePath={searchConfig.basePath}
-                placeholder={searchConfig.placeholder}
-                defaultValue={searchConfig.defaultValue}
-              />
-            </div>
-            {searchConfig.trailingActions}
+            {searchSlot ? (
+              searchSlot
+            ) : searchConfig ? (
+              <>
+                <div className="min-w-0 flex-1">
+                  <TableSearchForm
+                    key={searchConfig.defaultValue}
+                    basePath={searchConfig.basePath}
+                    placeholder={searchConfig.placeholder}
+                    defaultValue={searchConfig.defaultValue}
+                  />
+                </div>
+                {searchConfig.trailingActions}
+              </>
+            ) : null}
           </div>
         )}
       </CardHeader>

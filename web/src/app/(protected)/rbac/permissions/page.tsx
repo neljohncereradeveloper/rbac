@@ -1,7 +1,6 @@
 "use client"
 
 import { Suspense } from "react"
-import { PageHeader, PageShell, PageTitle } from "@/components/layout"
 import { DataTableCard } from "@/shared/ui/data-table-card"
 import { TablePageSkeleton } from "@/shared/ui/table-page-skeleton"
 import { useAuth } from "@/features/auth"
@@ -15,18 +14,7 @@ function PermissionsPageContent() {
 
   return (
     <>
-      <PageHeader
-        items={[
-          { label: "RBAC", href: "/rbac" },
-          { label: "Permissions" },
-        ]}
-      />
-      <PageShell>
-        <PageTitle
-          title="Permissions"
-          description="View permissions. Permissions are system-defined and cannot be modified."
-        />
-        <DataTableCard
+      <DataTableCard
           title="Permissions list"
           searchConfig={undefined}
           isAuthenticated={isAuthenticated}
@@ -38,7 +26,6 @@ function PermissionsPageContent() {
             <PermissionsTable permissions={permissions} />
           )}
         </DataTableCard>
-      </PageShell>
     </>
   )
 }

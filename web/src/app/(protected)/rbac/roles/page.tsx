@@ -1,7 +1,6 @@
 "use client"
 
 import { Suspense } from "react"
-import { PageHeader, PageShell, PageTitle } from "@/components/layout"
 import { DataTableCard } from "@/shared/ui/data-table-card"
 import { TablePageSkeleton } from "@/shared/ui/table-page-skeleton"
 import { useAuth } from "@/features/auth"
@@ -16,18 +15,7 @@ function RolesPageContent() {
 
   return (
     <>
-      <PageHeader
-        items={[
-          { label: "RBAC", href: "/rbac" },
-          { label: "Roles" },
-        ]}
-      />
-      <PageShell>
-        <PageTitle
-          title="Roles"
-          description="View roles and their permissions. Roles are system-defined and cannot be modified."
-        />
-        <DataTableCard
+      <DataTableCard
           title="Roles list"
           // Note: Search removed - fetch all roles without filtering
           // Roles are statically defined (ADMIN, EDITOR, VIEWER) and managed via seeders only
@@ -47,7 +35,6 @@ function RolesPageContent() {
             </>
           )}
         </DataTableCard>
-      </PageShell>
     </>
   )
 }

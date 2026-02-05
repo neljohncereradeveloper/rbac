@@ -94,8 +94,8 @@ export function ResetPasswordDialog({
       <DialogContent className="max-w-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle className="break-words">Reset password</DialogTitle>
-            <DialogDescription className="break-words">
+            <DialogTitle className="wrap-break-word">Reset password</DialogTitle>
+            <DialogDescription className="wrap-break-word">
               Reset password for user &quot;{user?.username}&quot;. The user will
               need to use this new password to log in.
             </DialogDescription>

@@ -13,16 +13,16 @@ import {
 import { Separator } from "@/shared/ui/separator"
 import { SidebarTrigger } from "@/shared/ui/sidebar"
 
-export interface PageHeaderItem {
+export interface PageBreadcrumbItem {
   label: string
   href?: string
 }
 
-export interface PageHeaderProps {
-  items: PageHeaderItem[]
+export interface PageBreadcrumbProps {
+  items: PageBreadcrumbItem[]
 }
 
-export function PageHeader({ items }: PageHeaderProps) {
+export function PageBreadcrumb({ items }: PageBreadcrumbProps) {
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">
@@ -39,7 +39,7 @@ export function PageHeader({ items }: PageHeaderProps) {
                 <BreadcrumbItem>
                   {item.href ? (
                     <BreadcrumbLink asChild>
-                      <Link href={item.href}>{item.label}</Link>
+                      <Link href={item.href} className="text-sm">{item.label}</Link>
                     </BreadcrumbLink>
                   ) : (
                     <BreadcrumbPage>{item.label}</BreadcrumbPage>

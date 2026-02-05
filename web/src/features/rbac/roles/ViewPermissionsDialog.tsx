@@ -102,7 +102,7 @@ export function ViewPermissionsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="flex-1 space-y-1 min-w-0">
@@ -130,28 +130,7 @@ export function ViewPermissionsDialog({
                 </div>
               )}
             </div>
-            {!isLoading && permissions.length > 0 && (
-              <div className="flex flex-col gap-2 sm:flex-row shrink-0 w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={expandAll}
-                  disabled={openResources.size === groupedPermissions.length}
-                  className="w-full sm:w-auto"
-                >
-                  Expand All
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={collapseAll}
-                  disabled={openResources.size === 0}
-                  className="w-full sm:w-auto"
-                >
-                  Collapse All
-                </Button>
-              </div>
-            )}
+
           </div>
         </DialogHeader>
         <div className="flex flex-1 flex-col min-h-0 space-y-4 py-4">
@@ -214,6 +193,28 @@ export function ViewPermissionsDialog({
                   )
                 })}
               </div>
+              {!isLoading && permissions.length > 0 && (
+                <div className="flex flex-col gap-2 sm:flex-row shrink-0 w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={expandAll}
+                    disabled={openResources.size === groupedPermissions.length}
+                    className="w-full sm:w-auto"
+                  >
+                    Expand All
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={collapseAll}
+                    disabled={openResources.size === 0}
+                    className="w-full sm:w-auto"
+                  >
+                    Collapse All
+                  </Button>
+                </div>
+              )}
             </>
           )}
         </div>

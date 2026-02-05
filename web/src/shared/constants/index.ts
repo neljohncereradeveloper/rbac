@@ -2,7 +2,7 @@ export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   RBAC: "/rbac",
-  ROLES: "/roles",
-  PERMISSIONS: "/permissions",
-  USERS: "/users",
+  ROLES: "/rbac/roles",
+  PERMISSIONS: "/rbac/permissions",
+  USERS: "/rbac/users",
 } as const
