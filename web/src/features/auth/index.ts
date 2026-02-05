@@ -11,4 +11,5 @@ export type {
   AuthState,
   LoginResponse,
   LoginFormData,
+  InitialAuth,
 } from "./login"

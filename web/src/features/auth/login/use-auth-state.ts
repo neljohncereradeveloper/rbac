@@ -4,61 +4,38 @@ import * as React from "react"
 import { login as loginApi } from "./auth.api"
 import { mapLoginResponseToUser } from "./auth.logic"
 import type { User } from "./auth.types"
+import { setAuthCookies, deleteAuthCookies } from "./auth-actions"
 
-const TOKEN_KEY = "rbac_token"
-const USER_KEY = "rbac_user"
-
-function getStoredToken(): string | null {
-  if (typeof window === "undefined") return null
-  return localStorage.getItem(TOKEN_KEY)
-}
-
-function getStoredUser(): User | null {
-  if (typeof window === "undefined") return null
-  try {
-    const raw = localStorage.getItem(USER_KEY)
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
+export interface InitialAuth {
+  token: string | null
+  user: User | null
 }
 
 /**
  * Hook that orchestrates auth API + state.
  * Used by AuthProvider - does not render UI.
+ * Auth is stored in cookies via Next.js cookies() for middleware-based route protection.
  */
-export function useAuthState() {
-  const [user, setUser] = React.useState<User | null>(null)
-  const [token, setToken] = React.useState<string | null>(null)
-  const [isLoading, setIsLoading] = React.useState(true)
-
-  React.useEffect(() => {
-    const storedToken = getStoredToken()
-    const storedUser = getStoredUser()
-    if (storedToken && storedUser) {
-      setToken(storedToken)
-      setUser(storedUser)
-    }
-    setIsLoading(false)
-  }, [])
+export function useAuthState(initialAuth: InitialAuth) {
+  const [user, setUser] = React.useState<User | null>(initialAuth.user)
+  const [token, setToken] = React.useState<string | null>(initialAuth.token)
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const login = React.useCallback(
     async (username_or_email: string, password: string) => {
       const res = await loginApi(username_or_email, password)
       const userData = mapLoginResponseToUser(res)
+      await setAuthCookies(res.access_token, userData)
       setToken(res.access_token)
       setUser(userData)
-      localStorage.setItem(TOKEN_KEY, res.access_token)
-      localStorage.setItem(USER_KEY, JSON.stringify(userData))
     },
     []
   )
 
-  const logout = React.useCallback(() => {
+  const logout = React.useCallback(async () => {
+    await deleteAuthCookies()
     setToken(null)
     setUser(null)
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(USER_KEY)
   }, [])
 
   return {

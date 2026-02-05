@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { PageBreadcrumb, PageShell } from "@/layout"
@@ -45,29 +46,58 @@ export default function RbacLayout({
 }) {
     const pathname = usePathname()
     const items = getRbacBreadcrumbItems(pathname)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => setMounted(true), [])
 
     return (
         <>
             <PageBreadcrumb items={items} />
             <PageShell>
-                <Menubar>
-                    {RBAC_MENU_ITEMS.map(({ href, label }) => {
-                        const isActive = pathname === href
-                        return (
-                            <MenubarMenu key={href}>
-                                <MenubarTrigger
-                                    asChild
+                {mounted ? (
+                    <Menubar className="mb-4 w-fit">
+                        {RBAC_MENU_ITEMS.map(({ href, label }) => {
+                            const isActive = pathname === href
+                            return (
+                                <MenubarMenu key={href}>
+                                    <MenubarTrigger
+                                        asChild
+                                        className={cn(
+                                            isActive &&
+                                            "bg-accent text-accent-foreground"
+                                        )}
+                                    >
+                                        <Link href={href}>{label}</Link>
+                                    </MenubarTrigger>
+                                </MenubarMenu>
+                            )
+                        })}
+                    </Menubar>
+                ) : (
+                    <nav
+                        role="menubar"
+                        aria-label="RBAC sections"
+                        className="bg-background mb-4 flex h-9 w-fit items-center gap-1 rounded-md border p-1 shadow-xs"
+                    >
+                        {RBAC_MENU_ITEMS.map(({ href, label }) => {
+                            const isActive = pathname === href
+                            return (
+                                <Link
+                                    key={href}
+                                    href={href}
+                                    role="menuitem"
                                     className={cn(
+                                        "focus:bg-accent focus:text-accent-foreground inline-flex items-center rounded-sm px-2 py-1 text-sm font-medium outline-hidden transition-colors",
                                         isActive &&
                                         "bg-accent text-accent-foreground"
                                     )}
                                 >
-                                    <Link href={href} className="text-sm">{label}</Link>
-                                </MenubarTrigger>
-                            </MenubarMenu>
-                        )
-                    })}
-                </Menubar>
+                                    {label}
+                                </Link>
+                            )
+                        })}
+                    </nav>
+                )}
                 {children}
             </PageShell>
         </>

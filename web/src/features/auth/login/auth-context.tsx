@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useAuthState } from "./use-auth-state"
+import { useAuthState, type InitialAuth } from "./use-auth-state"
 import type { User } from "./auth.types"
 
 interface AuthContextValue {
@@ -10,13 +10,19 @@ interface AuthContextValue {
   isAuthenticated: boolean
   isLoading: boolean
   login: (username_or_email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = React.createContext<AuthContextValue | null>(null)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const authState = useAuthState()
+export function AuthProvider({
+  children,
+  initialAuth,
+}: {
+  children: React.ReactNode
+  initialAuth: InitialAuth
+}) {
+  const authState = useAuthState(initialAuth)
   return (
     <AuthContext.Provider value={authState}>{children}</AuthContext.Provider>
   )

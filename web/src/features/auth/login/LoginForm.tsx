@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@/shared/utils"
@@ -23,6 +23,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { login } = useAuth()
   const [apiError, setApiError] = useState<string | null>(null)
   const {
@@ -41,7 +42,8 @@ export function LoginForm({
     setApiError(null)
     try {
       await login(data.username_or_email, data.password)
-      router.push("/rbac/users")
+      const redirectTo = searchParams.get("redirect")
+      router.push(redirectTo && redirectTo.startsWith("/rbac") ? redirectTo : "/rbac/users")
     } catch (err) {
       setApiError(err instanceof Error ? err.message : "Login failed")
     }

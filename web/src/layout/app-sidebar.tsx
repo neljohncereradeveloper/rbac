@@ -36,8 +36,8 @@ const navMain = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
   const { user, logout } = useAuth()
-  const logoutAndRedirect = () => {
-    logout()
+  const logoutAndRedirect = async () => {
+    await logout()
     router.push("/login")
   }
   const sidebarUser = user
